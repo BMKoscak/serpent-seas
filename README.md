@@ -2,7 +2,7 @@
 
 **Learn Python on the high seas.** A pirate adventure that takes you from your very first `print()` to object-oriented programming, with real Python running right in your browser.
 
-▶ **Play:** https://bmkoscak.github.io/serpent-seas/
+▶ **Play:** https://thebenn.me/serpent-seas/
 
 ## What's aboard
 
