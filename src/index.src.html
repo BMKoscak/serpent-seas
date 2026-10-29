@@ -1,0 +1,1685 @@
+<title>Serpent Seas</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Pirata+One&display=swap">
+<style>
+/*__CM_CSS__*/
+/* Layout concept: a night-time nautical chart. The map is a sea chart with a rope route
+   between islands; lessons open as a captain's desk: orders on the left, the brass
+   Interpreter (editor + console) on the right. Single deliberate dark theme. */
+:root {
+  --bg: #0a1a21;
+  --sea: #0e2630;
+  --panel: #12303b;
+  --panel-2: #173a47;
+  --line: #2a4d5a;
+  --ink: #ece2c9;
+  --ink-2: #c0c9bf;
+  --muted: #84a0a1;
+  --brass: #e2a948;
+  --brass-hi: #f5cb7a;
+  --rope: #8f6e47;
+  --kelp: #63c28f;
+  --coral: #ef6b54;
+  --sand: #d9c08b;
+  --sand-2: #b99c64;
+  --leaf: #4e8a5b;
+  --code-bg: #0b1d25;
+  --f-display: "Pirata One", "Georgia", serif;
+  --f-body: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 10px;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background-image:
+    linear-gradient(rgba(132,160,161,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(132,160,161,.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+* { box-sizing: border-box; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; border-radius: 6px; }
+code, pre, .mono { font-family: var(--f-mono); font-size: .86em; }
+a { color: var(--brass-hi); }
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding-block: 10px; margin: 0 auto; max-width: 1360px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; }
+.brand-mark { width: 34px; height: 34px; }
+.brand-name { font-family: var(--f-display); font-size: 30px; line-height: 1; color: var(--brass-hi); letter-spacing: .5px; }
+.nav { display: flex; gap: 4px; }
+.nav button {
+  background: none; border: 1px solid transparent; border-radius: 999px;
+  padding: 5px 14px; color: var(--ink-2); font-weight: 500;
+}
+.nav button:hover { color: var(--ink); border-color: var(--line); }
+.nav button[aria-current="page"] { color: var(--bg); background: var(--brass); }
+.stats { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.stat { display: flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stat svg { width: 20px; height: 20px; flex: none; }
+.rank { display: flex; flex-direction: column; gap: 3px; min-width: 128px; }
+.rank-name { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--brass-hi); font-weight: 700; line-height: 1; }
+.rank-bar { height: 5px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+.rank-bar i { display: block; height: 100%; background: var(--brass); border-radius: 3px; transition: width .6s; }
+.iconbtn { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; color: var(--ink-2); font-weight: 700; font-size: 14px; letter-spacing: .05em; }
+.iconbtn:hover { color: var(--ink); border-color: var(--muted); }
+.iconbtn svg { width: 18px; height: 18px; display: block; }
+
+main { max-width: 1360px; margin: 0 auto; padding-block: 20px 40px; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+  border-radius: 8px; padding: 9px 18px; font-weight: 700; border: 1px solid var(--line);
+  background: var(--panel); color: var(--ink);
+}
+.btn:hover:not(:disabled) { border-color: var(--muted); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--brass); border-color: var(--brass); color: #1b1408; }
+.btn.primary:hover:not(:disabled) { background: var(--brass-hi); }
+.btn.go { background: var(--kelp); border-color: var(--kelp); color: #08200f; }
+.btn.ghost { background: none; }
+.btn.small { padding: 5px 12px; font-size: 15px; }
+.btn svg { width: 16px; height: 16px; }
+kbd { font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 5px; color: var(--muted); }
+
+/* ---------- map ---------- */
+.map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 28px; align-items: start; }
+.map-col { min-width: 0; }
+.map-svg { width: 100%; max-width: 700px; display: block; margin: 0 auto; }
+.island { cursor: pointer; }
+.island:focus { outline: none; }
+.island:focus-visible .shore { stroke: var(--brass-hi); stroke-width: 4; }
+.island:hover .shore { stroke: var(--brass-hi); }
+.island .glow { animation: glow 2.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+@keyframes glow { 0%,100% { opacity: .25; transform: scale(1); } 50% { opacity: .6; transform: scale(1.08); } }
+.ship-marker { animation: bob 3s ease-in-out infinite; }
+@keyframes bob { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-5px) rotate(2deg); } }
+.panel {
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.panel h2 { font-family: var(--f-display); font-weight: 400; font-size: 38px; line-height: 1.05; margin: 0; color: var(--brass-hi); text-wrap: balance; }
+.panel .sub { margin: -6px 0 0; font-size: 19px; color: var(--ink); font-weight: 500; }
+.panel p { margin: 0; color: var(--ink-2); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--f-mono); font-size: 13px; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); background: var(--sea); }
+.lesson-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.lesson-list button {
+  width: 100%; display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 10px; text-align: left;
+  background: var(--sea); border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; color: var(--ink);
+}
+.lesson-list button:hover:not(:disabled) { border-color: var(--brass); }
+.lesson-list button:disabled { opacity: .5; cursor: not-allowed; }
+.lesson-list .ln { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; border: 1px solid var(--line); color: var(--muted); font-variant-numeric: tabular-nums; }
+.lesson-list .done .ln { background: var(--kelp); border-color: var(--kelp); color: #08200f; }
+.lesson-list .current .ln { border-color: var(--brass); color: var(--brass-hi); }
+.lesson-list .meta { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.lesson-list .solo-tag { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--brass-hi); font-weight: 700; display: block; }
+.note { border: 1px dashed var(--line); border-radius: 10px; padding: 12px 14px; color: var(--ink-2); font-size: 15px; }
+.welcome { margin-bottom: 18px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+.welcome h1 { font-family: var(--f-display); font-weight: 400; font-size: clamp(34px, 5vw, 52px); line-height: 1; margin: 0; color: var(--ink); text-wrap: balance; }
+.welcome p { margin: 4px 0 0; color: var(--ink-2); max-width: 60ch; }
+
+/* ---------- lesson ---------- */
+.lesson-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.crumb { min-width: 0; }
+.crumb .eyebrow { display: block; }
+.crumb h1 { font-family: var(--f-display); font-weight: 400; font-size: 32px; line-height: 1.05; margin: 0; text-wrap: balance; }
+.dots { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.dot {
+  width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--sea);
+  display: grid; place-items: center; padding: 0; color: var(--muted);
+}
+.dot svg { width: 14px; height: 14px; }
+.dot.done { background: var(--panel-2); color: var(--kelp); border-color: var(--kelp); }
+.dot.here { border-color: var(--brass); color: var(--brass-hi); box-shadow: 0 0 0 3px rgba(226,169,72,.2); }
+.dot:disabled { opacity: .4; cursor: not-allowed; }
+.desk { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 20px; align-items: start; }
+.desk.single { grid-template-columns: minmax(0, 760px); justify-content: center; }
+.orders { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.orders .kind { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
+.tag { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 1px solid currentColor; }
+.tag.learn { color: var(--ink-2); }
+.tag.predict { color: #8fc7e0; }
+.tag.task { color: var(--brass-hi); }
+.tag.debug { color: var(--coral); }
+.tag.project { color: var(--kelp); }
+.reward { font-variant-numeric: tabular-nums; color: var(--brass-hi); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 5px; }
+.reward svg { width: 16px; height: 16px; }
+.prose { min-width: 0; }
+.prose p { margin: 0 0 12px; }
+.prose p:last-child { margin-bottom: 0; }
+.prose ul, .prose ol { margin: 0 0 12px; padding-left: 22px; }
+.prose li { margin-bottom: 4px; }
+.prose code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; color: var(--brass-hi); white-space: pre-wrap; }
+.prose pre.block { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; overflow-x: auto; }
+.prose pre.block code { background: none; border: 0; padding: 0; color: var(--ink); white-space: pre; }
+.prose strong { color: var(--ink); }
+.speaker { display: flex; align-items: center; gap: 14px; }
+.speaker svg { width: 64px; height: 64px; flex: none; }
+.speaker b { font-family: var(--f-display); font-weight: 400; font-size: 28px; color: var(--brass-hi); line-height: 1; display: block; }
+.speaker small { color: var(--muted); font-size: 14px; }
+.story-card { padding: 30px 32px; }
+.story-card .prose { font-size: 19px; }
+
+.options { display: flex; flex-direction: column; gap: 8px; }
+.opt {
+  text-align: left; background: var(--sea); border: 1px solid var(--line); border-radius: 9px; padding: 10px 14px;
+  display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start;
+}
+.opt:hover:not(:disabled) { border-color: var(--brass); }
+.opt .letter { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--line); display: grid; place-items: center; font-size: 13px; font-weight: 700; color: var(--muted); }
+.opt pre { margin: 0; font-family: var(--f-mono); font-size: 14px; white-space: pre-wrap; }
+.opt.right { border-color: var(--kelp); background: rgba(99,194,143,.1); }
+.opt.wrong { border-color: var(--coral); background: rgba(239,107,84,.1); }
+.opt:disabled { cursor: default; }
+.feedback { border-radius: 10px; padding: 12px 14px; border: 1px solid; }
+.feedback.good { border-color: var(--kelp); background: rgba(99,194,143,.08); }
+.feedback.bad { border-color: var(--coral); background: rgba(239,107,84,.08); }
+.feedback.info { border-color: var(--line); background: var(--sea); }
+.feedback h3 { margin: 0 0 4px; font-size: 17px; }
+.feedback.good h3 { color: var(--kelp); }
+.feedback.bad h3 { color: var(--coral); }
+.hints { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--line); padding-top: 14px; }
+.hint { background: var(--sea); border-left: 3px solid var(--brass); border-radius: 0 8px 8px 0; padding: 9px 12px; font-size: 16px; }
+.hint .prose code { font-size: .82em; }
+.hint-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.confirm { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; background: var(--sea); border: 1px solid var(--coral); border-radius: 9px; padding: 10px 12px; font-size: 15px; }
+.solution pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 6px 0; overflow-x: auto; font-size: 14px; }
+
+/* ---------- interpreter (editor + console) ---------- */
+.interp { background: var(--code-bg); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.interp-bar { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-bottom: 1px solid var(--line); background: var(--panel); flex-wrap: wrap; }
+.interp-bar .title { font-family: var(--f-mono); font-size: 13px; color: var(--muted); margin-right: auto; }
+.editor-host { min-height: 220px; position: relative; }
+.editor-host textarea.fallback { width: 100%; min-height: 240px; background: var(--code-bg); border: 0; padding: 12px; font-family: var(--f-mono); font-size: 14px; resize: vertical; }
+.stdin { border-top: 1px solid var(--line); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; background: var(--sea); }
+.stdin label { font-size: 13px; color: var(--muted); }
+.stdin textarea { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font-family: var(--f-mono); font-size: 14px; min-height: 58px; resize: vertical; }
+.console { border-top: 1px solid var(--line); padding: 12px 14px; min-height: 120px; max-height: 420px; overflow: auto; font-size: 15px; }
+.console .label { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 6px; display: flex; gap: 8px; align-items: center; }
+.console pre.out { margin: 0; font-family: var(--f-mono); font-size: 14px; white-space: pre-wrap; word-break: break-word; color: var(--ink); }
+.console .empty { color: var(--muted); font-style: italic; }
+.errbox { margin-top: 10px; border: 1px solid var(--coral); border-radius: 9px; overflow: hidden; }
+.errbox .raw { background: rgba(239,107,84,.12); padding: 8px 12px; font-family: var(--f-mono); font-size: 13px; color: #ffb3a5; white-space: pre-wrap; word-break: break-word; }
+.errbox .plain { padding: 10px 12px; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; }
+.errbox .plain svg { width: 34px; height: 34px; }
+.status { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.spinner { width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--brass); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.testlist { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 15px; }
+.testlist li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; }
+.cm-errline { background: rgba(239,107,84,.16); }
+
+.lesson-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; flex-wrap: wrap; }
+
+/* ---------- completion ---------- */
+.complete { max-width: 640px; margin: 20px auto; text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 34px 28px; }
+.complete h2 { font-family: var(--f-display); font-weight: 400; font-size: 48px; margin: 0; color: var(--brass-hi); line-height: 1; text-wrap: balance; }
+.complete .big { font-size: 22px; font-variant-numeric: tabular-nums; }
+.complete .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- log & workshop ---------- */
+.page-title { font-family: var(--f-display); font-weight: 400; font-size: clamp(34px, 5vw, 50px); margin: 0 0 4px; line-height: 1; }
+.page-sub { color: var(--ink-2); margin: 0 0 20px; max-width: 70ch; }
+.log-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 520px), 1fr)); align-items: start; }
+.log-card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.log-card h2 { margin: 0; font-family: var(--f-display); font-weight: 400; font-size: 28px; color: var(--brass-hi); line-height: 1.1; }
+.log-card.locked { opacity: .6; }
+.workshop { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+
+/* ---------- modal & toast ---------- */
+.modal-back { position: fixed; inset: 0; z-index: 50; background: rgba(4,12,16,.78); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); overflow-y: auto; }
+.modal { width: min(640px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px; display: flex; flex-direction: column; gap: 14px; max-height: calc(100dvh - 32px); overflow-y: auto; }
+.modal h2 { font-family: var(--f-display); font-weight: 400; font-size: 40px; color: var(--brass-hi); margin: 0; line-height: 1; text-wrap: balance; }
+.modal p { margin: 0; color: var(--ink-2); }
+.choice-grid { display: grid; gap: 10px; }
+.choice { text-align: left; background: var(--sea); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.choice:hover { border-color: var(--brass); }
+.choice b { font-size: 18px; }
+.choice span { color: var(--muted); font-size: 15px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { background: none; border: 0; padding: 6px 16px; color: var(--ink-2); font-weight: 700; }
+.seg button[aria-pressed="true"] { background: var(--brass); color: #1b1408; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field textarea { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font-family: var(--f-mono); font-size: 12px; min-height: 80px; resize: vertical; word-break: break-all; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.settings-sec { border-top: 1px solid var(--line); padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+.settings-sec h3 { margin: 0; font-size: 16px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.switch { display: flex; gap: 10px; align-items: center; }
+.switch input { width: 20px; height: 20px; accent-color: var(--brass); }
+.pq-code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 0; font-family: var(--f-mono); font-size: 14px; overflow-x: auto; }
+.progress-line { height: 4px; background: var(--sea); border-radius: 2px; overflow: hidden; }
+.progress-line i { display: block; height: 100%; background: var(--brass); }
+.toasts { position: fixed; z-index: 60; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(16px, env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none; }
+.toast { background: var(--panel-2); border: 1px solid var(--brass); color: var(--ink); border-radius: 10px; padding: 10px 14px; display: flex; gap: 10px; align-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.4); animation: toastin .3s ease-out; max-width: min(360px, calc(100vw - 32px)); }
+.toast svg { width: 26px; height: 26px; flex: none; }
+.toast b { color: var(--brass-hi); }
+@keyframes toastin { from { transform: translateY(12px); opacity: 0; } }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge { display: flex; gap: 8px; align-items: center; background: var(--sea); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 6px; font-size: 14px; }
+.badge.off { opacity: .35; }
+.badge svg { width: 22px; height: 22px; }
+
+/* ---------- CodeMirror skin ---------- */
+.CodeMirror { height: auto; min-height: 220px; background: var(--code-bg); color: var(--ink); font-family: var(--f-mono); font-size: 15px; line-height: 1.55; }
+.CodeMirror-scroll { min-height: 220px; }
+.CodeMirror-gutters { background: var(--code-bg); border-right: 1px solid var(--line); }
+.CodeMirror-linenumber { color: #4f6f78; }
+.CodeMirror-cursor { border-left: 2px solid var(--brass-hi); }
+.CodeMirror-selected, .CodeMirror-focused .CodeMirror-selected { background: rgba(226,169,72,.22) !important; }
+.CodeMirror-matchingbracket { color: var(--brass-hi) !important; text-decoration: underline; }
+.cm-s-default .cm-keyword { color: #e88c6a; }
+.cm-s-default .cm-builtin { color: #7fc6e6; }
+.cm-s-default .cm-string { color: #a9d38a; }
+.cm-s-default .cm-number { color: #f0c36b; }
+.cm-s-default .cm-comment { color: #6f8d93; font-style: italic; }
+.cm-s-default .cm-def { color: #f5cb7a; }
+.cm-s-default .cm-variable { color: var(--ink); }
+.cm-s-default .cm-variable-2 { color: #d9cba8; }
+.cm-s-default .cm-property { color: #c3b7ee; }
+.cm-s-default .cm-operator { color: #e2a948; }
+.cm-s-default .cm-meta { color: #c3b7ee; }
+.readonly .CodeMirror-cursor { display: none !important; }
+
+/* ---------- motion ---------- */
+@keyframes rise { from { transform: translateY(10px); opacity: .35; } to { transform: none; opacity: 1; } }
+@keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(3px); } }
+@keyframes pulseGood { 0% { box-shadow: 0 0 0 0 rgba(99,194,143,.55); } 100% { box-shadow: 0 0 0 14px rgba(99,194,143,0); } }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(-70px); } }
+@keyframes fogdrift { 0%,100% { transform: translateX(-10px); } 50% { transform: translateX(14px); } }
+@keyframes gull { 0% { transform: translate(0,0); } 50% { transform: translate(60px,-14px); } 100% { transform: translate(120px,0); } }
+@keyframes flap { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(.45); } }
+@keyframes blink { 0%,92%,100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes pipbob { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-3px) rotate(-3deg); } }
+@keyframes lid { 0% { transform: rotate(0); } 55% { transform: rotate(-38deg); } 75% { transform: rotate(-30deg); } 100% { transform: rotate(-34deg); } }
+@keyframes shine { 0% { opacity: 0; transform: scale(.4); } 40% { opacity: 1; } 100% { opacity: .55; transform: scale(1); } }
+@keyframes sparkle { 0% { opacity: 0; transform: translateY(0) scale(.4); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-26px) scale(1); } }
+@keyframes bannerIn { 0% { transform: translate(-50%, -30px) scale(.8); opacity: 0; } 15% { transform: translate(-50%, 0) scale(1.05); opacity: 1; } 22% { transform: translate(-50%, 0) scale(1); } 85% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -16px); } }
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.desk > *, .complete, .log-card, .panel { animation: rise .38s ease-out both; }
+.desk > *:nth-child(2) { animation-delay: .06s; }
+.story-card .prose p { animation: rise .5s ease-out both; }
+.story-card .prose p:nth-child(2) { animation-delay: .12s; } .story-card .prose p:nth-child(3) { animation-delay: .24s; } .story-card .prose p:nth-child(4) { animation-delay: .36s; }
+.speaker svg, .complete > svg:first-child { animation: pipbob 3.2s ease-in-out infinite; }
+.pip-eye { transform-box: fill-box; transform-origin: center; animation: blink 4.5s infinite; }
+/* Pip's moving parts (all transforms in the 64x64 art space) */
+.pip-art .pip-body, .pip-art .pip-head, .pip-art .pip-wing, .pip-art .pip-jaw, .pip-art .pip-crest, .pip-art .pip-tail { transform-box: view-box; }
+.pip-art .pip-body { transform-origin: 34px 58px; }
+.pip-art .pip-head { transform-origin: 36px 34px; transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+.pip-art .pip-wing { transform-origin: 26px 34px; }
+.pip-art .pip-jaw { transform-origin: 44px 36px; transform: rotate(calc(var(--jaw, 0) * 38deg)); }
+.pip-art .pip-crest { transform-origin: 33px 21px; }
+.pip-art .pip-tail { transform-origin: 23px 46px; }
+.pip-art .pip-pupil { transition: transform .3s ease; }
+@keyframes wingflap { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-48deg) scaleY(1.1); } }
+@keyframes hop { 0%,100% { transform: translateY(0) scale(1); } 15% { transform: translateY(0) scale(1.08,.9); } 45% { transform: translateY(-13px) scale(.95,1.06); } 75% { transform: translateY(0) scale(1.06,.93); } }
+@keyframes ruffle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-14deg); } 60% { transform: rotate(10deg); } }
+@keyframes tailwag { 0%,100% { transform: rotate(0); } 30% { transform: rotate(12deg); } 70% { transform: rotate(-9deg); } }
+@keyframes jawchat { 0%,100% { transform: rotate(0); } 50% { transform: rotate(34deg); } }
+@keyframes dance { 0%,100% { transform: rotate(0) translateY(0); } 25% { transform: rotate(-9deg) translateY(-4px); } 75% { transform: rotate(9deg) translateY(-4px); } }
+.pip-art.flap .pip-wing { animation: wingflap .16s ease-in-out 6; }
+.pip-art.hop .pip-body { animation: hop .55s ease-out 2; }
+.pip-art.dance .pip-body { animation: dance .5s ease-in-out 4; }
+.pip-art.ruffle .pip-crest { animation: ruffle .6s ease-in-out 2; }
+.pip-art.wag .pip-tail { animation: tailwag .45s ease-in-out 3; }
+.pip-art.tilt .pip-head { transform: rotate(-11deg); }
+.pip-art.sad .pip-head { transform: rotate(8deg) translateY(1.5px); }
+.pip-art.sad .pip-crest { transform: rotate(18deg); }
+.pip-art.chat .pip-jaw { animation: jawchat .18s ease-in-out infinite; }
+/* the companion in the corner */
+#pip-mate { position: fixed; right: 14px; bottom: 12px; z-index: 40; display: flex; align-items: flex-end; gap: 6px; pointer-events: none; }
+#pip-mate[hidden] { display: none; }
+#pip-mate .pm-btn { pointer-events: auto; width: 84px; height: 92px; padding: 0; border: 0; background: none; cursor: pointer; position: relative; animation: pipbob 3.2s ease-in-out infinite; }
+#pip-mate .pm-btn svg.pip-art { width: 84px; height: 84px; overflow: visible; filter: drop-shadow(0 4px 6px rgba(0,0,0,.45)); }
+#pip-mate .pm-perch { position: absolute; left: 4px; right: 2px; bottom: 6px; height: 7px; border-radius: 4px; background: linear-gradient(#8a5a2b, #5a3a1a); box-shadow: 0 2px 0 #2b1b0c; }
+#pip-mate .pm-btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 12px; }
+#pip-mate .pm-bubble { position: relative; max-width: min(280px, 62vw); margin-bottom: 46px; padding: 10px 14px; border-radius: 14px 14px 4px 14px; background: #ece2c9; color: #1c1710;
+  font: 600 16px/1.35 "Alegreya Sans", sans-serif; box-shadow: 0 6px 18px rgba(0,0,0,.4); opacity: 0; transform: translateY(8px) scale(.92); transform-origin: 100% 100%;
+  transition: opacity .2s ease, transform .25s cubic-bezier(.3,1.5,.5,1); }
+#pip-mate .pm-bubble.show { opacity: 1; transform: none; }
+#pip-mate .pm-bubble b { color: #6b2e2a; }
+#pip-mate .pm-bubble::after { content: ""; position: absolute; right: -7px; bottom: 6px; border: 8px solid transparent; border-left-color: #ece2c9; border-right: 0; }
+@media (max-width: 700px) { #pip-mate .pm-btn, #pip-mate .pm-btn svg.pip-art { width: 60px; height: 64px; } #pip-mate .pm-bubble { margin-bottom: 30px; font-size: 15px; } }
+html.calm .pip-art *, html.calm #pip-mate .pm-btn { animation: none !important; }
+body { padding-bottom: 96px; }
+/* confetti */
+.confetto { position: fixed; top: 0; left: 0; width: 9px; height: 14px; border-radius: 2px; pointer-events: none; z-index: 60; }
+.shake { animation: shake .42s ease-in-out; }
+.opt.right { animation: pulseGood .7s ease-out; }
+.opt.wrong { animation: shake .42s ease-in-out; }
+.feedback.good { animation: pop .4s ease-out; }
+.gull { animation: gull 26s linear infinite alternate; }
+.gull path { transform-box: fill-box; transform-origin: center; animation: flap .7s ease-in-out infinite; }
+.stat.bump b, .stat.bump svg { animation: bump .35s ease-out; }
+.chest { width: 76px; height: 64px; flex: none; overflow: visible; }
+.chest .lid { transform-box: fill-box; transform-origin: 10% 100%; animation: lid .7s .1s ease-out both; }
+.chest .glow-in { transform-box: fill-box; transform-origin: center; animation: shine .8s .25s ease-out both; }
+.chest .spark { animation: sparkle 1.1s ease-out infinite; }
+.chest .spark:nth-of-type(2) { animation-delay: .35s; } .chest .spark:nth-of-type(3) { animation-delay: .7s; }
+.pass-row { display: flex; gap: 14px; align-items: center; }
+.flycoin { position: fixed; z-index: 70; width: 22px; height: 22px; pointer-events: none; left: 0; top: 0; }
+.rank-banner { position: fixed; z-index: 80; top: calc(env(safe-area-inset-top, 0px) + 90px); left: 50%; transform: translateX(-50%);
+  background: var(--panel-2); border: 2px solid var(--brass); border-radius: 14px; padding: 16px 28px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.55); animation: bannerIn 3.2s ease-in-out both; pointer-events: none; min-width: min(360px, calc(100vw - 32px)); }
+.rank-banner .eyebrow { color: var(--brass-hi); }
+.rank-banner b { display: block; font-family: var(--f-display); font-weight: 400; font-size: 40px; line-height: 1.1; color: var(--ink); }
+.rank-banner svg { width: 54px; height: 54px; }
+.sound-row { display: grid; grid-template-columns: auto 1fr; gap: 10px 14px; align-items: center; }
+.sound-row input[type=range] { width: 100%; accent-color: var(--brass); }
+html.calm *, html.calm *::before, html.calm *::after { animation: none !important; transition: none !important; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1020px) {
+  .map-layout { grid-template-columns: minmax(0, 1fr); }
+  .panel { position: static; order: -1; }
+  .desk { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  body { font-size: 16px; }
+  .topbar { gap: 10px; }
+  .brand-name { font-size: 25px; }
+  .nav { order: 3; width: 100%; overflow-x: auto; }
+  .stats { gap: 10px; }
+  .rank { min-width: 90px; }
+  .orders, .story-card { padding: 18px; }
+  .dots { margin-left: 0; }
+  .crumb h1 { font-size: 27px; }
+  .panel h2 { font-size: 32px; }
+}
+@media (max-width: 420px) {
+  .rank { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<header class="topbar" id="topbar"></header>
+<main id="view" aria-live="polite"></main>
+<div class="toasts" id="toasts"></div>
+<div id="modal-root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
+<script src="audio.js"></script>
+<script src="islands/c2.js"></script>
+<script src="islands/c3.js"></script>
+<script src="islands/c4.js"></script>
+<script src="islands/c5.js"></script>
+<script src="islands/c6.js"></script>
+<script src="islands/c7.js"></script>
+<script src="islands/c8.js"></script>
+<script src="islands/c9.js"></script>
+<script src="islands/c10.js"></script>
+<script src="islands/c11.js"></script>
+<script src="islands/c12.js"></script>
+<script src="islands/c13.js"></script>
+<script src="islands/c14.js"></script>
+<script src="lessons.js"></script>
+<script>
+(() => {
+"use strict";
+const CUR = window.CURRICULUM;
+const CH = CUR.chapters;
+
+/* ================= text ================= */
+const T = {
+  en: {
+    map: "Sea Chart", workshop: "Workshop", log: "Captain's Log", settings: "Settings",
+    doubloons: "doubloons", streak: "day streak", run: "Run", check: "Check", reset: "Reset", input: "Input",
+    output: "Output", noOutput: "(no output)", loadingPy: "Hoisting the sails: loading Python. The first time takes a moment.",
+    pyReady: "Interpreter ready", pyFail: "The Interpreter could not start in this browser.", running: "Running",
+    next: "Next", back: "Back", gotIt: "Got it", aye: "Aye!", toMap: "Sea Chart", continue: "Continue",
+    setSail: "Set sail", lessons: "Lessons", locked: "Locked", charting: "Being charted",
+    chartingNote: "This island's lessons are still being written. Here is what you'll learn there.",
+    lockedNote: (n) => `Finish ${n} to sail here.`,
+    stepsDone: (a, b) => `${a}/${b} steps`, solo: "Solo voyage",
+    learn: "Lesson", predict: "Predict", task: "Task", debug: "Bug hunt", project: "Solo voyage",
+    predictQ: "Pick your answer, then run the code to see for yourself.",
+    correct: "Correct!", notQuite: "Not quite.", tryRun: "Now press Run and watch it happen.",
+    hint: "Hint", showHint: "Show a hint", nextHint: "Another hint", hintCost: "−5", showSolution: "Show solution",
+    peekWarn: "Peeking at the solution means no doubloons for this task. Show it anyway?",
+    showIt: "Show it", keepTrying: "Keep trying", solution: "Solution", putInEditor: "Put it in the editor",
+    typeTip: "Tip: typing it out yourself teaches your fingers too.",
+    passed: "Treasure found!", failed: "Not yet", checking: "Checking your code",
+    allTests: (n) => `All ${n} checks passed.`, inputHelp: "Each line here is one answer for input(), used top to bottom.",
+    timeout: "Caught in a whirlpool: the program ran longer than 5 seconds. That usually means a loop that never ends. The Interpreter was restarted.",
+    outLimit: "The output got too long (over 20,000 characters) and was cut off. Is a loop printing forever?",
+    lessonDone: "Lesson complete", islandDone: "Island conquered!", earned: "earned in this lesson",
+    nextLesson: "Next lesson", backToMap: "Back to the chart",
+    welcomeH: "Welcome aboard", welcomeP: "Pick up where you left off, or choose any open island on the chart.",
+    doneH: "Captain of the Serpent Seas", doneP: "You claimed the Crown of Objects. Revisit any island, or keep building in the Workshop.",
+    startH: "Ahoy! Where do ye start?", startP: "Serpent Seas teaches Python from your very first line to advanced object-oriented programming. Every lesson runs real Python right here in your browser.",
+    newbie: "I'm new to programming", newbieS: "Start from the very first line. No experience needed.",
+    someExp: "I've written some code before", someExpS: "Take a quick placement test that stops as soon as it finds your level, then skip what you already know.",
+    explore: "Let me roam free", exploreS: "Unlock every island and pick your own route.",
+    language: "Language", placementH: "Placement test", placementP: "Predict what each program prints. Skip any you're not sure about.",
+    notSure: "Not sure", placementDone: "Placement complete",
+    placedSome: (n) => `You already know your way around ${n} island${n === 1 ? "" : "s"}. They are marked as charted, and you can revisit them anytime.`,
+    placedNone: "Best to start at the beginning. The first island moves quickly if it feels easy.",
+    toChart: "Open the chart",
+    wsTitle: "The Workshop", wsSub: "A free sandbox. Write any Python you like and run it. Your code is kept between visits.",
+    logTitle: "Captain's Log", logSub: "Cheat sheets for every island you've reached. Real programmers look things up constantly, so use this whenever you forget something.",
+    logLocked: "Reach this island to unlock its page.",
+    langLabel: "Language", unlockAll: "Unlock all islands", unlockAllS: "For experienced sailors who want to choose their own route.",
+    saveH: "Save code", saveS: "Progress is saved in this browser. Copy this code to move it to another browser or keep a backup.",
+    copy: "Copy", copied: "Copied", loadSave: "Load a save code", load: "Load", loaded: "Save loaded", badSave: "That save code isn't valid. Check that you copied all of it.",
+    resetH: "Start over", resetBtn: "Erase all progress", resetConfirm: "Erase everything? This cannot be undone.", erase: "Erase", cancel: "Cancel",
+    badgesH: "Badges", close: "Close", rankUp: "New rank", badgeGot: "Badge earned",
+    pipSays: "Pip explains", line: "Line", charted: "Charted", conquered: "Conquered",
+    of: "of", ctrlEnter: "Ctrl+Enter",
+    sound: "Sound", music: "Music", musicS: "Sea shanty on the chart, calm tunes while you code.", sfx: "Sound effects", ambience: "Ocean waves", volume: "Volume", voice: "Pip's voice", voiceS: "Pip talks when you pass, slip or ask for hints.", showPip: "Show Pip in the corner", showPipS: "Your parrot companion. Click him for a chat.",
+    motion: "Reduce animations", motionS: "Turns off moving waves, flying coins and other motion.",
+  },
+  sl: {
+    map: "Pomorska karta", workshop: "Delavnica", log: "Kapitanov dnevnik", settings: "Nastavitve",
+    doubloons: "dublonov", streak: "dni zapored", run: "Zaženi", check: "Preveri", reset: "Ponastavi", input: "Vnos",
+    output: "Izpis", noOutput: "(ni izpisa)", loadingPy: "Dvigujemo jadra: nalagam Python. Prvič traja trenutek.",
+    pyReady: "Tolmač pripravljen", pyFail: "Tolmač se v tem brskalniku ni mogel zagnati.", running: "Teče",
+    next: "Naprej", back: "Nazaj", gotIt: "Razumem", aye: "Ajej!", toMap: "Pomorska karta", continue: "Nadaljuj",
+    setSail: "Izpluj", lessons: "Lekcije", locked: "Zaklenjeno", charting: "V izdelavi",
+    chartingNote: "Lekcije za ta otok še nastajajo. Tole se boš naučil tam.",
+    lockedNote: (n) => `Za plovbo sem končaj ${n}.`,
+    stepsDone: (a, b) => `${a}/${b} korakov`, solo: "Samostojna plovba",
+    learn: "Lekcija", predict: "Napoved", task: "Naloga", debug: "Lov na hrošče", project: "Samostojna plovba",
+    predictQ: "Izberi odgovor, nato zaženi kodo in se prepričaj sam.",
+    correct: "Pravilno!", notQuite: "Ne čisto.", tryRun: "Zdaj pritisni Zaženi in poglej, kaj se zgodi.",
+    hint: "Namig", showHint: "Pokaži namig", nextHint: "Še en namig", hintCost: "−5", showSolution: "Pokaži rešitev",
+    peekWarn: "Če pogledaš rešitev, za to nalogo ne dobiš dublonov. Jo vseeno pokažem?",
+    showIt: "Pokaži", keepTrying: "Poskusim še", solution: "Rešitev", putInEditor: "Prenesi v urejevalnik",
+    typeTip: "Namig: če jo pretipkaš sam, se učijo tudi prsti.",
+    passed: "Zaklad najden!", failed: "Še ne", checking: "Preverjam kodo",
+    allTests: (n) => `Vseh ${n} preverjanj je uspešnih.`, inputHelp: "Vsaka vrstica tukaj je en odgovor za input(), po vrsti od zgoraj navzdol.",
+    timeout: "Ujet v vrtinec: program je tekel dlje kot 5 sekund. Običajno to pomeni zanko, ki se nikoli ne konča. Tolmač je bil ponovno zagnan.",
+    outLimit: "Izpis je postal predolg (več kot 20.000 znakov) in je bil odrezan. Ali zanka izpisuje v nedogled?",
+    lessonDone: "Lekcija končana", islandDone: "Otok osvojen!", earned: "prisluženih v tej lekciji",
+    nextLesson: "Naslednja lekcija", backToMap: "Nazaj na karto",
+    welcomeH: "Dobrodošel na krovu", welcomeP: "Nadaljuj, kjer si ostal, ali izberi katerikoli odprt otok na karti.",
+    doneH: "Kapitan Kačjih morij", doneP: "Osvojil si Krono objektov. Ponovno obišči katerikoli otok ali nadaljuj z gradnjo v Delavnici.",
+    startH: "Ahoj! Kje začneš?", startP: "Serpent Seas te nauči Python od prve vrstice do naprednega objektnega programiranja. Vsaka lekcija poganja pravi Python kar v tvojem brskalniku.",
+    newbie: "Programiranje mi je novo", newbieS: "Začni pri prvi vrstici. Izkušnje niso potrebne.",
+    someExp: "Nekaj kode sem že napisal", someExpS: "Reši hiter uvrstitveni preizkus, ki se ustavi, ko najde tvoj nivo, in preskoči, kar že znaš.",
+    explore: "Pusti me prosto pluti", exploreS: "Odkleni vse otoke in si sam izberi pot.",
+    language: "Jezik", placementH: "Uvrstitveni preizkus", placementP: "Napovej, kaj izpiše vsak program. Preskoči, če nisi prepričan.",
+    notSure: "Ne vem", placementDone: "Preizkus končan",
+    placedSome: (n) => `Na ${n} ${n === 1 ? "otoku" : n === 2 ? "otokih" : "otokih"} se že znajdeš. Označeni so kot raziskani in jih lahko kadarkoli obiščeš.`,
+    placedNone: "Najbolje je začeti na začetku. Prvi otok gre hitro, če se ti zdi lahek.",
+    toChart: "Odpri karto",
+    wsTitle: "Delavnica", wsSub: "Prost peskovnik. Napiši kateri koli Python in ga zaženi. Koda ostane shranjena med obiski.",
+    logTitle: "Kapitanov dnevnik", logSub: "Plonk listki za vsak otok, ki si ga dosegel. Pravi programerji ves čas nekaj preverjajo, zato ga uporabi, kadar kaj pozabiš.",
+    logLocked: "Dosezi ta otok, da odkleneš njegovo stran.",
+    langLabel: "Jezik", unlockAll: "Odkleni vse otoke", unlockAllS: "Za izkušene mornarje, ki si želijo sami izbrati pot.",
+    saveH: "Koda shranjenega napredka", saveS: "Napredek se hrani v tem brskalniku. Kopiraj to kodo, da ga preneseš v drug brskalnik ali shraniš varnostno kopijo.",
+    copy: "Kopiraj", copied: "Kopirano", loadSave: "Naloži kodo napredka", load: "Naloži", loaded: "Napredek naložen", badSave: "Ta koda ni veljavna. Preveri, ali si kopiral vse.",
+    resetH: "Začni znova", resetBtn: "Izbriši ves napredek", resetConfirm: "Izbrišem vse? Tega ni mogoče razveljaviti.", erase: "Izbriši", cancel: "Prekliči",
+    badgesH: "Značke", close: "Zapri", rankUp: "Nov čin", badgeGot: "Nova značka",
+    pipSays: "Pip razloži", line: "Vrstica", charted: "Raziskano", conquered: "Osvojeno",
+    of: "od", ctrlEnter: "Ctrl+Enter",
+    sound: "Zvok", music: "Glasba", musicS: "Mornarska pesem na karti, mirne melodije med programiranjem.", sfx: "Zvočni učinki", ambience: "Šumenje morja", volume: "Glasnost", voice: "Pipov glas", voiceS: "Pip spregovori, ko ti uspe, se zmotiš ali prosiš za namig.", showPip: "Pokaži Pipa v kotu", showPipS: "Tvoja papiga spremljevalka. Klikni nanj za klepet.",
+    motion: "Manj animacij", motionS: "Izklopi premikanje valov, leteče kovance in drugo gibanje.",
+  },
+};
+const t = (k, ...a) => { const v = (T[S.lang] || T.en)[k] ?? T.en[k]; return typeof v === "function" ? v(...a) : v; };
+const L = (v) => v == null ? "" : typeof v === "string" ? v : (v[S.lang] ?? v.en);
+
+const BADGES = {
+  first_run: { en: ["First Words", "Ran your first program"], sl: ["Prve besede", "Zagnal si prvi program"] },
+  bug_hunter: { en: ["Bug Hunter", "Fixed your first bug"], sl: ["Lovec na hrošče", "Popravil si prvega hrošča"] },
+  exterminator: { en: ["Exterminator", "Fixed 5 bugs"], sl: ["Pokončevalec", "Popravil si 5 hroščev"] },
+  no_hints: { en: ["Sharp Eye", "Finished a lesson without hints"], sl: ["Ostro oko", "Lekcija brez namigov"] },
+  solo: { en: ["Solo Sailor", "Completed a solo voyage"], sl: ["Samotni mornar", "Končal si samostojno plovbo"] },
+  island: { en: ["Island Conqueror", "Conquered your first island"], sl: ["Osvajalec otokov", "Osvojil si prvi otok"] },
+  streak3: { en: ["Steady Hand", "Sailed 3 days in a row"], sl: ["Mirna roka", "3 dni plovbe zapored"] },
+  crown: { en: ["The Crown of Objects", "Finished the whole voyage"], sl: ["Krona objektov", "Končal celotno plovbo"] },
+};
+
+/* ================= state ================= */
+const KEY = "serpent-seas-v1";
+const DEF = { lang: null, onboarded: false, coins: 0, done: {}, code: {}, hints: {}, peek: {}, predict: {},
+  badges: [], streak: { last: null, count: 0 }, placed: [], unlockAll: false, ran: 0, fixes: 0, workshop: null,
+  audio: { music: true, sfx: true, ambience: true, voice: true, musicVol: 0.5, sfxVol: 0.7 }, reduceMotion: false, shipAt: 0, pip: true };
+function loadState() {
+  let s = null;
+  try { const raw = localStorage.getItem(KEY); if (raw) s = JSON.parse(raw); } catch (e) {}
+  const base = JSON.parse(JSON.stringify(DEF));
+  const out = s && typeof s === "object" ? Object.assign(base, s) : base;
+  out.audio = Object.assign({}, DEF.audio, out.audio || {});
+  return out;
+}
+let S = loadState();
+if (!S.lang) S.lang = (navigator.language || "").toLowerCase().startsWith("sl") ? "sl" : "en";
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function inline(s) {
+  return esc(s)
+    .replace(/~([^~]+)~/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[\s(])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
+}
+function md(src) {
+  const out = []; let para = [], ul = [], ol = [], code = null;
+  const fp = () => { if (para.length) { out.push("<p>" + inline(para.join(" ")) + "</p>"); para = []; } };
+  const fl = () => {
+    if (ul.length) { out.push("<ul>" + ul.map((x) => "<li>" + inline(x) + "</li>").join("") + "</ul>"); ul = []; }
+    if (ol.length) { out.push("<ol>" + ol.map((x) => "<li>" + inline(x) + "</li>").join("") + "</ol>"); ol = []; }
+  };
+  for (const line of String(src).split("\n")) {
+    if (line.trim() === ":::") {
+      if (code) { out.push('<pre class="block"><code>' + esc(code.join("\n")) + "</code></pre>"); code = null; }
+      else { fp(); fl(); code = []; }
+      continue;
+    }
+    if (code) { code.push(line); continue; }
+    if (/^- /.test(line)) { fp(); ul.push(line.slice(2)); continue; }
+    if (/^\d+\. /.test(line)) { fp(); ol.push(line.replace(/^\d+\. /, "")); continue; }
+    if (!line.trim()) { fp(); fl(); continue; }
+    fl(); para.push(line);
+  }
+  fp(); fl();
+  return out.join("");
+}
+const keyOf = (ch, l, s) => `${ch.id}/${l.id}/${s.id}`;
+const lessonDone = (ch, l) => l.steps.every((s) => S.done[keyOf(ch, l, s)]);
+const chapterDone = (ch) => ch.lessons.length > 0 && ch.lessons.every((l) => lessonDone(ch, l));
+const chapterPassed = (ch) => chapterDone(ch) || S.placed.includes(ch.id);
+const chIndex = (ch) => CH.indexOf(ch);
+function chapterUnlocked(ch) {
+  const i = chIndex(ch);
+  return i === 0 || S.unlockAll || S.placed.includes(ch.id) || chapterPassed(CH[i - 1]);
+}
+function lessonUnlocked(ch, li) {
+  if (!chapterUnlocked(ch)) return false;
+  return li === 0 || S.unlockAll || S.placed.includes(ch.id) || lessonDone(ch, ch.lessons[li - 1]);
+}
+function findLesson(lid) {
+  for (const ch of CH) for (const l of ch.lessons) if (l.id === lid) return { ch, l };
+  return null;
+}
+function nextTarget() {
+  for (const ch of CH) {
+    if (!chapterUnlocked(ch) || ch.charting) continue;
+    for (let i = 0; i < ch.lessons.length; i++) {
+      const l = ch.lessons[i];
+      if (!lessonDone(ch, l) && lessonUnlocked(ch, i)) return { ch, l };
+    }
+  }
+  return null;
+}
+function rankInfo(c = S.coins) {
+  let i = 0;
+  CUR.ranks.forEach((r, k) => { if (c >= r[0]) i = k; });
+  const cur = CUR.ranks[i], nxt = CUR.ranks[i + 1];
+  const pct = nxt ? Math.round(((c - cur[0]) / (nxt[0] - cur[0])) * 100) : 100;
+  return { i, name: S.lang === "sl" ? cur[2] : cur[1], pct, next: nxt };
+}
+function todayStr(d = new Date()) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function bumpStreak() {
+  const today = todayStr();
+  if (S.streak.last === today) return;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  S.streak.count = S.streak.last === todayStr(y) ? S.streak.count + 1 : 1;
+  S.streak.last = today;
+  if (S.streak.count >= 3) award("streak3");
+}
+function streakNow() {
+  if (!S.streak.last) return 0;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  return (S.streak.last === todayStr() || S.streak.last === todayStr(y)) ? S.streak.count : 0;
+}
+function award(id) {
+  if (S.badges.includes(id)) return;
+  S.badges.push(id); save();
+  const b = BADGES[id][S.lang] || BADGES[id].en;
+  setTimeout(() => { Sound.play("chest"); Pip.react("dance"); }, 500);
+  toast(ICON.medal, `<b>${esc(t("badgeGot"))}:</b> ${esc(b[0])}`);
+}
+function addCoins(n, fromEl) {
+  const before = rankInfo().i;
+  const shown = S.coins;
+  S.coins += n; save();
+  const after = rankInfo();
+  if (n <= 0) { renderTop(); return; }
+  coinBurst(fromEl, n, shown, () => {
+    renderTop();
+    if (after.i > before) rankBanner(after.name);
+  });
+}
+const motionOK = () => !S.reduceMotion && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function coinBurst(fromEl, n, shown, done) {
+  const target = $("#coin-stat");
+  if (!target || !motionOK()) { Sound.play("coin"); done(); return; }
+  const tr = target.getBoundingClientRect();
+  const fr = fromEl && fromEl.getBoundingClientRect ? fromEl.getBoundingClientRect() : { left: innerWidth / 2 - 11, top: innerHeight / 2, width: 22, height: 22 };
+  const count = Math.max(3, Math.min(10, Math.round(n / 5)));
+  const numEl = $("b", target);
+  let landed = 0;
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement("div");
+    c.className = "flycoin"; c.innerHTML = ICON.coin.replace("<svg", '<svg width="22" height="22"');
+    document.body.appendChild(c);
+    const x0 = fr.left + fr.width / 2 - 11 + (Math.random() - 0.5) * 30, y0 = fr.top + fr.height / 2 - 11;
+    const x1 = tr.left + 2, y1 = tr.top;
+    const mx = (x0 + x1) / 2 + (Math.random() - 0.5) * 220, my = Math.min(y0, y1) - 60 - Math.random() * 120;
+    const frames = [];
+    for (let k = 0; k <= 16; k++) {
+      const q = k / 16, a = (1 - q) * (1 - q), b = 2 * (1 - q) * q, d = q * q;
+      frames.push({ transform: `translate(${a * x0 + b * mx + d * x1}px, ${a * y0 + b * my + d * y1}px) rotate(${q * 540}deg) scale(${1 + Math.sin(q * Math.PI) * 0.5})` });
+    }
+    const anim = c.animate(frames, { duration: 650 + Math.random() * 250, delay: i * 70, easing: "ease-in", fill: "both" });
+    anim.onfinish = () => {
+      c.remove(); landed++;
+      Sound.play("coin");
+      if (numEl) numEl.textContent = Math.round(shown + (n * landed) / count);
+      target.classList.remove("bump"); void target.offsetWidth; target.classList.add("bump");
+      if (landed === count) setTimeout(done, 150);
+    };
+  }
+}
+function rankBanner(name) {
+  Sound.play("rankup");
+  confetti(50);
+  setTimeout(() => Pip.say("rank", { voice: "always" }), 700);
+  const el = document.createElement("div");
+  el.className = "rank-banner"; el.setAttribute("role", "status");
+  el.innerHTML = `${ICON.hat}<div class="eyebrow">${esc(t("rankUp"))}</div><b>${esc(name)}</b>`;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), motionOK() ? 3300 : 2500);
+}
+const CHEST = '<svg class="chest" viewBox="0 0 76 64" aria-hidden="true"><ellipse class="glow-in" cx="38" cy="30" rx="30" ry="18" fill="#f5cb7a" opacity=".5"/><rect x="10" y="30" width="56" height="28" rx="4" fill="#7a4e26" stroke="#e2a948" stroke-width="2"/><rect x="10" y="40" width="56" height="5" fill="#e2a948"/><rect x="34" y="38" width="8" height="10" rx="2" fill="#f5cb7a" stroke="#6b4a12"/><circle class="spark" cx="26" cy="26" r="2.4" fill="#fff4cf"/><circle class="spark" cx="48" cy="22" r="2" fill="#fff4cf"/><circle class="spark" cx="38" cy="18" r="2.6" fill="#fff4cf"/><g class="lid"><path d="M10 31 Q38 6 66 31 Z" fill="#8a5a2c" stroke="#e2a948" stroke-width="2"/><path d="M36 13 v18" stroke="#e2a948" stroke-width="3"/></g></svg>';
+
+/* ================= icons & art ================= */
+const ICON = {
+  coin: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e2a948"/><circle cx="12" cy="12" r="7.2" fill="none" stroke="#9c6d1f" stroke-width="1.4"/><path d="M12 7.5v9M9.6 9.6c0-1 1-1.6 2.4-1.6s2.4.6 2.4 1.6-1 1.4-2.4 1.6-2.4.7-2.4 1.8 1 1.6 2.4 1.6 2.4-.6 2.4-1.6" fill="none" stroke="#6b4a12" stroke-width="1.5" stroke-linecap="round"/></svg>',
+  lantern: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M12 3v2" stroke="#84a0a1" stroke-width="1.6" stroke-linecap="round"/><rect x="7" y="5" width="10" height="14" rx="3" fill="#173a47" stroke="#84a0a1" stroke-width="1.4"/><path d="M12 8.5c1.8 2 2.2 3.4 2.2 4.6a2.2 2.2 0 0 1-4.4 0c0-1.2.4-2.6 2.2-4.6z" fill="#f5cb7a"/><path d="M8 21h8" stroke="#84a0a1" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  medal: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2l3 7M17 2l-3 7" stroke="#ef6b54" stroke-width="2.4"/><circle cx="12" cy="15" r="6.5" fill="#e2a948"/><path d="M12 11.2l1.2 2.5 2.7.3-2 1.8.6 2.7-2.5-1.4-2.5 1.4.6-2.7-2-1.8 2.7-.3z" fill="#6b4a12"/></svg>',
+  hat: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 15c3-1 5-6 10-6s7 5 10 6c-3 2.5-6.5 3.5-10 3.5S5 17.5 2 15z" fill="#2a2018" stroke="#e2a948" stroke-width="1.2"/><circle cx="12" cy="13" r="1.8" fill="#ece2c9"/></svg>',
+  play: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>',
+  checkmark: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8.5l3.5 3.5 7.5-8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  cross: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+  lock: '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
+  speaker: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+  mute: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zm8.4 3.5c0-.5 0-1-.1-1.4l2-1.6-2-3.4-2.4.9c-.8-.6-1.6-1.1-2.5-1.4L15 2.5h-4l-.4 2.6c-.9.3-1.7.8-2.5 1.4l-2.4-.9-2 3.4 2 1.6c-.1.4-.1.9-.1 1.4s0 1 .1 1.4l-2 1.6 2 3.4 2.4-.9c.8.6 1.6 1.1 2.5 1.4l.4 2.6h4l.4-2.6c.9-.3 1.7-.8 2.5-1.4l2.4.9 2-3.4-2-1.6c.1-.4.1-.9.1-1.4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  dotLearn: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3h4.5c.8 0 1.5.7 1.5 1.5V13c0-.6-.5-1-1-1H3zM13 3H9.5C8.7 3 8 3.7 8 4.5V13c0-.6.5-1 1-1h4z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>',
+  dotStory: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11v6h-6l-3 2.5v-2.5h-2z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+  dotPredict: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 6a2 2 0 1 1 2.8 1.8c-.5.3-.8.7-.8 1.2V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="12.6" r="1" fill="currentColor"/></svg>',
+  dotCode: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4.5L2 8l3.5 3.5M10.5 4.5L14 8l-3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  dotBug: '<svg viewBox="0 0 16 16" aria-hidden="true"><ellipse cx="8" cy="9" rx="3.2" ry="4.2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 5v8M4.8 9H2.5M11.2 9h2.3M5.5 6L3.5 4.5M10.5 6l2-1.5M5.5 12l-2 1.5M10.5 12l2 1.5" stroke="currentColor" stroke-width="1.2"/></svg>',
+  dotFlag: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 14V2.5M4 3h8l-2 3 2 3H4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+};
+const BRAND = '<svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#12303b" stroke="#e2a948" stroke-width="1.6"/><path d="M11 25c3 0 3-5 6-5s3 5 6 5 3-5 6-5" fill="none" stroke="#63c28f" stroke-width="3" stroke-linecap="round"/><circle cx="29.3" cy="19.6" r="1.2" fill="#ece2c9"/><path d="M20 6v4M20 30v4M6 20h4M30 20h4" stroke="#e2a948" stroke-width="1.4" stroke-linecap="round"/></svg>';
+function pipArt(bg) {
+  return `<svg class="pip-art" viewBox="0 0 64 64" aria-hidden="true">${bg ? '<circle cx="32" cy="32" r="31" fill="#173a47" stroke="#2a4d5a"/>' : ""}`
+    + '<g class="pip-body">'
+    + '<path class="pip-tail" d="M22 44c-4 2-6 6-5 12 3-3 6-5 9-6z" fill="#ef6b54"/><path class="pip-tail" d="M24 47c-2 3-2 7 0 11 1-3 3-5 5-6z" fill="#e2a948"/>'
+    + '<path d="M20 52c-2-10 0-24 10-30 8-5 18-2 20 6 2 7-3 12-8 14l-4 12z" fill="#4fae6c"/>'
+    + '<path d="M30 44c3 1 7 1 10-1-1 4-3 7-6 8-2-2-4-4-4-7z" fill="#8fd39f" opacity=".55"/>'
+    + '<g class="pip-wing"><path d="M23 33c5-5 13-4 15 2 1 6-5 12-13 15-3-5-4-11-2-17z" fill="#3c8a54"/><path d="M25 38c3 1 6 1 9-1M25 43c3 0 5-1 7-3" stroke="#2e6e43" stroke-width="1.3" fill="none" stroke-linecap="round"/></g>'
+    + '<g class="pip-head">'
+    + '<ellipse cx="37.5" cy="28.5" rx="11.5" ry="10.5" fill="#4fae6c"/>'
+    + '<g class="pip-crest"><path d="M31 21c-2-5-1-9 2-11 0 3 0 6 1 9z" fill="#ef6b54"/><path d="M34 19c0-5 2-8 5-9-1 3-2 6-2 9z" fill="#e2a948"/></g>'
+    + '<path d="M27 22c3-6 11-9 17-5-5 0-8 2-10 5z" fill="#3c8a54"/>'
+    + '<g class="pip-eye"><circle cx="38" cy="27" r="5.6" fill="#ece2c9"/><circle class="pip-pupil" cx="39" cy="27" r="2.6" fill="#0a1a21"/><circle cx="40" cy="25.8" r=".9" fill="#fff"/></g>'
+    + '<path class="pip-jaw" d="M44 36c3 0 5 1 6 3-2 1-4 1-6-1z" fill="#9c6d1f"/>'
+    + '<path d="M44 30c6 0 9 4 7 9-2-2-4-3-7-3z" fill="#e2a948"/>'
+    + '</g></g></svg>';
+}
+const PIP = pipArt(true);
+const CAPTAIN = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#173a47" stroke="#2a4d5a"/><path d="M14 64c1-12 8-18 18-18s17 6 18 18z" fill="#6b2e2a"/><circle cx="32" cy="34" r="11" fill="#c99a72"/><path d="M21 37c2 7 6 10 11 10s9-3 11-10c-3 3-7 4-11 4s-8-1-11-4z" fill="#3a2a20"/><path d="M8 27c6-2 9-12 24-12s18 10 24 12c-6 3-14 4-24 4S14 30 8 27z" fill="#1d1712" stroke="#e2a948" stroke-width="1.4"/><circle cx="32" cy="22" r="2.4" fill="#ece2c9"/><rect x="34" y="31" width="7" height="3.5" rx="1" fill="#1d1712"/><circle cx="27" cy="33" r="1.3" fill="#1d1712"/></svg>';
+const SPEAKERS = { pip: { art: PIP, name: "Pip", role: { en: "ship's parrot, your tutor", sl: "ladijska papiga, tvoj učitelj" } },
+  captain: { art: CAPTAIN, name: "Captain Marlow", role: { en: "captain of the Serpent", sl: "kapitan Kače" } } };
+
+/* ================= Pip, the companion ================= */
+const PIP_LINES = {
+  welcome: { en: "Ahoy, matey! I'm Pip. Let's learn some Python!", sl: "Ahoj, mornar! Jaz sem Pip. Naučiva se Python!" },
+  lesson: { en: "New lesson! Hoist the sails!", sl: "Nova lekcija! Dvigni jadra!" },
+  ok1: { en: "Squawk! That's right!", sl: "Skvik! Tako je!" },
+  ok2: { en: "Shiver me timbers, nice work!", sl: "Pri vseh morskih psih, odlično!" },
+  ok3: { en: "Brilliant! Pip is impressed!", sl: "Sijajno! Pip je navdušen!" },
+  wrong1: { en: "Not quite. Try again, matey!", sl: "Ne čisto. Poskusi znova, mornar!" },
+  wrong2: { en: "Hmm… read the error. It's a clue!", sl: "Hmm … preberi napako. To je namig!" },
+  hint: { en: "Need a hint? Pip's got you!", sl: "Rabiš namig? Pip ti pomaga!" },
+  bug: { en: "Bug squashed! Squawk!", sl: "Hrošč zmečkan! Skvik!" },
+  island: { en: "Land ho! Island conquered!", sl: "Kopno na vidiku! Otok osvojen!" },
+  rank: { en: "You've been promoted, Captain!", sl: "Napredoval si, kapitan!" },
+  treasure: { en: "Treasure! Shiny, shiny!", sl: "Zaklad! Bleščeče, bleščeče!" },
+  poke1: { en: "Hey! Pip is a parrot, not a button!", sl: "Hej! Pip je papiga, ne gumb!" },
+  poke2: { en: "Crackers? Do you have crackers?", sl: "Krekerji? Imaš kakšen kreker?" },
+  finale: { en: "You did it! You're a real Python pirate now!", sl: "Uspelo ti je! Zdaj si pravi Python pirat!" },
+};
+// which body moves go with each line
+const PIP_MOVES = { welcome: "flap hop wag", lesson: "flap ruffle", ok1: "hop wag", ok2: "dance flap", ok3: "hop ruffle", wrong1: "tilt", wrong2: "tilt ruffle",
+  hint: "ruffle wag", bug: "hop flap", island: "dance flap wag", rank: "hop flap ruffle", treasure: "dance wag", poke1: "flap ruffle", poke2: "tilt wag", finale: "dance flap wag ruffle" };
+const Pip = (() => {
+  let root = null, art = null, bubble = null, hideT = null, moveT = null, raf = 0, lastVoice = 0, pokes = 0, idleT = null, speaking = false;
+  function mount() {
+    if (root) return;
+    root = document.createElement("div");
+    root.id = "pip-mate";
+    root.innerHTML = `<div class="pm-bubble" role="status" aria-live="polite"></div><button class="pm-btn" type="button" aria-label="Pip"><span class="pm-perch"></span>${pipArt(false)}</button>`;
+    document.body.appendChild(root);
+    art = $("svg", root); bubble = $(".pm-bubble", root);
+    $(".pm-btn", root).addEventListener("click", poke);
+    // follow the mouse with the pupil now and then
+    window.addEventListener("pointermove", (e) => {
+      if (!art || !motionOK()) return;
+      const r = art.getBoundingClientRect();
+      const dx = Math.max(-1, Math.min(1, (e.clientX - r.left - r.width * 0.6) / 400)), dy = Math.max(-1, Math.min(1, (e.clientY - r.top - r.height * 0.4) / 400));
+      const p = $(".pip-pupil", art); if (p) p.style.transform = `translate(${dx * 1.6}px, ${dy * 1.4}px)`;
+    }, { passive: true });
+    idle();
+    show();
+  }
+  function show() { if (root) root.hidden = !S.pip; }
+  function idle() {
+    clearTimeout(idleT);
+    idleT = setTimeout(() => {
+      if (!speaking && motionOK() && !document.hidden) move(["ruffle", "wag", "tilt"][Math.floor(Math.random() * 3)], 1400);
+      idle();
+    }, 9000 + Math.random() * 9000);
+  }
+  function move(classes, ms = 1800) {
+    if (!art || !motionOK()) return;
+    const list = classes.split(" ").filter(Boolean);
+    art.classList.remove("flap", "hop", "dance", "ruffle", "wag", "tilt", "sad");
+    void art.getBoundingClientRect();
+    list.forEach((c) => art.classList.add(c));
+    if (list.includes("flap")) Sound.play("wings");
+    clearTimeout(moveT);
+    moveT = setTimeout(() => art.classList.remove(...list), ms);
+  }
+  function talkAnim(dur, voiced) {
+    cancelAnimationFrame(raf);
+    speaking = true;
+    const end = performance.now() + dur * 1000;
+    if (!voiced) { art.classList.add("chat"); setTimeout(() => { art.classList.remove("chat"); speaking = false; }, Math.min(dur, 2.2) * 1000); return; }
+    const tick = (now) => {
+      const v = Sound.voiceLevel();
+      art.style.setProperty("--jaw", Math.min(1, v * 1.6).toFixed(2));
+      if (now < end) raf = requestAnimationFrame(tick);
+      else { art.style.setProperty("--jaw", 0); speaking = false; }
+    };
+    raf = requestAnimationFrame(tick);
+  }
+  // say(key): show the bubble, move, and speak if voice is on.
+  // opts.voice: "always" | "throttle" (default) | "never"
+  function say(key, opts = {}) {
+    mount();
+    const line = PIP_LINES[key]; if (!line || !S.pip) return;
+    const txt = line[S.lang] || line.en;
+    bubble.textContent = txt;
+    bubble.classList.add("show");
+    move(opts.move || PIP_MOVES[key] || "ruffle", 2000);
+    const now = Date.now();
+    const wantVoice = opts.voice === "always" || (opts.voice !== "never" && now - lastVoice > (opts.gap || 12000));
+    const fallback = Math.max(1.6, txt.length / 14);
+    const finish = (d) => { clearTimeout(hideT); hideT = setTimeout(() => bubble.classList.remove("show"), (Math.max(d, fallback) + 1.4) * 1000); };
+    if (wantVoice && S.audio.voice && Sound.ready) {
+      lastVoice = now;
+      Sound.say(key, S.lang).then((d) => { talkAnim(d || fallback, !!d); finish(d || 0); });
+    } else { talkAnim(fallback, false); finish(0); }
+  }
+  function poke() {
+    pokes++;
+    Sound.play("squawk");
+    say(pokes % 2 ? "poke1" : "poke2", { voice: "always" });
+  }
+  function react(kind) { // light-weight reactions without a line
+    mount(); move(kind === "sad" ? "sad" : kind, 1800);
+  }
+  return { mount, say, react, show, move };
+})();
+const OKS = ["ok1", "ok2", "ok3"];
+const pipOk = () => OKS[Math.floor(Math.random() * OKS.length)];
+function confetti(n = 70) {
+  if (!motionOK()) return;
+  const colors = ["#e2a948", "#ef6b54", "#63c28f", "#ece2c9", "#7fb7d9", "#c3b7ee"];
+  for (let i = 0; i < n; i++) {
+    const c = document.createElement("div");
+    c.className = "confetto";
+    c.style.background = colors[i % colors.length];
+    document.body.appendChild(c);
+    const x0 = innerWidth / 2 + (Math.random() - 0.5) * 120, y0 = innerHeight * 0.35;
+    const ang = Math.random() * Math.PI * 2, sp = 180 + Math.random() * 320;
+    const x1 = x0 + Math.cos(ang) * sp, y1 = y0 + Math.sin(ang) * sp * 0.6 - 120;
+    const x2 = x1 + (Math.random() - 0.5) * 140, y2 = innerHeight + 40;
+    const r = Math.random() * 720 - 360;
+    const a = c.animate([
+      { transform: `translate(${x0}px,${y0}px) rotate(0) scale(.6)`, opacity: 1 },
+      { transform: `translate(${x1}px,${y1}px) rotate(${r / 2}deg) rotateX(180deg) scale(1)`, opacity: 1, offset: 0.3 },
+      { transform: `translate(${x2}px,${y2}px) rotate(${r}deg) rotateX(720deg) scale(1)`, opacity: 0.9 },
+    ], { duration: 1800 + Math.random() * 1400, easing: "cubic-bezier(.2,.6,.4,1)", fill: "both" });
+    a.onfinish = () => c.remove();
+  }
+}
+
+/* ================= toast & modal ================= */
+function toast(icon, html) {
+  const el = document.createElement("div");
+  el.className = "toast"; el.innerHTML = icon + "<span>" + html + "</span>";
+  $("#toasts").appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+}
+function openModal(html, onMount, dismissable = true) {
+  const root = $("#modal-root");
+  root.innerHTML = `<div class="modal-back"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
+  const back = $(".modal-back", root);
+  if (dismissable) back.addEventListener("click", (e) => { if (e.target === back) closeModal(); });
+  onMount && onMount($(".modal", root));
+  const f = $("button, textarea, select", root); f && f.focus();
+}
+function closeModal() { $("#modal-root").innerHTML = ""; }
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#modal-root .modal-back") && S.onboarded) closeModal(); });
+
+/* ================= Python engine ================= */
+const Py = {
+  worker: null, state: "idle", msg: "", pending: null, timer: null, nextId: 1, listeners: new Set(),
+  start() {
+    this.state = "loading"; this.emit();
+    try { this.worker = new Worker("runner.js"); }
+    catch (e) { this.state = "failed"; this.msg = String(e); this.emit(); return; }
+    this.worker.onmessage = (ev) => this.onMsg(ev.data);
+    this.worker.onerror = (ev) => { if (this.state === "loading") { this.state = "failed"; this.msg = ev.message || ""; this.emit(); } };
+  },
+  onMsg(m) {
+    if (m.type === "ready") { this.state = "ready"; this.emit(); }
+    else if (m.type === "fatal") { this.state = "failed"; this.msg = m.msg; this.emit(); }
+    else if (m.type === "started" && this.pending && this.pending.id === m.id) {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => this.kill(), this.pending.mode === "check" ? 9000 : 5000);
+    } else if (m.type === "result" && this.pending && this.pending.id === m.id) {
+      clearTimeout(this.timer);
+      const p = this.pending; this.pending = null; this.emit();
+      p.resolve(m.data);
+    }
+  },
+  kill() {
+    const p = this.pending; this.pending = null;
+    try { this.worker.terminate(); } catch (e) {}
+    this.start();
+    p && p.resolve({ timeout: true });
+  },
+  exec(payload) {
+    if (this.pending) return Promise.resolve({ busy: true });
+    if (this.state === "failed") return Promise.resolve({ internal: t("pyFail") + " " + this.msg });
+    return new Promise((resolve) => {
+      const id = this.nextId++;
+      this.pending = { id, resolve, mode: payload.mode }; this.emit();
+      this.worker.postMessage(Object.assign({ id }, payload));
+    });
+  },
+  emit() { this.listeners.forEach((f) => f()); },
+};
+
+/* ================= friendly errors ================= */
+function explain(err) {
+  const en = S.lang !== "sl";
+  const m = err.msg || "";
+  const name = (m.match(/name '([^']+)'/) || [])[1];
+  const pick = (a, b) => (en ? a : b);
+  switch (err.type) {
+    case "SyntaxError":
+      if (/unterminated string|EOL while scanning/.test(m)) return pick("A string was opened with a quote but never closed. Add the matching closing quote.", "Niz se je začel z narekovajem, a se ni zaključil. Dodaj zaključni narekovaj.");
+      if (/was never closed/.test(m)) return pick("You opened a bracket or parenthesis and never closed it. Count your ( and ) so they pair up.", "Odprl si oklepaj, ki ga nisi zaprl. Preštej ( in ), da bodo v parih.");
+      if (/unmatched '\)'|unmatched/.test(m)) return pick("There's a closing bracket with no opening partner. Remove it or add the missing opener.", "Tu je zaklepaj brez para. Odstrani ga ali dodaj manjkajoči oklepaj.");
+      if (/invalid decimal literal/.test(m)) return pick("Something starts with a digit where Python expected a name. Variable names can't begin with a number.", "Nekaj se začne s števko, kjer Python pričakuje ime. Imena spremenljivk se ne smejo začeti s številko.");
+      if (/expected ':'/.test(m)) return pick("This line needs a colon : at the end. Lines starting with if, elif, else, for, while, def and class always end with one.", "Ta vrstica potrebuje dvopičje : na koncu. Vrstice z if, elif, else, for, while, def in class se vedno končajo z njim.");
+      if (/Perhaps you forgot a comma/.test(m)) return pick("Two things are sitting next to each other with nothing between them. You probably need a comma.", "Dve stvari stojita druga ob drugi brez ničesar vmes. Verjetno manjka vejica.");
+      if (/cannot assign|Maybe you meant '=='/.test(m)) return pick("Python can't put a value there. Use = to store a value in a variable, and == to compare two values.", "Python vrednosti ne more shraniti tja. Z = shraniš vrednost v spremenljivko, z == primerjaš dve vrednosti.");
+      return pick("Python couldn't understand the grammar of this line. Check quotes, brackets, colons and commas around the spot shown.", "Python ne razume slovnice te vrstice. Preveri narekovaje, oklepaje, dvopičja in vejice okoli označenega mesta.");
+    case "IndentationError": case "TabError":
+      return pick("The spaces at the start of a line are off. Lines inside if, for, def and class must be indented by the same amount, usually 4 spaces.", "Presledki na začetku vrstice niso pravi. Vrstice znotraj if, for, def in class morajo biti enako zamaknjene, običajno za 4 presledke.");
+    case "NameError":
+      if (name && name !== name.toLowerCase() && ["print", "input", "int", "str", "len", "range", "float", "true", "false", "none"].includes(name.toLowerCase()))
+        return pick(`Python doesn't know ~${name}~. Capital letters matter: did you mean ~${name.toLowerCase() === "true" || name.toLowerCase() === "false" || name.toLowerCase() === "none" ? name[0].toUpperCase() + name.slice(1).toLowerCase() : name.toLowerCase()}~?`, `Python ne pozna ~${name}~. Velike črke so pomembne: si mislil ~${name.toLowerCase()}~?`);
+      return pick(`Python doesn't know anything called ~${name || "?"}~. Check the spelling and capital letters, and make sure you create it before the line that uses it. If it's meant to be text, it needs quotes.`, `Python ne pozna ničesar z imenom ~${name || "?"}~. Preveri črkovanje in velike črke ter ga ustvari pred vrstico, ki ga uporablja. Če je mišljeno besedilo, potrebuje narekovaje.`);
+    case "TypeError":
+      if (/can only concatenate str/.test(m) || /unsupported operand type.*'str'/.test(m) || /must be str, not/.test(m)) return pick("You're mixing text and a number with +. Convert the number with str(), or print them separated by commas.", "Z + mešaš besedilo in število. Število pretvori s str() ali ju izpiši ločena z vejico.");
+      if (/not callable/.test(m)) return pick("Something is being called with () but it isn't a function. Did a variable reuse a function's name?", "Nekaj kličeš z (), a ni funkcija. Si morda spremenljivki dal ime funkcije?");
+      if (/argument/.test(m)) return pick("A function got the wrong number of values. Compare what you pass in with what the function expects.", "Funkcija je dobila napačno število vrednosti. Primerjaj, kaj podaš, s tem, kar funkcija pričakuje.");
+      return pick("An operation got a type of value it can't work with, like doing maths on text. Check what kind of value each part is.", "Operacija je dobila vrsto vrednosti, s katero ne zna delati, na primer računanje z besedilom. Preveri, kakšna je vsaka vrednost.");
+    case "ValueError":
+      if (/invalid literal for int/.test(m)) return pick("int() was given text that isn't a whole number. Check what's being converted.", "int() je dobil besedilo, ki ni celo število. Preveri, kaj pretvarjaš.");
+      return pick("The type of value is right, but the value itself doesn't fit here.", "Vrsta vrednosti je prava, sama vrednost pa tu ne ustreza.");
+    case "ZeroDivisionError": return pick("Something was divided by zero, which has no answer. Check the number on the right of / // or %.", "Nekaj je deljeno z nič, kar nima rezultata. Preveri število desno od / // ali %.");
+    case "IndexError": return pick("You asked for a position that doesn't exist. Positions start at 0, so the last item of a 3-item list is at index 2.", "Zahteval si mesto, ki ne obstaja. Mesta se začnejo z 0, zato je zadnji element 3-elementnega seznama na indeksu 2.");
+    case "KeyError": return pick(`The dictionary has no key ${esc(m)}. Check spelling, or use .get() for keys that might be missing.`, `Slovar nima ključa ${esc(m)}. Preveri črkovanje ali uporabi .get() za ključe, ki morda manjkajo.`);
+    case "AttributeError": return pick("This value doesn't have that method or attribute. Check the spelling, and what type the value really is.", "Ta vrednost nima te metode ali atributa. Preveri črkovanje in kakšne vrste je vrednost v resnici.");
+    case "EOFError": return pick("Your program called input(), but there were no lines left in the Input box. Type the answers there, one per line.", "Program je poklical input(), v polju Vnos pa ni bilo več vrstic. Tja vpiši odgovore, vsakega v svojo vrstico.");
+    case "RecursionError": return pick("A function kept calling itself and never stopped. It needs a base case that ends the chain.", "Funkcija je klicala samo sebe in se ni ustavila. Potrebuje osnovni primer, ki verigo konča.");
+    default: return pick("Read the last line of the message: it names the problem. The line number shows where it happened.", "Preberi zadnjo vrstico sporočila: pove, kaj je narobe. Številka vrstice pokaže, kje se je zgodilo.");
+  }
+}
+
+/* ================= editor wrapper ================= */
+function makeEditor(host, value, { readOnly = false, onRun, onCheck, onChange } = {}) {
+  if (window.CodeMirror) {
+    const cm = window.CodeMirror(host, {
+      value, mode: "python", lineNumbers: true, indentUnit: 4, tabSize: 4, indentWithTabs: false,
+      matchBrackets: true, autoCloseBrackets: true, readOnly: readOnly ? "nocursor" : false, viewportMargin: Infinity,
+      extraKeys: {
+        Tab: (c) => (c.somethingSelected() ? c.indentSelection("add") : c.replaceSelection("    ")),
+        "Shift-Tab": (c) => c.indentSelection("subtract"),
+        "Ctrl-Enter": () => onRun && onRun(), "Cmd-Enter": () => onRun && onRun(),
+        "Shift-Ctrl-Enter": () => onCheck && onCheck(), "Shift-Cmd-Enter": () => onCheck && onCheck(),
+        "Ctrl-/": "toggleComment", "Cmd-/": "toggleComment",
+      },
+    });
+    if (readOnly) host.classList.add("readonly");
+    let marked = null;
+    cm.on("change", () => { if (marked != null) { cm.removeLineClass(marked, "background", "cm-errline"); marked = null; } onChange && onChange(cm.getValue()); });
+    return {
+      get: () => cm.getValue(), set: (v) => cm.setValue(v), focus: () => cm.focus(), refresh: () => cm.refresh(),
+      mark(line) { if (marked != null) cm.removeLineClass(marked, "background", "cm-errline"); if (line) { marked = line - 1; cm.addLineClass(marked, "background", "cm-errline"); } },
+    };
+  }
+  const ta = document.createElement("textarea");
+  ta.className = "fallback"; ta.value = value; ta.readOnly = readOnly; ta.spellcheck = false;
+  ta.setAttribute("aria-label", "Python code");
+  ta.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText("    ", s, ta.selectionEnd, "end"); }
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); e.shiftKey ? onCheck && onCheck() : onRun && onRun(); }
+  });
+  ta.addEventListener("input", () => onChange && onChange(ta.value));
+  host.appendChild(ta);
+  return { get: () => ta.value, set: (v) => (ta.value = v), focus: () => ta.focus(), refresh() {}, mark() {} };
+}
+
+/* An "Interpreter" block: toolbar, editor, input box and console. */
+function interpreter(host, opts) {
+  const { code, title = "main.py", readOnly = false, showCheck = false, runLocked = false, stdinOpen = false, stdin = "", onChange, onCheck } = opts;
+  host.innerHTML = `
+    <div class="interp">
+      <div class="interp-bar">
+        <span class="title">${esc(title)}</span>
+        <span class="status" data-status></span>
+        ${readOnly ? "" : `<button class="btn ghost small" data-reset type="button">${esc(t("reset"))}</button>`}
+        ${readOnly ? "" : `<button class="btn ghost small" data-stdin-toggle type="button" aria-expanded="false">${esc(t("input"))}</button>`}
+        <button class="btn small ${showCheck ? "" : "primary"}" data-run type="button" ${runLocked ? "disabled" : ""}>${ICON.play}${esc(t("run"))}</button>
+        ${showCheck ? `<button class="btn small primary" data-check type="button">${ICON.checkmark}${esc(t("check"))}</button>` : ""}
+      </div>
+      <div class="editor-host" data-editor></div>
+      <div class="stdin" data-stdin hidden>
+        <label for="stdin-box">${esc(t("inputHelp"))}</label>
+        <textarea id="stdin-box" spellcheck="false">${esc(stdin)}</textarea>
+      </div>
+      <div class="console" data-console><div class="label">${esc(t("output"))} <kbd>${esc(t("ctrlEnter"))}</kbd></div><div class="empty">${esc(t("noOutput"))}</div></div>
+    </div>`;
+  const api = {};
+  if (Py.state === "idle") Py.start();
+  const ed = makeEditor($("[data-editor]", host), code, { readOnly, onRun: () => api.run(), onCheck: () => onCheck && onCheck(), onChange: (v) => { onChange && onChange(v); syncStdin(); } });
+  const stdinBox = $("[data-stdin]", host);
+  const toggle = $("[data-stdin-toggle]", host);
+  const setStdin = (open) => { stdinBox.hidden = !open; toggle && toggle.setAttribute("aria-expanded", String(open)); };
+  const syncStdin = () => { if (/\binput\s*\(/.test(ed.get())) setStdin(true); };
+  setStdin(stdinOpen); syncStdin();
+  toggle && toggle.addEventListener("click", () => setStdin(stdinBox.hidden));
+  const statusEl = $("[data-status]", host);
+  const runBtn = $("[data-run]", host), checkBtn = $("[data-check]", host);
+  const paint = () => {
+    const busy = !!Py.pending;
+    if (Py.state === "loading") statusEl.innerHTML = `<span class="spinner"></span>${esc(t("loadingPy"))}`;
+    else if (Py.state === "failed") statusEl.textContent = t("pyFail");
+    else if (busy) statusEl.innerHTML = `<span class="spinner"></span>${esc(t("running"))}`;
+    else statusEl.textContent = "";
+    if (runBtn && !api.locked) runBtn.disabled = busy || Py.state !== "ready";
+    if (checkBtn) checkBtn.disabled = busy || Py.state !== "ready";
+  };
+  api.locked = runLocked;
+  Py.listeners.add(paint); paint();
+  api.dispose = () => Py.listeners.delete(paint);
+  api.editor = ed;
+  api.stdinLines = () => { const v = $("textarea", stdinBox).value; return v === "" ? [] : v.replace(/\n$/, "").split("\n"); };
+  api.console = $("[data-console]", host);
+  api.unlockRun = () => { api.locked = false; paint(); };
+  api.run = async () => {
+    if (api.locked || Py.state !== "ready" || Py.pending) return;
+    Sound.play("whoosh");
+    const res = await Py.exec({ mode: "run", code: ed.get(), stdin: api.stdinLines(), setup: opts.setup || "" });
+    if (res.busy) return;
+    S.ran++; save(); if (S.ran === 1) award("first_run");
+    if (res.busy) return;
+    showOutput(api, res);
+    if (res.err || res.timeout) { Sound.play("error"); shakeEl(host.querySelector(".interp")); }
+  };
+  runBtn && runBtn.addEventListener("click", () => api.run());
+  checkBtn && checkBtn.addEventListener("click", () => onCheck && onCheck());
+  const resetBtn = $("[data-reset]", host);
+  resetBtn && resetBtn.addEventListener("click", () => { ed.set(opts.resetTo ?? code); ed.focus(); });
+  return api;
+}
+function errHtml(err) {
+  const where = err.line ? `${t("line")} ${err.line}: ` : "";
+  const raw = `${where}${err.type}: ${err.msg}` + (err.text ? `\n    ${err.text.trim()}` : "");
+  return `<div class="errbox"><div class="raw">${esc(raw)}</div><div class="plain">${PIP}<div><div class="eyebrow">${esc(t("pipSays"))}</div><div class="prose">${md(explain(err))}</div></div></div></div>`;
+}
+function showOutput(api, res, extraTop = "") {
+  const c = api.console;
+  let h = extraTop + `<div class="label">${esc(t("output"))}</div>`;
+  if (res.timeout) { h += `<div class="feedback bad">${esc(t("timeout"))}</div>`; c.innerHTML = h; return; }
+  if (res.internal) { h += `<div class="feedback bad">${esc(res.internal)}</div>`; c.innerHTML = h; return; }
+  h += res.out ? `<pre class="out">${esc(res.out)}</pre>` : res.err ? "" : `<div class="empty">${esc(t("noOutput"))}</div>`;
+  if (res.err) {
+    if (res.err.type === "OutputLimit") h += `<div class="feedback bad" style="margin-top:8px">${esc(t("outLimit"))}</div>`;
+    else h += errHtml(res.err);
+  }
+  c.innerHTML = h;
+  api.editor.mark(res.err && res.err.line);
+}
+
+/* ================= top bar ================= */
+function renderTop() {
+  const r = rankInfo();
+  const view = (location.hash || "#map").slice(1);
+  const cur = view === "workshop" ? "workshop" : view === "log" ? "log" : view === "map" || !view ? "map" : "";
+  $("#topbar").innerHTML = `
+    <button class="brand" type="button" data-go="map" aria-label="Serpent Seas">${BRAND}<span class="brand-name">Serpent Seas</span></button>
+    <nav class="nav" aria-label="Main">
+      <button type="button" data-go="map" ${cur === "map" ? 'aria-current="page"' : ""}>${esc(t("map"))}</button>
+      <button type="button" data-go="workshop" ${cur === "workshop" ? 'aria-current="page"' : ""}>${esc(t("workshop"))}</button>
+      <button type="button" data-go="log" ${cur === "log" ? 'aria-current="page"' : ""}>${esc(t("log"))}</button>
+    </nav>
+    <div class="stats">
+      <div class="rank" title="${esc(r.next ? `${r.pct}%` : "")}"><span class="rank-name">${esc(r.name)}</span><span class="rank-bar"><i style="width:${r.pct}%"></i></span></div>
+      <span class="stat" id="coin-stat" title="${esc(t("doubloons"))}">${ICON.coin}<b>${S.coins}</b></span>
+      <span class="stat" title="${esc(t("streak"))}">${ICON.lantern}<b>${streakNow()}</b></span>
+      <button class="iconbtn" type="button" data-lang aria-label="${esc(t("language"))}">${S.lang === "sl" ? "SL" : "EN"}</button>
+      <button class="iconbtn" type="button" data-sound aria-label="${esc(t("sound"))}">${S.audio.music || S.audio.sfx ? ICON.speaker : ICON.mute}</button>
+      <button class="iconbtn" type="button" data-settings aria-label="${esc(t("settings"))}">${ICON.gear}</button>
+    </div>`;
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("button");
+  if (b && !b.disabled && !b.matches("[data-run],[data-check],[data-opt],[data-hint],[data-next],[data-step],[data-prev]")) Sound.play("click");
+  const go = e.target.closest("[data-go]");
+  if (go) { location.hash = go.dataset.go; return; }
+  if (e.target.closest("[data-lang]")) { S.lang = S.lang === "sl" ? "en" : "sl"; save(); route(true); return; }
+  if (e.target.closest("[data-settings]")) { openSettings(); return; }
+  if (e.target.closest("[data-sound]")) { openSound(); return; }
+});
+
+/* ================= map ================= */
+function rng(seed) { return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t2 = Math.imul(seed ^ (seed >>> 15), 1 | seed); t2 = (t2 + Math.imul(t2 ^ (t2 >>> 7), 61 | t2)) ^ t2; return ((t2 ^ (t2 >>> 14)) >>> 0) / 4294967296; }; }
+function blob(cx, cy, r, seed, n = 13, wob = 0.32) {
+  const R = rng(seed); const pts = [];
+  for (let i = 0; i < n; i++) { const a = (i / n) * Math.PI * 2; const rr = r * (1 - wob / 2 + R() * wob); pts.push([cx + Math.cos(a) * rr * 1.18, cy + Math.sin(a) * rr * 0.86]); }
+  let d = "";
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    if (i === 0) d += `M${p1[0].toFixed(1)},${p1[1].toFixed(1)}`;
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    d += `C${c1[0].toFixed(1)},${c1[1].toFixed(1)} ${c2[0].toFixed(1)},${c2[1].toFixed(1)} ${p2[0].toFixed(1)},${p2[1].toFixed(1)}`;
+  }
+  return d + "Z";
+}
+let selected = null;
+function renderMap() {
+  const W = 700, top = 110, gap = 150;
+  const pos = CH.map((c, i) => { const R = rng(i * 97 + 11); return { x: (i % 2 === 0 ? 215 : 485) + (R() - 0.5) * 50, y: top + i * gap + (R() - 0.5) * 24 }; });
+  const H = top + (CH.length - 1) * gap + 130;
+  const target = nextTarget();
+  const curCh = target ? target.ch : CH.find((c) => chapterUnlocked(c) && !chapterPassed(c)) || CH[0];
+  if (!selected) selected = curCh.id;
+
+  let route = "", routeDone = "";
+  for (let i = 1; i < CH.length; i++) {
+    const a = pos[i - 1], b = pos[i];
+    const seg = `M${a.x},${a.y} C${a.x},${a.y + gap * 0.55} ${b.x},${b.y - gap * 0.55} ${b.x},${b.y}`;
+    if (chapterPassed(CH[i - 1])) routeDone += seg; else route += seg;
+  }
+  let grid = "";
+  for (let x = 0; x <= W; x += 70) grid += `<line x1="${x}" y1="0" x2="${x}" y2="${H}"/>`;
+  for (let y = 0; y <= H; y += 70) grid += `<line x1="0" y1="${y}" x2="${W}" y2="${y}"/>`;
+  let waves = ""; const WR = rng(5);
+  for (let k = 0; k < 60; k++) { const x = WR() * (W + 60) + 20, y = WR() * (H - 40) + 20; waves += `<path d="M${x.toFixed(0)},${y.toFixed(0)} q6,-6 12,0 t12,0"/>`; }
+  let gulls = "";
+  [[90, 40]].forEach(([gx, gy], gi) => { if (gy < H) gulls += `<g class="gull" style="animation-delay:${-gi * 7}s" transform="translate(${gx},${gy})"><path d="M0,0 q7,-7 14,0 q7,-7 14,0" fill="none" stroke="#c0c9bf" stroke-width="2" stroke-linecap="round"/></g>`; });
+
+  const islands = CH.map((ch, i) => {
+    const p = pos[i], unlocked = chapterUnlocked(ch), done = chapterDone(ch), placed = S.placed.includes(ch.id) && !done;
+    const r = i === CH.length - 1 ? 62 : 46 + rng(i + 3)() * 10;
+    const shore = blob(p.x, p.y, r + 7, i * 31 + 7), land = blob(p.x, p.y, r, i * 31 + 7), green = blob(p.x - r * 0.12, p.y - r * 0.1, r * 0.55, i * 17 + 2, 9, 0.5);
+    const right = p.x < W / 2;
+    const lx = right ? p.x + r * 1.18 + 22 : p.x - r * 1.18 - 22, anchor = right ? "start" : "end";
+    const total = ch.lessons.length, dl = ch.lessons.filter((l) => lessonDone(ch, l)).length;
+    const status = ch.charting ? t("charting") : !unlocked ? t("locked") : done ? t("conquered") : placed ? t("charted") : `${dl}/${total} ${t("lessons").toLowerCase()}`;
+    const isCur = ch === curCh && unlocked && !ch.charting;
+    const dim = !unlocked ? 0.38 : 1;
+    const sel = selected === ch.id;
+    return `<g class="island" tabindex="0" role="button" data-ch="${ch.id}" aria-label="${esc(L(ch.island))}: ${esc(L(ch.title))}. ${esc(status)}" opacity="${dim}">
+      ${isCur ? `<ellipse class="glow" cx="${p.x}" cy="${p.y}" rx="${r * 1.7}" ry="${r * 1.35}" fill="url(#lanternGlow)"/>` : ""}
+      <path class="shore" d="${shore}" fill="#1c4652" stroke="${sel ? "#f5cb7a" : "#3d6b75"}" stroke-width="${sel ? 3 : 1.5}"/>
+      <path d="${land}" fill="${unlocked ? "#d9c08b" : "#8d8a78"}"/>
+      <path d="${green}" fill="${unlocked ? "#4e8a5b" : "#5d6b5f"}"/>
+      <text x="${p.x}" y="${p.y + 9}" text-anchor="middle" style="font-family:var(--f-display)" font-size="30" fill="#0a1a21" opacity=".75">${i + 1}</text>
+      ${done || placed ? `<g transform="translate(${p.x + r * 0.45},${p.y - r * 0.7})"><line x1="0" y1="0" x2="0" y2="30" stroke="#2a2018" stroke-width="2.4"/><path d="M1 1h18l-5 6 5 6H1z" fill="${done ? "#ef6b54" : "#84a0a1"}"/></g>` : ""}
+      ${!unlocked ? `<g><ellipse cx="${p.x - r * 0.4}" cy="${p.y - 6}" rx="${r * 1.3}" ry="${r * 0.55}" fill="url(#fogGrad)"/><ellipse cx="${p.x + r * 0.5}" cy="${p.y + 12}" rx="${r * 1.1}" ry="${r * 0.45}" fill="url(#fogGrad)"/></g>` : ""}
+      ${!unlocked ? `<g transform="translate(${p.x - 8},${p.y - r - 6})" color="#84a0a1">${ICON.lock.replace("<svg", '<svg width="16" height="16"')}</g>` : ""}
+      <text x="${lx}" y="${p.y - 4}" text-anchor="${anchor}" style="font-family:var(--f-display)" font-size="29" fill="${unlocked ? "#f5cb7a" : "#84a0a1"}">${esc(L(ch.island))}</text>
+      <text x="${lx}" y="${p.y + 20}" text-anchor="${anchor}" style="font-family:var(--f-body)" font-size="18" font-weight="500" fill="#ece2c9">${esc(L(ch.title))}</text>
+      <text x="${lx}" y="${p.y + 42}" text-anchor="${anchor}" style="font-family:var(--f-body)" font-size="14" letter-spacing="1.5" fill="#84a0a1">${esc(status.toUpperCase())}</text>
+    </g>`;
+  }).join("");
+  const curIdx = chIndex(curCh);
+  const parkAt = (j) => ({ x: pos[j].x + (pos[j].x < W / 2 ? -88 : 88), y: pos[j].y + 34 });
+  const fromIdx = Math.min(Math.max(0, S.shipAt || 0), curIdx);
+  const shipStart = parkAt(fromIdx);
+  const ship = `<g id="ship" transform="translate(${shipStart.x},${shipStart.y})"><g class="ship-marker">
+    <path d="M-20 0h40l-7 10h-26z" fill="#5a3b22" stroke="#e2a948" stroke-width="1.2"/><line x1="0" y1="0" x2="0" y2="-34" stroke="#ece2c9" stroke-width="2"/>
+    <path d="M2 -32c12 4 14 18 0 26z" fill="#63c28f"/><path d="M-2 -28c-10 4-11 14 0 20z" fill="#4fae6c"/><path d="M0 -34l10 3-10 3z" fill="#ef6b54"/></g></g>`;
+  const compass = `<g transform="translate(${W - 70},62)" opacity=".8"><circle r="34" fill="none" stroke="#2a4d5a" stroke-width="1.5"/><circle r="26" fill="none" stroke="#2a4d5a"/>
+    <path d="M0,-40 L6,0 L0,40 L-6,0Z" fill="#e2a948"/><path d="M-40,0 L0,-5 L40,0 L0,5Z" fill="#8f6e47"/><circle r="3.5" fill="#0a1a21" stroke="#e2a948"/>
+    <text y="-46" text-anchor="middle" style="font-family:var(--f-display)" font-size="18" fill="#f5cb7a">N</text></g>`;
+  const lastLocked = !chapterUnlocked(CH[CH.length - 1]);
+  const dragons = lastLocked ? `<text x="${pos[CH.length - 1].x + 40}" y="${pos[CH.length - 1].y + 100}" style="font-family:var(--f-display)" font-size="22" fill="#84a0a1" opacity=".7" font-style="italic">${S.lang === "sl" ? "Tu prebivajo kače" : "Here be serpents"}</text>` : "";
+
+  const svg = `<svg class="map-svg" viewBox="0 0 ${W} ${H}" role="group" aria-label="${esc(t("map"))}">
+    <defs><radialGradient id="fogGrad"><stop offset="0" stop-color="#84a0a1" stop-opacity=".22"/><stop offset="1" stop-color="#84a0a1" stop-opacity="0"/></radialGradient><radialGradient id="lanternGlow"><stop offset="0" stop-color="#f5cb7a" stop-opacity=".55"/><stop offset="1" stop-color="#f5cb7a" stop-opacity="0"/></radialGradient></defs>
+    <rect width="${W}" height="${H}" rx="18" fill="#0e2630"/>
+    <g stroke="#84a0a1" stroke-opacity=".08">${grid}</g>
+    <g fill="none" stroke="#84a0a1" stroke-opacity=".2" stroke-width="1.3" stroke-linecap="round">${waves}</g>
+    <path d="${route}" fill="none" stroke="#8f6e47" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round"/>
+    <path d="${routeDone}" fill="none" stroke="#e2a948" stroke-width="3.5" stroke-linecap="round"/>
+    ${compass}${islands}${gulls}${ship}${dragons}
+  </svg>`;
+
+  const tg = target;
+  const allDone = CH.every((c) => chapterDone(c));
+  const welcome = `<div class="welcome"><div style="flex:1;min-width:240px"><h1>${esc(allDone ? t("doneH") : t("welcomeH"))}</h1><p>${esc(allDone ? t("doneP") : t("welcomeP"))}</p></div>
+    ${tg ? `<button class="btn primary" type="button" data-lesson="${tg.l.id}">${ICON.play}${esc(t("continue"))}: ${esc(L(tg.l.title))}</button>` : ""}</div>`;
+
+  $("#view").innerHTML = `${welcome}<div class="map-layout"><div class="map-col">${svg}</div><aside class="panel" id="panel" aria-live="polite"></aside></div>`;
+  renderPanel();
+  if (curIdx > fromIdx) {
+    const shipEl = $("#ship");
+    const pts = []; for (let j = fromIdx; j <= curIdx; j++) pts.push(parkAt(j));
+    const go = () => {
+      S.shipAt = curIdx; save();
+      if (!motionOK()) { const e = pts[pts.length - 1]; shipEl.setAttribute("transform", `translate(${e.x},${e.y})`); return; }
+      Sound.play("whoosh");
+      const segDur = 1400, t0 = performance.now();
+      const step = (now) => {
+        const q = Math.min(1, (now - t0) / (segDur * (pts.length - 1)));
+        const f = q * (pts.length - 1), si = Math.min(pts.length - 2, Math.floor(f)), u = f - si;
+        const a = pts[si], b = pts[si + 1], e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+        const x = a.x + (b.x - a.x) * e, y = a.y + (b.y - a.y) * e + Math.sin(e * Math.PI) * 30;
+        if (shipEl.isConnected) shipEl.setAttribute("transform", `translate(${x.toFixed(1)},${y.toFixed(1)})`);
+        if (q < 1 && shipEl.isConnected) requestAnimationFrame(step);
+        else if (q >= 1) { Sound.play("splash"); setTimeout(() => Sound.play("bell"), 350); }
+      };
+      requestAnimationFrame(step);
+    };
+    setTimeout(go, 500);
+  } else if (S.shipAt !== curIdx) { S.shipAt = curIdx; save(); }
+  $$(".island").forEach((g) => {
+    const pick = () => { selected = g.dataset.ch; renderMap(); if (window.matchMedia("(max-width: 1020px)").matches) $("#panel").scrollIntoView({ behavior: "smooth", block: "start" }); };
+    g.addEventListener("click", pick);
+    g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+  bindLessonButtons();
+}
+function renderPanel() {
+  const ch = CH.find((c) => c.id === selected) || CH[0];
+  const i = chIndex(ch), unlocked = chapterUnlocked(ch);
+  let body = "";
+  if (ch.charting) body = `<div class="note">${esc(t("chartingNote"))}</div>`;
+  else if (!unlocked) body = `<div class="note">${esc(t("lockedNote", L(CH[i - 1].island)))}</div>`;
+  if (!ch.charting) {
+    body += `<div class="eyebrow">${esc(t("lessons"))}</div><ul class="lesson-list">` + ch.lessons.map((l, li) => {
+      const ok = lessonUnlocked(ch, li), done = lessonDone(ch, l);
+      const n = l.steps.filter((s) => S.done[keyOf(ch, l, s)]).length;
+      const tgt = nextTarget();
+      const cur = tgt && tgt.l === l;
+      return `<li><button type="button" class="${done ? "done" : cur ? "current" : ""}" data-lesson="${l.id}" ${ok ? "" : "disabled"}>
+        <span class="ln">${done ? ICON.checkmark.replace("<svg", '<svg width="14" height="14"') : ok ? li + 1 : ICON.lock.replace("<svg", '<svg width="12" height="12"')}</span>
+        <span>${l.solo ? `<span class="solo-tag">${esc(t("solo"))}</span>` : ""}${esc(L(l.title))}</span>
+        <span class="meta">${esc(t("stepsDone", n, l.steps.length))}</span></button></li>`;
+    }).join("") + "</ul>";
+  }
+  $("#panel").innerHTML = `
+    <div class="eyebrow">${esc(S.lang === "sl" ? "Otok" : "Island")} ${i + 1} ${esc(t("of"))} ${CH.length}</div>
+    <h2>${esc(L(ch.island))}</h2>
+    <p class="sub">${esc(L(ch.title))}</p>
+    ${ch.blurb ? `<p>${esc(L(ch.blurb))}</p>` : ""}
+    <div class="chips">${(ch.topics[S.lang] || ch.topics.en).map((x) => `<span class="chip">${esc(x)}</span>`).join("")}</div>
+    ${body}`;
+  bindLessonButtons();
+}
+function bindLessonButtons() {
+  $$("[data-lesson]").forEach((b) => { if (!b.dataset.bound) { b.dataset.bound = 1; b.addEventListener("click", () => { location.hash = b.dataset.lesson; }); } });
+}
+
+/* ================= lesson ================= */
+let LS = null; // { ch, l, idx, interp }
+function openLesson(lid, idx) {
+  const f = findLesson(lid);
+  if (!f) { location.hash = "map"; return; }
+  const li = f.ch.lessons.indexOf(f.l);
+  if (!lessonUnlocked(f.ch, li)) { selected = f.ch.id; location.hash = "map"; return; }
+  if (idx == null) { idx = f.l.steps.findIndex((s) => !S.done[keyOf(f.ch, f.l, s)]); if (idx < 0) idx = 0; }
+  LS = { ch: f.ch, l: f.l, idx };
+  renderStep();
+  Sound.play("anchor");
+  if (idx === 0) setTimeout(() => Pip.say("lesson", { gap: 90000 }), 600);
+}
+function stepReachable(i) {
+  const { ch, l } = LS;
+  for (let k = 0; k < i; k++) if (!S.done[keyOf(ch, l, l.steps[k])]) return false;
+  return true;
+}
+const kindIcon = (s) => s.type === "story" ? ICON.dotStory : s.type === "learn" ? ICON.dotLearn : s.type === "predict" ? ICON.dotPredict : s.kind === "debug" ? ICON.dotBug : s.kind === "project" ? ICON.dotFlag : ICON.dotCode;
+const BASE = { learn: 5, task: 20, debug: 20, project: 60 };
+function rewardFor(k, s) {
+  if (S.peek[k]) return 0;
+  const base = BASE[s.kind] || 20;
+  return Math.max(5, base - 5 * (S.hints[k] || 0));
+}
+function complete(k, coins, fromEl) {
+  if (S.done[k]) return;
+  S.done[k] = { r: coins, at: Date.now() };
+  bumpStreak(); save();
+  addCoins(coins, fromEl || $(".orders .reward"));
+}
+function renderStep() {
+  if (LS.interp) { LS.interp.dispose(); LS.interp = null; }
+  const { ch, l, idx } = LS;
+  const s = l.steps[idx], k = keyOf(ch, l, s);
+  const done = !!S.done[k];
+  const dots = l.steps.map((st, i) => {
+    const kk = keyOf(ch, l, st);
+    return `<button type="button" class="dot ${S.done[kk] ? "done" : ""} ${i === idx ? "here" : ""}" data-step="${i}" ${stepReachable(i) ? "" : "disabled"} aria-label="${i + 1}" ${i === idx ? 'aria-current="step"' : ""}>${kindIcon(st)}</button>`;
+  }).join("");
+  const head = `<div class="lesson-head">
+    <button class="btn ghost small" type="button" data-go="map">← ${esc(t("toMap"))}</button>
+    <div class="crumb"><span class="eyebrow">${esc(L(ch.island))} · ${esc(L(ch.title))}</span><h1>${esc(L(l.title))}</h1></div>
+    <div class="dots" role="navigation">${dots}</div></div>`;
+
+  let left = "", single = false, nextLabel = t("next");
+  if (s.type === "story") {
+    single = true;
+    const sp = SPEAKERS[s.speaker] || SPEAKERS.pip;
+    left = `<section class="orders story-card"><div class="speaker">${sp.art}<div><b>${esc(sp.name)}</b><small>${esc(L(sp.role))}</small></div></div><div class="prose">${md(L(s.text))}</div></section>`;
+    nextLabel = t("aye");
+  } else if (s.type === "learn") {
+    left = `<section class="orders"><div class="kind"><span class="tag learn">${esc(t("learn"))}</span>${coinChip(BASE.learn, done)}</div><div class="prose">${md(L(s.text))}</div></section>`;
+    nextLabel = t("gotIt");
+  } else if (s.type === "predict") {
+    const st = S.predict[k];
+    left = `<section class="orders"><div class="kind"><span class="tag predict">${esc(t("predict"))}</span>${coinChip(10, done)}</div>
+      <div class="prose">${md(L(s.text))}</div><p style="margin:0;color:var(--muted);font-size:15px">${esc(t("predictQ"))}</p>
+      <div class="options">${s.options.map((o, i) => {
+        const cls = st ? (i === s.answer ? "right" : i === st.choice ? "wrong" : "") : "";
+        return `<button type="button" class="opt ${cls}" data-opt="${i}" ${st ? "disabled" : ""}><span class="letter">${"ABCD"[i]}</span><pre>${esc(L(o))}</pre></button>`;
+      }).join("")}</div>
+      <div data-pfb>${st ? predictFb(s, st) : ""}</div></section>`;
+  } else if (s.type === "code") {
+    left = `<section class="orders"><div class="kind"><span class="tag ${s.kind}">${esc(t(s.kind))}</span>${coinChip(done ? S.done[k].r : rewardFor(k, s), done)}</div>
+      <div class="prose">${md(L(s.text))}</div>
+      <div data-result>${done ? passHtml(s) : ""}</div>
+      <div class="hints" data-hints></div></section>`;
+  }
+  const right = single ? "" : `<section data-interp></section>`;
+  const canNext = done || s.type === "story" || s.type === "learn";
+  const isLast = idx === l.steps.length - 1;
+  $("#view").innerHTML = `<div class="lesson">${head}<div class="desk ${single ? "single" : ""}">${left}${right}</div>
+    <div class="lesson-foot"><button class="btn ghost" type="button" data-prev ${idx === 0 ? "disabled" : ""}>← ${esc(t("back"))}</button>
+    <button class="btn ${canNext ? "primary" : ""}" type="button" data-next ${canNext ? "" : "disabled"}>${esc(isLast && canNext ? t("next") : nextLabel)} →</button></div></div>`;
+
+  $$("[data-step]").forEach((b) => b.addEventListener("click", () => { Sound.play("page"); LS.idx = +b.dataset.step; renderStep(); }));
+  $("[data-prev]").addEventListener("click", () => { if (LS.idx > 0) { Sound.play("page"); LS.idx--; renderStep(); } });
+  $("[data-next]").addEventListener("click", onNext);
+
+  if (s.type === "learn") {
+    LS.interp = interpreter($("[data-interp]"), { code: S.code[k] ?? s.example, resetTo: s.example, setup: s.setup, stdin: s.stdin || "", onChange: (v) => { S.code[k] = v; saveSoon(); } });
+  } else if (s.type === "predict") {
+    const st = S.predict[k];
+    LS.interp = interpreter($("[data-interp]"), { code: s.code, readOnly: true, runLocked: !st, setup: s.setup, stdin: s.stdin || "" });
+    $$("[data-opt]").forEach((b) => b.addEventListener("click", () => answerPredict(s, k, +b.dataset.opt)));
+  } else if (s.type === "code") {
+    LS.interp = interpreter($("[data-interp]"), {
+      code: S.code[k] ?? s.starter, resetTo: s.starter, showCheck: true, setup: s.setup, stdin: s.stdin || "",
+      title: s.kind === "project" ? "voyage.py" : "main.py",
+      onChange: (v) => { S.code[k] = v; saveSoon(); },
+      onCheck: () => runCheck(s, k),
+    });
+    renderHints(s, k);
+  }
+  window.scrollTo({ top: 0 });
+}
+function coinChip(n, done) {
+  return `<span class="reward" title="${esc(t("doubloons"))}">${ICON.coin}${done ? ICON.checkmark.replace("<svg", '<svg style="color:var(--kelp)"') : ""}${done ? n : "+" + n}</span>`;
+}
+function predictFb(s, st) {
+  const ok = st.choice === s.answer;
+  return `<div class="feedback ${ok ? "good" : "bad"}"><h3>${esc(ok ? t("correct") : t("notQuite"))}</h3><div class="prose">${md(L(s.explain))}</div><p style="margin:8px 0 0;color:var(--muted)">${esc(t("tryRun"))}</p></div>`;
+}
+function answerPredict(s, k, i) {
+  if (S.predict[k]) return;
+  S.predict[k] = { choice: i };
+  const btn = $(`[data-opt="${i}"]`);
+  Sound.play(i === s.answer ? "success" : "fail");
+  if (i === s.answer) Pip.say(pipOk()); else Pip.say("wrong1", { gap: 30000 });
+  complete(k, i === s.answer ? 10 : 2, btn);
+  renderStep();
+  LS.interp && LS.interp.unlockRun();
+}
+let saveTimer = null;
+function saveSoon() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); }
+
+function renderHints(s, k) {
+  const host = $("[data-hints]");
+  if (!host) return;
+  const n = S.hints[k] || 0, done = !!S.done[k];
+  let h = "";
+  for (let i = 0; i < Math.min(n, s.hints.length); i++) h += `<div class="hint"><div class="eyebrow">${esc(t("hint"))} ${i + 1}</div><div class="prose">${md(L(s.hints[i]))}</div></div>`;
+  if (S.peek[k]) h += `<div class="hint solution"><div class="eyebrow">${esc(t("solution"))}</div><pre><code>${esc(s.solution)}</code></pre>
+    <div class="row"><button class="btn small" type="button" data-put>${esc(t("putInEditor"))}</button><span style="color:var(--muted);font-size:14px">${esc(t("typeTip"))}</span></div></div>`;
+  const row = [];
+  if (n < s.hints.length) row.push(`<button class="btn small" type="button" data-hint>${esc(n === 0 ? t("showHint") : t("nextHint"))}${done ? "" : ` <span style="color:var(--muted)">${esc(t("hintCost"))}</span>`}</button>`);
+  else if (!S.peek[k]) row.push(`<button class="btn small ghost" type="button" data-peek>${esc(t("showSolution"))}</button>`);
+  if (row.length) h += `<div class="hint-row" data-hintrow>${row.join("")}</div>`;
+  host.innerHTML = h;
+  host.hidden = !h;
+  const hb = $("[data-hint]", host);
+  hb && hb.addEventListener("click", () => { Sound.play("squawk"); Pip.say("hint", { gap: 20000 }); S.hints[k] = (S.hints[k] || 0) + 1; save(); renderHints(s, k); refreshChip(s, k); });
+  const pb = $("[data-peek]", host);
+  pb && pb.addEventListener("click", () => {
+    if (S.done[k]) { S.peek[k] = true; save(); renderHints(s, k); return; }
+    $("[data-hintrow]", host).outerHTML = `<div class="confirm"><span>${esc(t("peekWarn"))}</span><button class="btn small" type="button" data-yes>${esc(t("showIt"))}</button><button class="btn small primary" type="button" data-no>${esc(t("keepTrying"))}</button></div>`;
+    $("[data-yes]", host).addEventListener("click", () => { S.peek[k] = true; save(); renderHints(s, k); refreshChip(s, k); });
+    $("[data-no]", host).addEventListener("click", () => renderHints(s, k));
+  });
+  const put = $("[data-put]", host);
+  put && put.addEventListener("click", () => { LS.interp.editor.set(s.solution); LS.interp.editor.focus(); });
+}
+function refreshChip(s, k) {
+  const chip = $(".orders .reward");
+  if (chip && !S.done[k]) chip.outerHTML = coinChip(rewardFor(k, s), false);
+}
+function passHtml(s, chest) {
+  return `<div class="feedback good"><div class="pass-row">${chest ? CHEST : ""}<div><h3>${esc(t("passed"))}</h3>${s.after ? `<div class="prose">${md(L(s.after))}</div>` : `<div>${esc(t("allTests", s.tests.length))}</div>`}</div></div></div>`;
+}
+function shakeEl(el) { if (!el || !motionOK()) return; el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+async function runCheck(s, k) {
+  const api = LS.interp;
+  if (!api || Py.state !== "ready" || Py.pending) return;
+  const resEl = $("[data-result]");
+  resEl.innerHTML = `<div class="feedback info"><span class="status"><span class="spinner"></span>${esc(t("checking"))}</span></div>`;
+  const tests = s.tests.map((x) => ({ stdin: x.stdin || [], check: x.check, allow_error: !!x.allow_error, seed: x.seed, setup: x.setup ?? s.setup ?? "" }));
+  Sound.play("whoosh");
+  const res = await Py.exec({ mode: "check", code: api.editor.get(), tests });
+  if (res.busy) return;
+  S.ran++; if (S.ran === 1) award("first_run");
+  if (res.timeout || res.internal) { Sound.play("fail"); showOutput(api, res); resEl.innerHTML = `<div class="feedback bad"><h3>${esc(t("failed"))}</h3></div>`; return; }
+  showOutput(api, { out: res.out, err: res.err });
+  const results = res.results || [];
+  const ok = results.length === s.tests.length && results.every((r) => r.ok);
+  if (ok) {
+    const first = !S.done[k];
+    resEl.innerHTML = passHtml(s, true);
+    Sound.play("chest"); setTimeout(() => Sound.play("success"), 250);
+    LS.fails = 0;
+    Pip.say(first && s.kind === "debug" ? "bug" : pipOk(), { voice: first && s.kind === "debug" ? "always" : "throttle" });
+    if (first) {
+      complete(k, rewardFor(k, s), $(".chest", resEl));
+      if (s.kind === "debug") { S.fixes++; save(); award("bug_hunter"); if (S.fixes >= 5) award("exterminator"); }
+      if (s.kind === "project") award("solo");
+    }
+    renderHints(s, k);
+    const nb = $("[data-next]"); nb.disabled = false; nb.classList.add("primary"); nb.focus({ preventScroll: true });
+    $$(".dot")[LS.idx].classList.add("done");
+    const chip = $(".orders .reward"); if (chip) chip.outerHTML = coinChip(S.done[k].r, true);
+  } else {
+    const fi = results.findIndex((r) => !r.ok);
+    const failed = s.tests[fi] || s.tests[0];
+    const r = results[fi] || {};
+    let h = `<div class="feedback bad"><h3>${esc(t("failed"))}</h3>`;
+    if (r.detail === "error" && r.err) h += `<div class="prose"><p>${esc(S.lang === "sl" ? "Program se je ustavil z napako. Poglej izpis spodaj." : "Your program stopped with an error. See the output below.")}</p></div>`;
+    else h += `<div class="prose"><p>${inline(L(failed.msg))}</p></div>`;
+    h += `<ul class="testlist">${s.tests.map((_, i) => {
+      const st = i < fi ? "ok" : i === fi ? "bad" : "wait";
+      return `<li><span style="color:${st === "ok" ? "var(--kelp)" : st === "bad" ? "var(--coral)" : "var(--muted)"}">${st === "ok" ? "✓" : st === "bad" ? "✗" : "·"}</span><span style="color:var(--ink-2)">${esc(S.lang === "sl" ? "Preverjanje" : "Check")} ${i + 1}</span></li>`;
+    }).join("")}</ul></div>`;
+    resEl.innerHTML = h;
+    Sound.play(r.detail === "error" ? "error" : "fail");
+    shakeEl($(".feedback", resEl));
+    LS.fails = (LS.fails || 0) + 1;
+    if (LS.fails === 1 || LS.fails % 4 === 0) Pip.say(r.detail === "error" ? "wrong2" : "wrong1", { voice: LS.fails === 1 ? "always" : "throttle" });
+    else Pip.react(LS.fails % 2 ? "tilt" : "sad");
+  }
+}
+function onNext() {
+  const { ch, l, idx } = LS;
+  const s = l.steps[idx], k = keyOf(ch, l, s);
+  if (s.type === "story") complete(k, 0);
+  if (s.type === "learn") complete(k, BASE.learn, $(".orders .reward"));
+  if (!S.done[k]) return;
+  if (idx < l.steps.length - 1) { Sound.play("page"); LS.idx++; LS.fails = 0; renderStep(); return; }
+  lessonComplete();
+}
+function lessonComplete() {
+  if (LS.interp) { LS.interp.dispose(); LS.interp = null; }
+  const { ch, l } = LS;
+  const coins = l.steps.reduce((a, s) => a + ((S.done[keyOf(ch, l, s)] || {}).r || 0), 0);
+  const noHints = l.steps.every((s) => !S.hints[keyOf(ch, l, s)] && !S.peek[keyOf(ch, l, s)]);
+  if (noHints && l.steps.some((s) => s.type === "code")) award("no_hints");
+  const island = chapterDone(ch);
+  if (island) award("island");
+  if (island && ch.id === CH[CH.length - 1].id) award("crown");
+  const li = ch.lessons.indexOf(l);
+  const nextL = ch.lessons[li + 1];
+  const tg = nextTarget();
+  Sound.play("fanfare");
+  const finale = island && ch.id === CH[CH.length - 1].id;
+  confetti(island ? 110 : 45);
+  setTimeout(() => Pip.say(finale ? "finale" : island ? "island" : "ok2", { voice: island ? "always" : "throttle" }), 1200);
+  $("#view").innerHTML = `<div class="complete">${island ? CAPTAIN : PIP}${CHEST.replace('class="chest"', 'class="chest" style="width:120px;height:100px"')}
+    <div class="eyebrow">${esc(L(ch.island))}</div>
+    <h2>${esc(island ? t("islandDone") : t("lessonDone"))}</h2>
+    <p class="big">${ICON.coin.replace("<svg", '<svg width="26" height="26" style="vertical-align:-6px"')} <b>${coins}</b> ${esc(t("doubloons"))} ${esc(t("earned"))}</p>
+    ${island && ch.log ? `<p style="margin:0;color:var(--ink-2);max-width:48ch">${esc(S.lang === "sl" ? "Plonk listek za ta otok je zdaj v Kapitanovem dnevniku." : "This island's cheat sheet is waiting in the Captain's Log.")}</p>` : ""}
+    <div class="row">
+      ${nextL ? `<button class="btn primary" type="button" data-lesson="${nextL.id}">${esc(t("nextLesson"))}: ${esc(L(nextL.title))} →</button>` : tg ? `<button class="btn primary" type="button" data-lesson="${tg.l.id}">${esc(t("continue"))}: ${esc(L(tg.l.title))} →</button>` : ""}
+      <button class="btn" type="button" data-go="map">${esc(t("backToMap"))}</button>
+    </div></div>`;
+  selected = ch.id;
+  bindLessonButtons();
+  window.scrollTo({ top: 0 });
+}
+
+/* ================= workshop & log ================= */
+const WS_DEFAULT = `# The Workshop: write anything and press Run.\n# Here's a taste of where the voyage goes.\n\ncrew = ["Pip", "Marlow", "Anne"]\nfor sailor in crew:\n    print("Ahoy,", sailor)\n\nname = input("Your name, sailor? ")\nprint(f"Welcome aboard the Serpent, {name}!")\n`;
+function renderWorkshop() {
+  $("#view").innerHTML = `<h1 class="page-title">${esc(t("wsTitle"))}</h1><p class="page-sub">${esc(t("wsSub"))}</p><div class="workshop"><section data-interp></section></div>`;
+  LS = { interp: interpreter($("[data-interp]"), { code: S.workshop ?? WS_DEFAULT, resetTo: WS_DEFAULT, title: "workshop.py", stdin: "Ben", onChange: (v) => { S.workshop = v; saveSoon(); } }) };
+}
+function renderLog() {
+  const cards = CH.filter((c) => c.log || c.charting).map((ch) => {
+    const ok = chapterUnlocked(ch) && ch.log;
+    return `<article class="log-card ${ok ? "" : "locked"}"><div class="eyebrow">${esc(S.lang === "sl" ? "Otok" : "Island")} ${chIndex(ch) + 1}</div><h2>${esc(L(ch.island))}: ${esc(L(ch.title))}</h2>
+      ${ok ? `<div class="prose">${md(L(ch.log))}</div>` : `<div class="chips">${(ch.topics[S.lang] || ch.topics.en).map((x) => `<span class="chip">${esc(x)}</span>`).join("")}</div><p style="margin:0;color:var(--muted)">${esc(ch.charting ? t("chartingNote") : t("logLocked"))}</p>`}</article>`;
+  }).join("");
+  $("#view").innerHTML = `<h1 class="page-title">${esc(t("logTitle"))}</h1><p class="page-sub">${esc(t("logSub"))}</p><div class="log-grid">${cards}</div>`;
+}
+
+/* ================= onboarding & placement ================= */
+function langSeg() {
+  return `<div class="row"><span class="eyebrow">${esc(t("language"))}</span><div class="seg" role="group">
+    <button type="button" data-setlang="en" aria-pressed="${S.lang === "en"}">English</button>
+    <button type="button" data-setlang="sl" aria-pressed="${S.lang === "sl"}">Slovenščina</button></div></div>`;
+}
+function bindLang(m, again) {
+  $$("[data-setlang]", m).forEach((b) => b.addEventListener("click", () => { S.lang = b.dataset.setlang; save(); route(true); again(); }));
+}
+function openWelcome() {
+  openModal(`${PIP.replace("<svg", '<svg width="72" height="72"')}<h2>${esc(t("startH"))}</h2><p>${esc(t("startP"))}</p>${langSeg()}
+    <div class="choice-grid">
+      <button class="choice" type="button" data-start="new"><b>${esc(t("newbie"))}</b><span>${esc(t("newbieS"))}</span></button>
+      <button class="choice" type="button" data-start="test"><b>${esc(t("someExp"))}</b><span>${esc(t("someExpS"))}</span></button>
+      <button class="choice" type="button" data-start="free"><b>${esc(t("explore"))}</b><span>${esc(t("exploreS"))}</span></button>
+    </div>`, (m) => {
+    bindLang(m, openWelcome);
+    $$("[data-start]", m).forEach((b) => b.addEventListener("click", () => {
+      const v = b.dataset.start;
+      if (v === "test") { openPlacement(); return; }
+      S.onboarded = true; if (v === "free") S.unlockAll = true; save(); closeModal(); setTimeout(() => Pip.say("welcome", { voice: "always" }), 400);
+      go(v === "new" ? CH[0].lessons[0].id : "map");
+    }));
+  }, false);
+}
+function openPlacement(i = 0, answers = []) {
+  const Q = CUR.placement;
+  if (i >= Q.length) return placementResult(answers);
+  const q = Q[i];
+  openModal(`<div class="eyebrow">${esc(t("placementH"))} · ${i + 1}/${Q.length}</div><div class="progress-line"><i style="width:${(i / Q.length) * 100}%"></i></div>
+    <p>${esc(t("placementP"))}</p><pre class="pq-code">${esc(q.code)}</pre>
+    <div class="options">${q.options.map((o, k) => `<button class="opt" type="button" data-a="${k}"><span class="letter">${"ABCD"[k]}</span><pre>${esc(L(o))}</pre></button>`).join("")}</div>
+    <div class="row"><button class="btn ghost small" type="button" data-a="-1">${esc(t("notSure"))}</button></div>`, (m) => {
+    $$("[data-a]", m).forEach((b) => b.addEventListener("click", () => {
+      const ok = +b.dataset.a === q.answer;
+      Sound.play(ok ? "tick" : "click");
+      // Stop at the first miss: that island is where this learner should start.
+      if (!ok) placementResult(answers.concat(false));
+      else openPlacement(i + 1, answers.concat(true));
+    }));
+  }, false);
+}
+function placementResult(answers) {
+  const Q = CUR.placement;
+  const placed = [];
+  for (const ch of CH) {
+    const qs = Q.map((q, i) => [q, i]).filter(([q]) => q.ch === ch.id);
+    if (!qs.length || !qs.every(([, i]) => answers[i])) break;
+    placed.push(ch.id);
+  }
+  S.placed = placed; S.onboarded = true; save();
+  setTimeout(() => Pip.say("welcome", { voice: "always" }), 600);
+  openModal(`${CAPTAIN.replace("<svg", '<svg width="72" height="72"')}<h2>${esc(t("placementDone"))}</h2><p>${esc(placed.length ? t("placedSome", placed.length) : t("placedNone"))}</p>
+    <div class="row"><button class="btn primary" type="button" data-done>${esc(t("toChart"))}</button></div>`, (m) => {
+    $("[data-done]", m).addEventListener("click", () => { closeModal(); selected = null; go("map"); });
+  }, false);
+}
+
+/* ================= sound ================= */
+function applyPrefs() {
+  Sound.setPrefs(S.audio);
+  document.documentElement.classList.toggle("calm", !!S.reduceMotion);
+}
+function openSound() {
+  const A = S.audio;
+  openModal(`<h2>${esc(t("sound"))}</h2>
+    <div class="sound-row">
+      <input type="checkbox" id="snd-music" ${A.music ? "checked" : ""}><label for="snd-music"><b>${esc(t("music"))}</b><br><span style="color:var(--muted);font-size:15px">${esc(t("musicS"))}</span></label>
+      <span></span><input type="range" id="snd-mvol" min="0" max="1" step="0.05" value="${A.musicVol}" aria-label="${esc(t("music"))} ${esc(t("volume"))}">
+      <input type="checkbox" id="snd-amb" ${A.ambience ? "checked" : ""}><label for="snd-amb"><b>${esc(t("ambience"))}</b></label>
+      <input type="checkbox" id="snd-sfx" ${A.sfx ? "checked" : ""}><label for="snd-sfx"><b>${esc(t("sfx"))}</b></label>
+      <span></span><input type="range" id="snd-svol" min="0" max="1" step="0.05" value="${A.sfxVol}" aria-label="${esc(t("sfx"))} ${esc(t("volume"))}">
+      <input type="checkbox" id="snd-voice" ${A.voice ? "checked" : ""}><label for="snd-voice"><b>${esc(t("voice"))}</b><br><span style="color:var(--muted);font-size:15px">${esc(t("voiceS"))}</span></label>
+    </div>
+    <label class="switch"><input type="checkbox" id="snd-pip" ${S.pip ? "checked" : ""}><span><b>${esc(t("showPip"))}</b><br><span style="color:var(--muted);font-size:15px">${esc(t("showPipS"))}</span></span></label>
+    <label class="switch"><input type="checkbox" id="snd-motion" ${S.reduceMotion ? "checked" : ""}><span><b>${esc(t("motion"))}</b><br><span style="color:var(--muted);font-size:15px">${esc(t("motionS"))}</span></span></label>
+    <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" data-close>${esc(t("close"))}</button></div>`, (m) => {
+    const upd = () => {
+      S.audio = { music: $("#snd-music", m).checked, ambience: $("#snd-amb", m).checked, sfx: $("#snd-sfx", m).checked, voice: $("#snd-voice", m).checked, musicVol: +$("#snd-mvol", m).value, sfxVol: +$("#snd-svol", m).value };
+      S.pip = $("#snd-pip", m).checked; Pip.show();
+      S.reduceMotion = $("#snd-motion", m).checked;
+      save(); applyPrefs(); renderTop();
+    };
+    $$("input", m).forEach((i) => i.addEventListener("input", upd));
+    $("#snd-svol", m).addEventListener("change", () => Sound.play("coin"));
+    $("#snd-voice", m).addEventListener("change", (e) => { if (e.target.checked) Pip.say("ok1", { voice: "always" }); });
+    $("[data-close]", m).addEventListener("click", closeModal);
+  });
+}
+
+/* ================= settings ================= */
+function openSettings() {
+  const code = (() => { try { return btoa(unescape(encodeURIComponent(JSON.stringify(S)))); } catch (e) { return ""; } })();
+  openModal(`<h2>${esc(t("settings"))}</h2>${langSeg()}
+    <label class="switch"><input type="checkbox" id="unlock-all" ${S.unlockAll ? "checked" : ""}><span><b>${esc(t("unlockAll"))}</b><br><span style="color:var(--muted);font-size:15px">${esc(t("unlockAllS"))}</span></span></label>
+    <div class="settings-sec"><h3>${esc(t("badgesH"))}</h3><div class="badges">${Object.keys(BADGES).map((id) => { const b = BADGES[id][S.lang] || BADGES[id].en; return `<span class="badge ${S.badges.includes(id) ? "" : "off"}" title="${esc(b[1])}">${ICON.medal}${esc(b[0])}</span>`; }).join("")}</div></div>
+    <div class="settings-sec"><h3>${esc(t("saveH"))}</h3><p>${esc(t("saveS"))}</p>
+      <div class="field"><textarea id="save-out" readonly>${esc(code)}</textarea></div>
+      <div class="row"><button class="btn small" type="button" data-copy>${esc(t("copy"))}</button></div>
+      <div class="field"><label for="save-in">${esc(t("loadSave"))}</label><textarea id="save-in" spellcheck="false"></textarea></div>
+      <div class="row"><button class="btn small" type="button" data-import>${esc(t("load"))}</button><span data-imsg style="font-size:15px"></span></div></div>
+    <div class="settings-sec"><h3>${esc(t("resetH"))}</h3><div class="row" data-resetrow><button class="btn small" type="button" data-reset-all style="border-color:var(--coral);color:var(--coral)">${esc(t("resetBtn"))}</button></div></div>
+    <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" data-close>${esc(t("close"))}</button></div>`, (m) => {
+    bindLang(m, openSettings);
+    $("#unlock-all", m).addEventListener("change", (e) => { S.unlockAll = e.target.checked; save(); route(true); });
+    $("[data-close]", m).addEventListener("click", closeModal);
+    $("[data-copy]", m).addEventListener("click", (e) => {
+      const ta = $("#save-out", m);
+      const done = () => { e.target.textContent = t("copied"); };
+      try { navigator.clipboard.writeText(ta.value).then(done, () => { ta.select(); }); } catch (x) { ta.select(); }
+    });
+    $("[data-import]", m).addEventListener("click", () => {
+      const msg = $("[data-imsg]", m);
+      try {
+        const obj = JSON.parse(decodeURIComponent(escape(atob($("#save-in", m).value.trim()))));
+        if (!obj || typeof obj !== "object" || !("done" in obj)) throw 0;
+        S = Object.assign(JSON.parse(JSON.stringify(DEF)), obj); save();
+        msg.style.color = "var(--kelp)"; msg.textContent = t("loaded"); route(true);
+      } catch (x) { msg.style.color = "var(--coral)"; msg.textContent = t("badSave"); }
+    });
+    $("[data-reset-all]", m).addEventListener("click", () => {
+      const row = $("[data-resetrow]", m);
+      row.innerHTML = `<div class="confirm"><span>${esc(t("resetConfirm"))}</span><button class="btn small" type="button" data-erase style="border-color:var(--coral);color:var(--coral)">${esc(t("erase"))}</button><button class="btn small primary" type="button" data-keep>${esc(t("cancel"))}</button></div>`;
+      $("[data-erase]", m).addEventListener("click", () => { const lang = S.lang; S = JSON.parse(JSON.stringify(DEF)); S.lang = lang; save(); selected = null; closeModal(); go("map"); openWelcome(); });
+      $("[data-keep]", m).addEventListener("click", openSettings);
+    });
+  });
+}
+
+/* ================= router ================= */
+function go(h) { if ((location.hash || "#map").slice(1) === h) route(); else location.hash = h; }
+function route(keepStep) {
+  if (LS && LS.interp) { LS.interp.dispose(); }
+  const h = (location.hash || "#map").slice(1);
+  renderTop();
+  Sound.setScene(h === "workshop" || findLesson(h) ? "lesson" : "map");
+  if (h === "workshop") { LS = null; renderWorkshop(); }
+  else if (h === "log") { LS = null; renderLog(); }
+  else if (findLesson(h)) {
+    if (keepStep === true && LS && LS.l && LS.l.id === h) renderStep();
+    else openLesson(h);
+  } else { LS = null; renderMap(); }
+}
+window.addEventListener("hashchange", () => route());
+
+applyPrefs();
+route();
+Pip.mount();
+if (!S.onboarded) openWelcome();
+})();
+</script>
