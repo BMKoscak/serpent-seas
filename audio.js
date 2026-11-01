@@ -232,7 +232,7 @@
   function say(key, lang) {
     if (!ctx || !unlocked || !prefs.voice) return Promise.resolve(0);
     const name = "v_" + lang + "_" + key;
-    return load(name, "voice/" + lang + "_" + key + ".mp3").then((b) => {
+    return load(name, "voice2/" + lang + "_" + key + ".mp3").then((b) => {
       if (!b) return 0;
       if (voiceSrc) { try { voiceSrc.stop(); } catch (e) {} }
       const s = ctx.createBufferSource(); s.buffer = b; s.connect(voiceBus);
