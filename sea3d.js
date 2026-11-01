@@ -65,7 +65,7 @@ function makeOcean(pal, size = 700, seg = 220, islands = []) {
   const m = new THREE.ShaderMaterial({
     fog: true,
     uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, {
-      uT: { value: 0 }, uSun: { value: pal.sun }, uSunC: { value: pal.sunColor }, uZ: { value: pal.zenith }, uH: { value: pal.horizon },
+      uT: { value: 0 }, uHi: { value: 1 }, uSun: { value: pal.sun }, uSunC: { value: pal.sunColor }, uZ: { value: pal.zenith }, uH: { value: pal.horizon },
       uDeep: { value: new THREE.Color("#0b3f5c") }, uShallow: { value: new THREE.Color("#2bb7b0") }, uIsl: { value: isl },
       uW: { value: WAVE_K.map((w) => new THREE.Vector4(w.dx, w.dz, w.k, w.A)) }, uWs: { value: WAVE_K.map((w) => w.w) },
     }]),
@@ -77,7 +77,7 @@ function makeOcean(pal, size = 700, seg = 220, islands = []) {
         #include <fog_vertex>
       }`,
     fragmentShader: GLSL_WAVES + `
-      uniform float uT; uniform vec3 uSun,uSunC,uZ,uH,uDeep,uShallow; uniform vec4 uIsl[16];
+      uniform float uT, uHi; uniform vec3 uSun,uSunC,uZ,uH,uDeep,uShallow; uniform vec4 uIsl[16];
       varying vec3 vW; varying float vH;
       #include <fog_pars_fragment>
       float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
@@ -86,24 +86,21 @@ function makeOcean(pal, size = 700, seg = 220, islands = []) {
       void main(){
         vec2 g=waveG(vW.xz,uT);
         // fine ripples
-        float r1=noise(vW.xz*0.9+vec2(uT*0.6,uT*0.3)), r2=noise(vW.xz*2.1-vec2(uT*0.4,uT*0.7));
-        g+=vec2(r1-0.5,r2-0.5)*0.09;
+        if(uHi>0.5){ float r1=noise(vW.xz*0.9+vec2(uT*0.6,uT*0.3)), r2=noise(vW.xz*2.1-vec2(uT*0.4,uT*0.7)); g+=vec2(r1-0.5,r2-0.5)*0.09; }
         vec3 N=normalize(vec3(-g.x,1.,-g.y));
         vec3 V=normalize(cameraPosition-vW);
         float fr=0.02+0.98*pow(1.-max(dot(N,V),0.),5.);
-        float sh=0.; float foam=0.;
-        for(int i=0;i<16;i++){ if(uIsl[i].w<.5) continue; float d=length(vW.xz-uIsl[i].xy)-uIsl[i].z;
-          sh=max(sh,smoothstep(10.,0.,d));
-          float n=noise(vW.xz*0.8+uT*0.3);
-          foam=max(foam, smoothstep(1.8,0.2,d+n*1.2)*(0.55+0.45*sin(uT*2.2-d*3.)));
-        }
+        float dmin=1e4;
+        for(int i=0;i<16;i++){ if(uIsl[i].w<.5) continue; dmin=min(dmin,length(vW.xz-uIsl[i].xy)-uIsl[i].z); }
+        float sh=smoothstep(10.,0.,dmin), foam=0.;
+        if(dmin<3.){ float n=noise(vW.xz*0.8+uT*0.3); foam=smoothstep(1.8,0.2,dmin+n*1.2)*(0.55+0.45*sin(uT*2.2-dmin*3.)); }
         vec3 base=mix(uDeep,uShallow,sh*0.85);
         base*=0.75+0.35*smoothstep(-0.4,0.6,vH);
         vec3 R=reflect(-V,N); vec3 sky=mix(uH,uZ,pow(max(R.y,0.),0.6));
         vec3 c=mix(base,sky,fr*0.85);
         float sp=pow(max(dot(R,uSun),0.),400.); c+=uSunC*sp*1.4;
         c+=uSunC*pow(max(dot(R,uSun),0.),18.)*0.08;
-        float crest=smoothstep(0.62,0.95,vH+noise(vW.xz*0.35)*0.18);
+        float crest=smoothstep(0.62,0.95,vH+(uHi>0.5?noise(vW.xz*0.35)*0.18:0.));
         c=mix(c,vec3(0.93,0.96,0.95),clamp(foam*0.8+crest*0.18,0.,1.));
         gl_FragColor=vec4(c,1.);
         #include <tonemapping_fragment>
@@ -171,13 +168,34 @@ function makeSerpent() {
 
 /* ---------------- renderer setup shared by both scenes ---------------- */
 function makeRenderer(canvasHost) {
-  const r = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-  r.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+  const r = new THREE.WebGLRenderer({ antialias: (window.devicePixelRatio || 1) < 1.5, powerPreference: "high-performance" });
   r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
   r.outputColorSpace = THREE.SRGBColorSpace;
   canvasHost.appendChild(r.domElement);
   r.domElement.style.display = "block"; r.domElement.style.width = "100%"; r.domElement.style.height = "100%";
   return r;
+}
+// Adaptive quality: watch frame times and lower the render resolution (then the water detail) on slow GPUs.
+function makeGovernor(renderer, ocean) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+  const steps = [1, 0.8, 0.65, 0.5, 0.4];
+  let level = 0, acc = 0, n = 0, settle = 0;
+  try { const saved = +localStorage.getItem("ss-3d-level"); if (saved >= 0 && saved < steps.length) level = saved; } catch (e) {}
+  const apply = () => { renderer.setPixelRatio(dpr * steps[level]); if (ocean) ocean.material.uniforms.uHi.value = level >= 2 ? 0 : 1; };
+  apply();
+  return {
+    frame(dtReal) {
+      if (settle > 0) { settle--; return false; }
+      acc += dtReal; n++;
+      if (n < 40) return false;
+      const avg = acc / n; acc = 0; n = 0;
+      let changed = false;
+      if (avg > 1 / 40 && level < steps.length - 1) { level++; changed = true; }
+      else if (avg < 1 / 58 && level > 0) { level--; changed = true; }
+      if (changed) { apply(); settle = 30; try { localStorage.setItem("ss-3d-level", String(level)); } catch (e) {} }
+      return changed;
+    },
+  };
 }
 function lights(scene, pal) {
   scene.add(new THREE.HemisphereLight("#cfe8ff", "#35574a", 1.25));
@@ -270,7 +288,7 @@ function mountChart(host, opts) {
   scene.add(makeSky(pal));
   lights(scene, pal);
   const pos = layout(data.length);
-  const ocean = makeOcean(pal, 700, 220, pos.map((p, i) => ({ x: p.x, z: p.z, r: (i === 13 ? 9 : 7) * 1.05 })));
+  const ocean = makeOcean(pal, 600, 150, pos.map((p, i) => ({ x: p.x, z: p.z, r: (i === 13 ? 9 : 7) * 1.05 })));
   scene.add(ocean);
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.5, 2000);
@@ -437,13 +455,16 @@ function mountChart(host, opts) {
   const io = new IntersectionObserver((en) => { visible = en[0].isIntersecting; }); io.observe(wrap);
 
   const clock = new THREE.Clock(); let t = 0, raf = 0;
+  const gov = makeGovernor(renderer, ocean);
   const tmp = new THREE.Vector3(), proj = new THREE.Vector3();
   const motion = () => !document.documentElement.classList.contains("calm");
   function tick() {
     raf = requestAnimationFrame(tick);
     if (!visible || document.hidden) { clock.getDelta(); return; }
     resize();
-    const dt = Math.min(clock.getDelta(), 0.05); t += motion() ? dt : dt * 0.25;
+    const raw = clock.getDelta();
+    if (gov.frame(raw)) { w = 0; resize(); }
+    const dt = Math.min(raw, 0.1); t += motion() ? dt : dt * 0.25;
     ocean.material.uniforms.uT.value = t; beaconMat.uniforms.uT.value = t;
     ocean.position.set(Math.round(controls.target.x / 4) * 4, 0, Math.round(controls.target.z / 4) * 4);
     // camera focus animation
@@ -595,11 +616,14 @@ function mountCelebration(host, opts = {}) {
   let w = 0, h = 0;
   const resize = () => { const r = wrap.getBoundingClientRect(); if (!r.width || !r.height || (r.width === w && r.height === h)) return; w = r.width; h = r.height; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
   const clock = new THREE.Clock(); let t = 0, raf = 0, nextFire = 0.8, nextBurst = 1.4;
+  const gov = makeGovernor(renderer, ocean);
   function tick() {
     raf = requestAnimationFrame(tick);
     if (document.hidden) { clock.getDelta(); return; }
     resize();
-    const dt = Math.min(clock.getDelta(), 0.05); t += dt;
+    const raw = clock.getDelta();
+    if (gov.frame(raw)) { w = 0; resize(); }
+    const dt = Math.min(raw, 0.1); t += dt;
     ocean.material.uniforms.uT.value = t;
     const ang = t * 0.12;
     camera.position.set(Math.sin(ang) * 26 + 6, 7 + Math.sin(t * 0.3), Math.cos(ang) * 26); camera.lookAt(-3, kind === "lesson" ? 3 : 6, -6);
