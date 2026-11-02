@@ -200,11 +200,13 @@ function makeGovernor(renderer, ocean) {
   const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
   const steps = [1, 0.8, 0.65, 0.5, 0.4];
   let level = 0, acc = 0, n = 0, settle = 0;
-  try { const saved = +localStorage.getItem("ss-3d-level"); if (saved >= 0 && saved < steps.length) level = saved; } catch (e) {}
+  try { const saved = +localStorage.getItem("ss-3d-level"); if (saved >= 0 && saved < steps.length) level = Math.min(saved, 2); } catch (e) {}
   const apply = () => { renderer.setPixelRatio(dpr * steps[level]); if (ocean) ocean.material.uniforms.uHi.value = level >= 2 ? 0 : 1; };
   apply();
   return {
     frame(dtReal) {
+      // ignore throttled frames (background tab, window hidden) so they never lower the quality
+      if (dtReal > 0.2 || document.hidden || !document.hasFocus()) { acc = 0; n = 0; return false; }
       if (settle > 0) { settle--; return false; }
       acc += dtReal; n++;
       if (n < 40) return false;
