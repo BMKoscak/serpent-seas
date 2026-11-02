@@ -66,6 +66,7 @@ function makeOcean(pal, size = 700, seg = 220, islands = []) {
     fog: true,
     uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, {
       uT: { value: 0 }, uHi: { value: 1 }, uSun: { value: pal.sun }, uSunC: { value: pal.sunColor }, uZ: { value: pal.zenith }, uH: { value: pal.horizon },
+      uShip: { value: new THREE.Vector4(0, 0, 1, 0) }, uShipOn: { value: 0 }, uShipS: { value: 2.6 },
       uDeep: { value: new THREE.Color("#0b3f5c") }, uShallow: { value: new THREE.Color("#2bb7b0") }, uIsl: { value: isl },
       uW: { value: WAVE_K.map((w) => new THREE.Vector4(w.dx, w.dz, w.k, w.A)) }, uWs: { value: WAVE_K.map((w) => w.w) },
     }]),
@@ -78,12 +79,20 @@ function makeOcean(pal, size = 700, seg = 220, islands = []) {
       }`,
     fragmentShader: GLSL_WAVES + `
       uniform float uT, uHi; uniform vec3 uSun,uSunC,uZ,uH,uDeep,uShallow; uniform vec4 uIsl[16];
+      uniform vec4 uShip; uniform float uShipOn, uShipS;
       varying vec3 vW; varying float vH;
       #include <fog_pars_fragment>
       float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
       float noise(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
         return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y); }
       void main(){
+        if (uShipOn > 0.5) {
+          // no sea inside the hull (so the cargo hold stays dry): ship-local coords in model units
+          vec2 d = vW.xz - uShip.xy;
+          float lx = (d.x * uShip.z - d.y * uShip.w) / uShipS, lz = (d.x * uShip.w + d.y * uShip.z) / uShipS;
+          float w = lz <= -4.0 ? 2.05 + (lz + 6.4) * 0.146 : (lz <= 1.5 ? 2.4 : 2.4 * sqrt(max(0.0, 1.0 - pow((lz - 1.5) / 5.05, 2.0))));
+          if (abs(lz) < 6.3 && abs(lx) < w * 0.93) discard;
+        }
         vec2 g=waveG(vW.xz,uT);
         // fine ripples
         if(uHi>0.5){ float r1=noise(vW.xz*0.9+vec2(uT*0.6,uT*0.3)), r2=noise(vW.xz*2.1-vec2(uT*0.4,uT*0.7)); g+=vec2(r1-0.5,r2-0.5)*0.09; }

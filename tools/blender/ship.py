@@ -92,9 +92,9 @@ parts = [hull]
 P = lambda o: parts.append(o) or o
 
 # ---------- decks ----------
-def deck(y, z0, z1, wfun, name, inset=0.06):
+def deck(y, z0, z1, wfun, name, inset=0.06, hole=None, extra_z=()):
     vs, fs = [], []
-    zl = [z0] + [z for z in ZS if z0 < z < z1] + [z1]
+    zl = sorted(set([z0] + [z for z in list(ZS) + list(extra_z) if z0 < z < z1] + [z1]))
     xs = [-2.6 + i * 0.2 for i in range(27)]
     for zi in range(len(zl) - 1):
         za, zb = zl[zi], zl[zi + 1]
@@ -103,6 +103,7 @@ def deck(y, z0, z1, wfun, name, inset=0.06):
             xa, xb = xs[xi], xs[xi + 1]
             q = [(max(-wa, min(wa, xa)), za), (max(-wa, min(wa, xb)), za), (max(-wb, min(wb, xb)), zb), (max(-wb, min(wb, xa)), zb)]
             if abs(q[0][0] - q[1][0]) < 1e-4 and abs(q[2][0] - q[3][0]) < 1e-4: continue
+            if hole and hole[0] <= xa and xb <= hole[1] and hole[2] <= za and zb <= hole[3]: continue
             i = len(vs)
             for (x, z) in q: vs.append((x, y, z))
             fs.append([i, i + 3, i + 2, i + 1])
@@ -111,16 +112,23 @@ def deck(y, z0, z1, wfun, name, inset=0.06):
         return ["#b5875a", "#a97c50", "#bf9364", "#a47548"][k % 4]
     return poly(vs, fs, name, plank, 0.03, WOODM)
 
-P(deck(2.1, -4.1, 1.2, W, "deck-main"))
+P(deck(2.1, -4.1, 1.2, W, "deck-main", hole=(-0.61, 0.61, -2.5, -1.5), extra_z=(-2.5, -1.5)))
+# cabin floor under the quarterdeck, and the cargo hold floor below the main deck
+P(deck(2.1, -6.36, -4.1, W, "deck-cabin"))
+def hold_w(z):
+    return W(z) * 0.74
+P(deck(0.7, -4.3, 1.4, hold_w, "deck-hold"))
 P(deck(3.5, -6.38, -4.1, W, "deck-quarter"))
 P(deck(2.8, 1.2, 6.25, W, "deck-fore"))
-# under-deck fills so you never see into the hull from the side openings
-P(box(4.7, 0.02, 0.9, (0, 2.08, -1.8), color="#3a2414"))
 
 # quarterdeck front wall with cabin door and windows
-P(box(4.8, 1.4, 0.14, (0, 2.8, -4.17), color="#6b4428", material=WOODM))
-P(box(0.62, 1.05, 0.06, (0, 2.62, -4.08), color="#3b2212", material=WOODM))
-P(box(0.08, 0.08, 0.04, (0.2, 2.6, -4.04), color="#e2b04a", material=METAL))
+for sx in (-1, 1):
+    P(box(2.1, 1.4, 0.14, (sx * 1.36, 2.8, -4.17), color="#6b4428", material=WOODM))
+P(box(0.62, 0.36, 0.14, (0, 3.32, -4.17), color="#6b4428", material=WOODM))
+for sx in (-1, 1): P(box(0.07, 1.1, 0.18, (sx * 0.34, 2.65, -4.15), color="#3b2212", material=WOODM))
+P(box(0.76, 0.08, 0.2, (0, 3.2, -4.14), color="#3b2212", material=WOODM))
+# the cabin door stands open against the wall inside
+P(box(0.6, 1.05, 0.05, (0.62, 2.63, -4.55), (0, 70, 0), "#4a2a16", material=WOODM))
 for x in (-0.75, 0.75):
     P(box(0.34, 0.3, 0.05, (x, 2.95, -4.09), color="#ffd27a", material=GLOW))
     P(box(0.42, 0.06, 0.07, (x, 2.78, -4.08), color="#3b2212"))
@@ -144,11 +152,79 @@ for (z, y) in ((-4.12, 3.5), (1.22, 2.8)):
     P(box(1.76, 0.07, 0.09, (0, y + 0.5, z), color="#4a2e1a"))
     for i in range(8):
         P(cyl(0.035, 0.03, 0.47, 6, (-0.8 + i * 0.228, y, z), color="#7a5230"))
-# hatch grate
-P(box(1.1, 0.05, 1.1, (0, 2.13, -2.0), color="#3d2615"))
-for i in range(5):
-    P(box(0.06, 0.03, 1.0, (-0.4 + i * 0.2, 2.165, -2.0), color="#7a5230"))
-    P(box(1.0, 0.03, 0.06, (0, 2.17, -2.4 + i * 0.2), color="#7a5230"))
+# open cargo hatch: coaming around the hole and stairs down to the hold (tops 1.75 / 1.4 / 1.05 / hold floor 0.7)
+for sx in (-1, 1):
+    P(box(0.07, 0.09, 1.1, (sx * 0.64, 2.14, -2.0), color="#4a2e1a"))
+P(box(1.34, 0.09, 0.07, (0, 2.14, -1.47), color="#4a2e1a"))
+for i, top in enumerate((1.75, 1.4, 1.05)):
+    zc = -1.62 - i * 0.26
+    P(box(1.1, 0.08, 0.26, (0, top - 0.04, zc), color="#9a6a3c", material=WOODM))
+    for sx in (-1, 1): P(box(0.06, top - 0.7 + 0.02, 0.26, (sx * 0.56, (top + 0.7) / 2, zc), color="#4a2e1a"))
+for sx in (-1, 1): P(beam((sx * 0.6, 2.6, -1.5), (sx * 0.6, 1.25, -2.5), 0.03, 5, "#4a2e1a"))
+
+# ---------- captain's cabin furniture (under the quarterdeck, floor 2.1, ceiling 3.5) ----------
+GOLDM = mat("gold", 0.42, 0.3)
+P(box(1.3, 0.08, 0.8, (0, 2.82, -5.5), color="#7a4a26", material=WOODM))                # table
+for sx in (-1, 1):
+    for sz in (-1, 1): P(cyl(0.04, 0.04, 0.68, 6, (sx * 0.55, 2.1, -5.5 + sz * 0.32), color="#4a2e1a"))
+P(box(0.9, 0.012, 0.6, (0.05, 2.87, -5.5), (0, 8, 0), "#e8d5a6"))                       # chart on the table
+P(beam((-0.25, 2.885, -5.45), (0.25, 2.885, -5.65), 0.01, 4, "#a33a2a"))
+P(cyl(0.05, 0.04, 0.12, 8, (0.45, 2.86, -5.35), color="#f2ecdc"))                       # candle
+P(box(0.04, 0.05, 0.04, (0.45, 3.0, -5.35), color="#ffcf6a", material=GLOW))
+P(cyl(0.1, 0.12, 0.18, 8, (-0.45, 2.86, -5.62), color="#3c7ca8"))                       # globe stand
+P(ball(0.12, (-0.45, 3.12, -5.62), color="#3c7ca8", sub=2))
+for sx in (-1, 1):                                                                       # chairs
+    P(box(0.4, 0.06, 0.4, (sx * 0.95, 2.55, -5.5), color="#6b4428", material=WOODM))
+    P(box(0.4, 0.5, 0.06, (sx * 1.13, 2.82, -5.5), (0, 90, 0), "#6b4428", material=WOODM))
+    for k in range(4): P(cyl(0.025, 0.025, 0.45, 5, (sx * 0.95 + (k % 2 - 0.5) * 0.3, 2.1, -5.5 + (k // 2 - 0.5) * 0.3), color="#4a2e1a"))
+P(box(1.5, 0.9, 0.35, (-1.35, 2.55, -4.5), (0, 90, 0), "#5a3920", material=WOODM))      # bookshelf
+for k in range(10):
+    P(box(0.06, 0.24, 0.18, (-1.25, 2.4 + (k // 5) * 0.4, -5.1 + (k % 5) * 0.28), color=["#8a3a2a", "#2c5aa0", "#3f8f3a", "#c99b3a", "#6b2e6a"][k % 5]))
+P(box(0.7, 0.36, 0.45, (1.45, 2.28, -6.0), color="#7a4a24", material=WOODM))           # sea chest
+P(box(0.72, 0.06, 0.47, (1.45, 2.48, -6.0), color="#c99b3a", material=GOLDM))
+for k in range(9): P(ball(0.05, (1.25 + (k % 3) * 0.1, 2.5, -6.1 + (k // 3) * 0.1), color="#f1c84b", sub=1, material=GOLDM))
+P(box(0.8, 0.08, 1.6, (1.45, 2.4, -4.9), color="#7a5233", material=WOODM))             # bunk
+P(box(0.72, 0.1, 1.5, (1.45, 2.48, -4.9), color="#a33a2a"))
+P(box(0.5, 0.08, 0.3, (1.45, 2.55, -5.5), color="#efe6cf"))
+P(box(0.9, 0.012, 0.9, (0, 2.11, -5.5), color="#7a2e2a"))                               # rug
+P(box(0.16, 0.24, 0.16, (0, 3.3, -5.5), color="#ffcf6a", material=GLOW))               # hanging lantern
+P(beam((0, 3.42, -5.5), (0, 3.5, -5.5), 0.01, 4, "#2b2b30"))
+
+# ---------- cargo hold (floor 0.7) ----------
+def hull_hw(z, y):
+    w, b = W(z), BOT(z)
+    if y >= 2.0: return w * (1 - 0.015 * (y - 2.0))
+    t = max(0.0, min(1.0, (y - b) / max(0.05, 2.0 - b)))
+    return w * (1 - (1 - t) ** 2.4) ** 0.55
+lz = [-4.3 + i * 0.47 for i in range(13)]
+for sx in (-1, 1):
+    vs, fs = [], []
+    ys = [0.6, 1.0, 1.4, 1.75, 2.09]
+    for z in lz:
+        for y in ys: vs.append((sx * (hull_hw(z, y) * 0.93 - 0.12), y, z))
+    n = len(ys)
+    for i in range(len(lz) - 1):
+        for j in range(n - 1):
+            a0 = i * n + j
+            fs.append([a0, a0 + 1, a0 + n + 1, a0 + n] if sx > 0 else [a0, a0 + n, a0 + n + 1, a0 + 1])
+    P(poly(vs, fs, "lining", lambda c, nn: ["#7a5233", "#6b4428", "#84593a"][int((c.y - 0.6) / 0.35) % 3], 0.05, WOODM))
+for z in (-4.3, 1.4):
+    P(box(3.4, 1.4, 0.08, (0, 1.38, z), color="#6b4428", material=WOODM))
+
+for (x, z) in ((-1.1, -3.6), (-1.25, -3.0), (1.15, -3.5), (1.2, 0.6), (-1.15, 0.9)):
+    P(cyl(0.22, 0.22, 0.48, 10, (x, 0.7, z), color="#8a5a30"))
+    for yy in (0.78, 1.06): P(cyl(0.23, 0.23, 0.04, 10, (x, yy, z), color="#3b3b40"))
+for (x, z, y) in ((1.0, -2.6, 0.7), (1.05, -2.1, 0.7), (1.0, -2.35, 1.08), (-1.0, 0.0, 0.7)):
+    P(box(0.4, 0.38, 0.4, (x, y + 0.19, z), (0, 12, 0), "#a77a4c", material=WOODM))
+for k in range(4): P(ball(0.18, (-1.1 + (k % 2) * 0.3, 0.86, -1.7 + (k // 2) * 0.35), (1, 0.75, 1), "#c9b38a", sub=2))   # sacks
+# the treasure pile at the bow end of the hold
+for k in range(40):
+    a = k * 2.4; r = 0.05 + (k % 9) * 0.04
+    P(ball(0.05, (math.cos(a) * r * 1.4, 0.72 + max(0, 0.32 - r) * 0.9, 1.05 + math.sin(a) * r), color="#f1c84b", sub=1, material=GOLDM))
+P(box(0.55, 0.32, 0.38, (0.3, 0.86, 1.25), (0, -20, 0), "#7a4a24", material=WOODM)); P(box(0.57, 0.05, 0.4, (0.3, 1.04, 1.25), (0, -20, 0), "#c99b3a", material=GOLDM))
+for k in range(3): P(beam((-1.5, 1.85, -3.2 + k * 1.3), (1.5, 1.7, -2.8 + k * 1.3), 0.012, 4, "#b39b72"))   # hammock ropes
+P(box(0.14, 0.2, 0.14, (0, 1.75, -0.8), color="#ffcf6a", material=GLOW))
+P(box(0.14, 0.2, 0.14, (0, 1.75, -3.6), color="#ffcf6a", material=GLOW))
 
 # ---------- masts, yards, sails ----------
 MASTS = [  # z, base y, top y, yards [(y, half width)]
@@ -249,6 +325,10 @@ for i in range(10):
 for i in range(8):
     a = i / 8 * math.tau
     ring.append(beam((0, WY, WZ), (math.cos(a) * 0.28, WY + math.sin(a) * 0.28, WZ), 0.016, 4, "#6b4428"))
+ring.append(cyl(0.05, 0.05, 0.06, 10, (0, WY, WZ - 0.03), color="#d6a640", axis="z", material=METAL))
+for i in range(8):
+    a = i / 8 * math.tau
+    ring.append(ball(0.022, (math.cos(a) * 0.3, WY + math.sin(a) * 0.3, WZ), color="#6b4428", sub=1))
 P(join(ring, "wheel"))
 
 # stern: windows, lanterns, carvings
@@ -267,6 +347,11 @@ P(ball(0.2, (0, 3.45, 6.5), (0.8, 0.8, 1.2), "#3f9b5c", sub=1))
 P(cyl(0.12, 0.03, 0.3, 6, (0, 3.42, 6.68), (90, 0, 0), "#3f9b5c"))
 for sx in (-1, 1):
     P(ball(0.04, (sx * 0.1, 3.55, 6.6), color="#ffd27a", sub=0))
+# rope coils
+for (x, y, z) in ((1.5, 2.1, -0.2), (-0.5, 3.5, -6.0), (-1.4, 2.8, 2.6)):
+    for k in range(3):
+        P(cyl(0.2 - k * 0.04, 0.2 - k * 0.04, 0.03, 12, (x, y + k * 0.028, z), color="#c2a476", caps=False))
+    P(cyl(0.08, 0.08, 0.03, 10, (x, y, z), color="#7a6040"))
 # barrels lashed by the main mast
 for (x, z) in ((-0.55, 0.45), (0.55, 0.45)):
     P(cyl(0.2, 0.2, 0.42, 8, (x, 2.1, z), color="#8a5a30"))

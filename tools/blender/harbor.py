@@ -45,7 +45,7 @@ def stall(name, colors, goods, sign=None):
 
 def g_silas(W_):
     p = []
-    GOLD = mat("gold", 0.35, 0.7)
+    GOLD = mat("gold", 0.42, 0.3)
     # treasure chest, maps, bottles, a globe
     p.append(box(0.6, 0.35, 0.4, (-1.1, 1.26, 0.5), color="#7a4a24", material=W_)); p.append(box(0.62, 0.06, 0.42, (-1.1, 1.45, 0.5), color="#c99b3a", material=GOLD))
     for i in range(5): p.append(ball(0.06, (-1.25 + i * 0.07, 1.47, 0.5), color="#f1c84b", sub=0, material=GOLD))
@@ -239,7 +239,7 @@ def props():
     save("rowboat", hull)
     reset(); W_ = M()
     save("bollard", [cyl(0.25, 0.3, 0.7, 8, (0, 0, 0), color="#3b3b40"), cyl(0.33, 0.33, 0.1, 8, (0, 0.62, 0), color="#2b2b30"), cyl(0.27, 0.27, 0.12, 8, (0, 0.35, 0), color="#c7b48a")])
-    reset(); W_ = M(); GOLD = mat("gold", 0.35, 0.7)
+    reset(); W_ = M(); GOLD = mat("gold", 0.42, 0.3)
     p = [box(0.9, 0.5, 0.6, (0, 0.25, 0), color="#7a4a24", material=W_), box(0.92, 0.22, 0.62, (0, 0.6, 0), color="#6b3e1e", material=W_)]
     for x in (-0.3, 0.3): p.append(box(0.08, 0.74, 0.64, (x, 0.37, 0), color="#c99b3a", material=GOLD))
     p.append(box(0.14, 0.16, 0.05, (0, 0.5, 0.32), color="#e2b04a", material=GOLD))

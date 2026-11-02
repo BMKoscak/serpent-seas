@@ -785,9 +785,20 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 .w3d.talking .w3d-stick, .w3d.talking .w3d-tbtns { display: none; }
 .w3d.touch .w3d-prompt { top: calc(50% + 40px); }
 @media (max-width: 560px) { .w3d-dlg p { font-size: 15px; } .w3d-sail { max-width: calc(100% - 24px); top: 60px; } }
+.w3d-hunt { font-weight: 700; color: #f6e7c4; background: rgba(20,14,6,.6); border-radius: 999px; padding: 6px 12px; font-size: 14px; margin-left: auto; margin-right: 8px; }
+.w3d-mini { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(460px, calc(100% - 24px)); background: rgba(246,231,196,.96); color: #2b1d0e; border: 3px solid #6b4a22; border-radius: 14px; padding: 10px 14px; text-align: center; }
+.w3d-mini p { margin: 2px 0 10px; font-size: 17px; font-weight: 700; }
+.w3d-mini .w3d-opts { justify-content: center; }
+.w3d.in-mode .w3d-stick, .w3d.in-mode .w3d-tbtns, .w3d.in-mode .w3d-help { display: none; }
+.w3d-fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.w3d-fade.on { opacity: 1; }
+.w3d-code { background: #1b1408; color: #f6e7c4; border-radius: 8px; padding: 8px 10px; margin: 8px 0 0; font: 14px/1.45 ui-monospace, "JetBrains Mono", monospace; white-space: pre; overflow-x: auto; }
+@media (max-width: 560px) { .w3d-hunt { font-size: 12px; padding: 5px 9px; } }
 body.in-world #pip-mate, body.in-world .topbar { display: none; }
 .harbor-2d { max-width: 640px; margin: 40px auto; padding: 0 16px; display: grid; gap: 14px; }
 .modal.shop { width: min(760px, 100%); }
+.modal.shop > * { flex-shrink: 0; }
+.shop-tabs { position: sticky; top: -26px; z-index: 2; background: var(--panel); padding: 6px 0; }
 .shop-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .shop-head h2 { margin: 0; }
 .shop-tabs { flex-wrap: wrap; }
@@ -833,6 +844,16 @@ body.in-world #pip-mate, body.in-world .topbar { display: none; }
 .sp-code[data-cmtheme="parchment"] .cm-keyword { color: #a3361f; } .sp-code[data-cmtheme="parchment"] .cm-builtin { color: #1f5f8b; } .sp-code[data-cmtheme="parchment"] .cm-string { color: #3f7a2a; } .sp-code[data-cmtheme="parchment"] .cm-number { color: #a35f00; } .sp-code[data-cmtheme="parchment"] .cm-def { color: #7a3e12; }
 .sp-code[data-cmtheme="deep"] .cm-keyword { color: #e88c6a; } .sp-code[data-cmtheme="deep"] .cm-builtin { color: #7fc6e6; } .sp-code[data-cmtheme="deep"] .cm-string { color: #a9d38a; } .sp-code[data-cmtheme="deep"] .cm-number { color: #f0c36b; } .sp-code[data-cmtheme="deep"] .cm-def { color: #f5cb7a; } .sp-code .cm-variable-2 { color: inherit; }
 .sp-code[data-cmtheme="reef"] { color: #dff; } .sp-code[data-cmtheme="kraken"] { color: #eee; }
+
+.edfx-layer { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+.cm-host { position: relative; }
+.edbg-cv { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; display: block; }
+.edbg .CodeMirror { position: relative; z-index: 1; background: rgba(4, 10, 14, .32) !important; }
+.edbg .CodeMirror-gutters { background: rgba(4, 10, 14, .45) !important; }
+@keyframes edfxshake { 0%,100% { transform: translate(0,0); } 20% { transform: translate(-6px,3px); } 40% { transform: translate(5px,-4px); } 60% { transform: translate(-4px,2px); } 80% { transform: translate(3px,-1px); } }
+.edfx-shake { animation: edfxshake .35s ease-out; }
+.si-act .try { font-size: 13px; }
+.sp-fx { width: 64px; height: 64px; border-radius: 12px; display: grid; place-items: center; background: var(--code-bg); border: 1px solid var(--line); }
 </style>
 
 <header class="topbar" id="topbar"></header>
@@ -848,8 +869,8 @@ body.in-world #pip-mate, body.in-world .topbar { display: none; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/comment/comment.min.js"></script>
 <script type="importmap">{ "imports": { "three": "./lib/three.module.min.js" } }</script>
-<script type="module" src="sea3d.js?v=4"></script>
-<script src="audio.js?v=4"></script>
+<script type="module" src="sea3d.js?v=5"></script>
+<script src="audio.js?v=5"></script>
 <script src="islands/c2.js"></script>
 <script src="islands/c3.js"></script>
 <script src="islands/c4.js"></script>
@@ -874,7 +895,7 @@ const CH = CUR.chapters;
 const T = {
   en: {
     map: "Sea Chart", workshop: "Workshop", log: "Captain's Log", settings: "Settings",
-    harbor: "Harbor", shopH: "Old Silas's Wares", equipL: "Equip", equippedL: "Equipped", removeL: "Remove",
+    tryL: "Try", harbor: "Harbor", shopH: "Old Silas's Wares", equipL: "Equip", equippedL: "Equipped", removeL: "Remove",
     shopHelpNote: (a, b) => `You have ${a} hint token${a === 1 ? "" : "s"} and ${b} solution scroll${b === 1 ? "" : "s"}. They're used automatically when you open a hint or the solution.`,
     harborOff: "The 3D harbor is switched off in Sound & display settings. You can still shop here.", harborNoGL: "Your browser can't show the 3D harbor, but Old Silas will still trade with you.", turnOn3d: "Turn on 3D",
     tokenHint: (n) => `Use a hint token (${n} left)`, scrollPeek: (n) => `Use a solution scroll (${n} left), no doubloons lost`,
@@ -925,7 +946,7 @@ const T = {
   },
   sl: {
     map: "Pomorska karta", workshop: "Delavnica", log: "Kapitanov dnevnik", settings: "Nastavitve",
-    harbor: "Pristan", shopH: "Blago starega Silasa", equipL: "Nadeni", equippedL: "Nadeto", removeL: "Odstrani",
+    tryL: "Preizkusi", harbor: "Pristan", shopH: "Blago starega Silasa", equipL: "Nadeni", equippedL: "Nadeto", removeL: "Odstrani",
     shopHelpNote: (a, b) => `Imaš ${a} žetonov za namig in ${b} zvitkov z rešitvijo. Porabijo se samodejno, ko odpreš namig ali rešitev.`,
     harborOff: "3D pristan je izklopljen v nastavitvah zvoka in prikaza. Tukaj lahko še vedno nakupuješ.", harborNoGL: "Tvoj brskalnik ne zmore 3D pristana, stari Silas pa bo vseeno trgoval s tabo.", turnOn3d: "Vklopi 3D",
     tokenHint: (n) => `Porabi žeton za namig (še ${n})`, scrollPeek: (n) => `Porabi zvitek z rešitvijo (še ${n}), brez izgube dublonov`,
@@ -1525,6 +1546,8 @@ function makeEditor(host, value, { readOnly = false, onRun, onCheck, onChange } 
       },
     });
     if (readOnly) host.classList.add("readonly");
+    host.classList.add("cm-host");
+    if (!readOnly) { try { EdFX.attach(cm, host); } catch (e) { console.warn(e); } }
     let marked = null;
     cm.on("change", () => { if (marked != null) { cm.removeLineClass(marked, "background", "cm-errline"); marked = null; } onChange && onChange(cm.getValue()); });
     return {
@@ -1593,7 +1616,7 @@ function interpreter(host, opts) {
   api.unlockRun = () => { api.locked = false; paint(); };
   api.run = async () => {
     if (api.locked || Py.state !== "ready" || Py.pending) return;
-    Sound.play("whoosh");
+    Sound.play("whoosh"); EdFX.run(host.querySelector("[data-run]") || host);
     const res = await Py.exec({ mode: "run", code: ed.get(), stdin: api.stdinLines(), setup: opts.setup || "" });
     if (res.busy) return;
     S.ran++; save(); if (S.ran === 1) award("first_run");
@@ -2006,6 +2029,7 @@ async function runCheck(s, k) {
   if (ok) {
     const first = !S.done[k];
     resEl.innerHTML = passHtml(s, true);
+    EdFX.pass($("[data-check]") || resEl);
     Sound.play("chest"); setTimeout(() => Sound.play("success"), 250);
     const clean = first && !LS.fails && !S.hints[k] && !S.peek[k];
     LS.fails = 0;
@@ -2240,6 +2264,170 @@ function openSettings() {
 }
 
 
+
+/* ================= editor effects (bought from Old Silas) ================= */
+const EdFX = (() => {
+  let cv = null, cx = null, parts = [], raf = 0, last = 0;
+  const motion = () => motionOK();
+  function ensure() {
+    if (cv && cv.isConnected) return;
+    cv = document.createElement("canvas"); cv.className = "edfx-layer"; document.body.appendChild(cv);
+    cx = cv.getContext("2d"); size();
+  }
+  function size() { if (!cv) return; const d = Math.min(2, window.devicePixelRatio || 1); cv.width = innerWidth * d; cv.height = innerHeight * d; cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px"; cx.setTransform(d, 0, 0, d, 0, 0); }
+  window.addEventListener("resize", size);
+  function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+  function loop(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    cx.clearRect(0, 0, innerWidth, innerHeight);
+    for (let i = parts.length - 1; i >= 0; i--) {
+      const p = parts[i]; p.t += dt;
+      if (p.t >= p.life) { parts.splice(i, 1); continue; }
+      p.vy += (p.g || 0) * dt; p.x += p.vx * dt; p.y += p.vy * dt; if (p.drag) { p.vx *= 1 - p.drag * dt; p.vy *= 1 - p.drag * dt; }
+      const k = p.t / p.life; cx.save(); cx.globalAlpha = (p.a ?? 1) * (p.fade === false ? 1 : 1 - k * k);
+      DRAW[p.kind](p, k); cx.restore();
+    }
+    raf = parts.length ? requestAnimationFrame(loop) : 0;
+    if (!raf) cx.clearRect(0, 0, innerWidth, innerHeight);
+  }
+  const R = (a, b) => a + Math.random() * (b - a);
+  const DRAW = {
+    spark(p, k) { cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.r * (1 - k * 0.6), 0, 7); cx.fill(); cx.globalAlpha *= 0.4; cx.beginPath(); cx.arc(p.x, p.y, p.r * 2.6 * (1 - k), 0, 7); cx.fill(); },
+    bubble(p, k) { const w = Math.sin(p.t * 9 + p.s) * 3; cx.strokeStyle = "rgba(170,225,255,.95)"; cx.lineWidth = 1.4; cx.beginPath(); cx.arc(p.x + w, p.y, p.r, 0, 7); cx.stroke(); cx.fillStyle = "rgba(255,255,255,.8)"; cx.beginPath(); cx.arc(p.x + w - p.r * 0.35, p.y - p.r * 0.35, p.r * 0.25, 0, 7); cx.fill(); },
+    coin(p, k) { const sx = Math.abs(Math.cos(p.t * 10 + p.s)); cx.translate(p.x, p.y); cx.scale(Math.max(0.15, sx), 1); cx.fillStyle = "#e2a948"; cx.beginPath(); cx.arc(0, 0, p.r, 0, 7); cx.fill(); cx.strokeStyle = "#9c6d1f"; cx.lineWidth = 1.2; cx.stroke(); cx.fillStyle = "#f8d47a"; cx.beginPath(); cx.arc(-p.r * 0.25, -p.r * 0.25, p.r * 0.35, 0, 7); cx.fill(); },
+    ink(p, k) { const r = p.r * (0.6 + Math.min(1, k * 4) * 0.8); cx.fillStyle = p.c; cx.beginPath(); for (let i = 0; i < 9; i++) { const a = (i / 9) * 6.283, rr = r * (0.75 + 0.35 * Math.sin(i * 2.3 + p.s)); cx.lineTo(p.x + Math.cos(a) * rr, p.y + Math.sin(a) * rr); } cx.closePath(); cx.fill(); },
+    trail(p, k) { cx.fillStyle = p.c; cx.shadowColor = p.c; cx.shadowBlur = 10; cx.beginPath(); cx.arc(p.x, p.y, p.r * (1 - k), 0, 7); cx.fill(); },
+    star(p, k) { cx.translate(p.x, p.y); cx.rotate(p.t * 4 + p.s); cx.fillStyle = p.c; cx.beginPath(); for (let i = 0; i < 10; i++) { const rr = i % 2 ? p.r * 0.4 : p.r; const a = (i / 10) * 6.283; cx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } cx.closePath(); cx.fill(); },
+    smoke(p, k) { const r = p.r * (0.5 + k * 1.6); const g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r); g.addColorStop(0, "rgba(220,214,200,.85)"); g.addColorStop(1, "rgba(220,214,200,0)"); cx.fillStyle = g; cx.beginPath(); cx.arc(p.x, p.y, r, 0, 7); cx.fill(); },
+    flash(p, k) { const g = cx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r); g.addColorStop(0, "rgba(255,240,180,1)"); g.addColorStop(0.4, "rgba(255,170,60,.8)"); g.addColorStop(1, "rgba(255,120,30,0)"); cx.fillStyle = g; cx.beginPath(); cx.arc(p.x, p.y, p.r * (0.6 + k), 0, 7); cx.fill(); },
+    rocket(p, k) { cx.fillStyle = "#ffe6a0"; cx.beginPath(); cx.arc(p.x, p.y, 2.5, 0, 7); cx.fill(); if (p.t > p.life - 0.03 && !p.done) { p.done = 1; burst(p.x, p.y, p.c); } },
+    tentacle(p, k) {
+      const rise = Math.sin(Math.min(1, k * 2.2) * Math.PI / 2) * (k > 0.7 ? 1 - (k - 0.7) / 0.3 : 1);
+      const h = p.h * rise; cx.strokeStyle = "#7b3f8f"; cx.lineCap = "round";
+      for (let s = 0; s < 14; s++) {
+        const u = s / 14, u2 = (s + 1) / 14;
+        const x1 = p.x + Math.sin(u * 4 + p.t * 3 + p.s) * 26 * u, y1 = p.base - h * u;
+        const x2 = p.x + Math.sin(u2 * 4 + p.t * 3 + p.s) * 26 * u2, y2 = p.base - h * u2;
+        cx.lineWidth = p.w * (1 - u * 0.85); cx.beginPath(); cx.moveTo(x1, y1); cx.lineTo(x2, y2); cx.stroke();
+        if (s % 3 === 1) { cx.fillStyle = "#e7b6ef"; cx.beginPath(); cx.arc(x1 + p.w * 0.25 * (1 - u), y1, p.w * 0.16 * (1 - u * 0.7), 0, 7); cx.fill(); }
+      }
+    },
+    drop(p, k) { cx.fillStyle = "rgba(120,200,255,.9)"; cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 7); cx.fill(); },
+  };
+  function add(o) { if (!motion()) return; ensure(); parts.push(Object.assign({ t: 0, s: Math.random() * 6 }, o)); if (parts.length > 500) parts.splice(0, parts.length - 500); kick(); }
+  function burst(x, y, c) { for (let i = 0; i < 46; i++) { const a = R(0, 6.283), v = R(80, 260); add({ kind: Math.random() < 0.25 ? "star" : "spark", x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 120, drag: 1.2, r: R(2, 4), c: Math.random() < 0.7 ? c : "#fff3c4", life: R(0.9, 1.5) }); } }
+  const TYPE = {
+    sparks(x, y) { for (let i = 0; i < 6; i++) add({ kind: "spark", x, y, vx: R(-70, 70), vy: R(-170, -60), g: 420, r: R(1.4, 2.6), c: ["#ffd36b", "#ff9a4a", "#fff1b8"][i % 3], life: R(0.35, 0.6) }); },
+    bubbles(x, y) { for (let i = 0; i < 2; i++) add({ kind: "bubble", x: x + R(-4, 4), y, vx: R(-8, 8), vy: R(-80, -40), r: R(3, 6), life: R(0.8, 1.3) }); },
+    coins(x, y) { add({ kind: "coin", x, y, vx: R(-60, 60), vy: R(-220, -140), g: 700, r: R(4, 5.5), life: 0.9 }); },
+    ink(x, y) { add({ kind: "ink", x: x + R(-6, 6), y: y + R(-4, 6), vx: 0, vy: 0, r: R(3, 6), c: Math.random() < 0.5 ? "rgba(20,30,60,.85)" : "rgba(60,20,70,.8)", life: 0.9 }); },
+  };
+  const TRAIL = {
+    glow(x, y) { add({ kind: "trail", x: x + R(-1, 1), y: y + R(-2, 2), vx: 0, vy: R(-8, 8), r: 3.2, c: "rgba(255,210,110,.9)", life: 0.55 }); },
+    stardust(x, y) { add({ kind: "star", x: x + R(-3, 3), y: y + R(-3, 3), vx: R(-15, 15), vy: R(5, 30), r: R(2.5, 4.5), c: ["#9fe8ff", "#ffd1f2", "#fff2a8"][Math.floor(R(0, 3))], life: 0.8 }); },
+  };
+  function caret(cm) { const c = cm.cursorCoords(null, "window"); return { x: c.left, y: (c.top + c.bottom) / 2 }; }
+  function attach(cm, host) {
+    const e = () => S.equip || {};
+    cm.on("inputRead", (c, ch) => {
+      const p = caret(c), t = e().typefx; t && TYPE[t] && TYPE[t](p.x, p.y);
+      const txt = (ch.text || []).join("\n");
+      e().sound && Sound.pack && Sound.pack(e().sound, /\n/.test(txt) || ch.text.length > 1 ? "enter" : "key");
+    });
+    cm.on("keydown", (c, ev) => { if (ev.key === "Enter" && e().sound) Sound.pack && Sound.pack(e().sound, "enter"); if (ev.key === "Backspace" && e().sound) Sound.pack && Sound.pack(e().sound, "key"); });
+    let lx = -1, ly = -1;
+    cm.on("cursorActivity", (c) => { const tr = e().trail; if (!tr || !TRAIL[tr] || !c.hasFocus()) return; const p = caret(c); const d = Math.hypot(p.x - lx, p.y - ly); const n = Math.min(10, Math.max(1, Math.round(d / 9))); for (let i = 0; i < n; i++) { const k = (i + 1) / n; TRAIL[tr](lx < 0 ? p.x : lx + (p.x - lx) * k, ly < 0 ? p.y : ly + (p.y - ly) * k); } lx = p.x; ly = p.y; });
+    background(host);
+  }
+  function rectOf(el) { const r = (el || document.body).getBoundingClientRect(); return r; }
+  const PASS = {
+    cannon(el, big) {
+      const r = rectOf(el); const x = r.left + r.width * 0.5, y = r.top + r.height * 0.5;
+      add({ kind: "flash", x, y, vx: 0, vy: 0, r: big ? 120 : 60, life: 0.25 });
+      for (let i = 0; i < (big ? 18 : 8); i++) add({ kind: "smoke", x: x + R(-10, 10), y: y + R(-10, 10), vx: R(-90, 90), vy: R(-110, -10), drag: 1.6, r: R(14, 28) * (big ? 1.4 : 1), life: R(0.9, 1.6) });
+      for (let i = 0; i < (big ? 24 : 10); i++) { const a = R(0, 6.283), v = R(120, 340); add({ kind: "spark", x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, g: 300, drag: 1.5, r: R(1.4, 2.6), c: "#ffb34a", life: R(0.3, 0.6) }); }
+      const box = el && el.closest(".interp"); if (box && motion()) { box.classList.remove("edfx-shake"); void box.offsetWidth; box.classList.add("edfx-shake"); }
+      Sound.cannonBoom && Sound.cannonBoom();
+    },
+    fireworks(el, big) {
+      const n = big ? 6 : 2;
+      for (let i = 0; i < n; i++) setTimeout(() => add({ kind: "rocket", x: R(innerWidth * 0.15, innerWidth * 0.85), y: innerHeight + 5, vx: R(-40, 40), vy: R(-760, -560), g: 520, r: 2, c: ["#ef6b54", "#63c28f", "#7fc6e6", "#f5cb7a", "#c3b7ee"][i % 5], life: R(0.75, 1.0), fade: false }), i * 220);
+      big && Sound.play && Sound.play("sparkle");
+    },
+    kraken(el, big) {
+      const r = rectOf(el && (el.closest(".interp") || el)); const base = r.bottom + 10;
+      const n = big ? 5 : 2;
+      for (let i = 0; i < n; i++) add({ kind: "tentacle", x: r.left + r.width * ((i + 0.5) / n) + R(-20, 20), base, h: R(120, 220) * (big ? 1.2 : 0.7), w: R(16, 24), vx: 0, vy: 0, life: big ? 2.4 : 1.6, fade: false });
+      for (let i = 0; i < (big ? 40 : 14); i++) add({ kind: "drop", x: R(r.left, r.right), y: base - 4, vx: R(-60, 60), vy: R(-380, -160), g: 900, r: R(2, 4), life: R(0.6, 1.1) });
+      Sound.play && Sound.play("splash");
+    },
+  };
+  function run(el) { const f = (S.equip || {}).passfx; f && PASS[f] && PASS[f](el, false); const s = (S.equip || {}).sound; s && Sound.pack && Sound.pack(s, "run"); }
+  function pass(el) { const f = (S.equip || {}).passfx; f && PASS[f] && PASS[f](el, true); const s = (S.equip || {}).sound; s && Sound.pack && Sound.pack(s, "pass"); }
+  // ---- animated backgrounds behind the code ----
+  const BG = {
+    night(g, w, h, t) {
+      const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#07142a"); gr.addColorStop(1, "#0c2a3e"); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+      for (let i = 0; i < 60; i++) { const x = (i * 97.3) % w, y = (i * 53.7) % (h * 0.65); g.globalAlpha = 0.25 + 0.35 * Math.abs(Math.sin(t * 1.3 + i)); g.fillStyle = "#fff"; g.fillRect(x, y, 1.5, 1.5); }
+      g.globalAlpha = 0.22; g.fillStyle = "#fff6d6"; g.beginPath(); g.arc(w * 0.82, h * 0.2, 22, 0, 7); g.fill();
+      for (let k = 0; k < 3; k++) { g.globalAlpha = 0.14 + k * 0.05; g.fillStyle = "#1e4f6a"; g.beginPath(); g.moveTo(0, h); for (let x = 0; x <= w; x += 12) g.lineTo(x, h * (0.78 + k * 0.07) + Math.sin(x * 0.02 + t * (0.6 + k * 0.3) + k) * 6); g.lineTo(w, h); g.fill(); }
+      g.globalAlpha = 1;
+    },
+    map(g, w, h, t) {
+      g.fillStyle = "#1c140b"; g.fillRect(0, 0, w, h);
+      g.globalAlpha = 0.12; g.strokeStyle = "#e2c48a"; g.lineWidth = 1;
+      for (let x = 0; x < w; x += 46) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, h); g.stroke(); }
+      for (let y = 0; y < h; y += 46) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+      g.globalAlpha = 0.28; g.setLineDash([6, 8]); g.lineDashOffset = -t * 14; g.strokeStyle = "#ef6b54"; g.lineWidth = 2.5;
+      g.beginPath(); g.moveTo(w * 0.1, h * 0.85); g.bezierCurveTo(w * 0.3, h * 0.3, w * 0.55, h * 0.95, w * 0.85, h * 0.25); g.stroke(); g.setLineDash([]);
+      g.globalAlpha = 0.35; g.lineWidth = 4; const X = w * 0.85, Y = h * 0.25; g.beginPath(); g.moveTo(X - 10, Y - 10); g.lineTo(X + 10, Y + 10); g.moveTo(X + 10, Y - 10); g.lineTo(X - 10, Y + 10); g.stroke();
+      g.globalAlpha = 0.16; g.strokeStyle = "#e2c48a"; g.lineWidth = 2; g.beginPath(); g.arc(w * 0.12, h * 0.2, 34, 0, 7); g.stroke();
+      for (let i = 0; i < 8; i++) { const a = i / 8 * 6.283 + t * 0.1; g.beginPath(); g.moveTo(w * 0.12, h * 0.2); g.lineTo(w * 0.12 + Math.cos(a) * 30, h * 0.2 + Math.sin(a) * 30); g.stroke(); }
+      g.globalAlpha = 1;
+    },
+    storm(g, w, h, t) {
+      g.fillStyle = "#0b1218"; g.fillRect(0, 0, w, h);
+      const fl = (Math.sin(t * 0.7) > 0.985 || Math.sin(t * 1.9 + 1) > 0.993) ? 0.18 : 0;
+      if (fl) { g.fillStyle = `rgba(200,220,255,${fl})`; g.fillRect(0, 0, w, h); }
+      g.strokeStyle = "rgba(150,180,210,.18)"; g.lineWidth = 1;
+      for (let i = 0; i < 70; i++) { const x = ((i * 71.3 + t * 260) % (w + 60)) - 30, y = ((i * 37.1 + t * 620) % (h + 40)) - 20; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 6, y + 16); g.stroke(); }
+      g.globalAlpha = 0.18; g.fillStyle = "#1a2a36"; g.beginPath(); g.moveTo(0, h); for (let x = 0; x <= w; x += 10) g.lineTo(x, h * 0.86 + Math.sin(x * 0.03 + t * 1.6) * 9); g.lineTo(w, h); g.fill(); g.globalAlpha = 1;
+    },
+  };
+  const bgs = new Set(); let bgRaf = 0, bgLast = 0;
+  function background(host) {
+    const kind = (S.equip || {}).edbg;
+    host.classList.toggle("edbg", !!kind);
+    let c = host.querySelector(":scope > canvas.edbg-cv");
+    if (!kind) { c && c.remove(); return; }
+    if (!c) { c = document.createElement("canvas"); c.className = "edbg-cv"; host.prepend(c); }
+    c.dataset.kind = kind; bgs.add(c);
+    if (!bgRaf) bgRaf = requestAnimationFrame(bgLoop);
+  }
+  function bgLoop(now) {
+    bgRaf = 0;
+    if (now - bgLast > 33) {
+      bgLast = now;
+      for (const c of [...bgs]) {
+        if (!c.isConnected) { bgs.delete(c); continue; }
+        const w = c.clientWidth, h = c.clientHeight; if (!w || !h) continue;
+        if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+        const g = c.getContext("2d"); BG[c.dataset.kind] && BG[c.dataset.kind](g, w, h, motion() ? now / 1000 : 0);
+      }
+    }
+    if (bgs.size) bgRaf = requestAnimationFrame(bgLoop);
+  }
+  function refresh() { document.querySelectorAll(".cm-host, [data-editor]").forEach((h) => background(h)); }
+  function demo(kind, val, el) {
+    const r = rectOf(el), x = r.left + r.width / 2, y = r.top;
+    if (kind === "typefx") for (let i = 0; i < 6; i++) setTimeout(() => TYPE[val](x + R(-30, 30), y), i * 70);
+    else if (kind === "trail") for (let i = 0; i < 24; i++) setTimeout(() => TRAIL[val](x - 60 + i * 5, y + Math.sin(i / 3) * 8), i * 16);
+    else if (kind === "passfx") PASS[val](el, true);
+    else if (kind === "sound") { Sound.pack(val, "key"); setTimeout(() => Sound.pack(val, "key"), 120); setTimeout(() => Sound.pack(val, "key"), 240); setTimeout(() => Sound.pack(val, "pass"), 450); }
+  }
+  return { attach, run, pass, refresh, demo, background };
+})();
+
 /* ================= shop & cosmetics ================= */
 const wallet = () => Math.max(0, S.coins - (S.spent || 0));
 const SHOP = [
@@ -2269,11 +2457,27 @@ const SHOP = [
   { id: "flag-red", cat: "ship", kind: "flag", val: "#c0392b", price: 60, name: ["Red Flag", "Rdeča zastava"], desc: ["No quarter given.", "Brez milosti."] },
   { id: "flag-green", cat: "ship", kind: "flag", val: "#2e8b57", price: 60, name: ["Serpent Green Flag", "Kačje zelena zastava"], desc: ["For Python pirates.", "Za Python pirate."] },
   { id: "flag-purple", cat: "ship", kind: "flag", val: "#6a3d9a", price: 80, name: ["Royal Purple Flag", "Vijolična zastava"], desc: ["Fancy.", "Imenitno."] },
+  // editor effects
+  { id: "type-sparks", cat: "fx", kind: "typefx", val: "sparks", price: 60, name: ["Spark Keys", "Iskrive tipke"], desc: ["Little sparks fly off every key you type.", "Iz vsake tipke odletijo iskrice."] },
+  { id: "type-bubbles", cat: "fx", kind: "typefx", val: "bubbles", price: 60, name: ["Sea Bubbles", "Morski mehurčki"], desc: ["Bubbles rise from your cursor as you type.", "Med tipkanjem se iz kazalca dvigajo mehurčki."] },
+  { id: "type-ink", cat: "fx", kind: "typefx", val: "ink", price: 70, name: ["Squid Ink", "Lignjevo črnilo"], desc: ["Inky splats where you write.", "Packe črnila, kjer pišeš."] },
+  { id: "type-coins", cat: "fx", kind: "typefx", val: "coins", price: 90, name: ["Coin Shower", "Dež kovancev"], desc: ["Every keystroke flips a doubloon.", "Vsak pritisk vrže dublon."] },
+  { id: "trail-glow", cat: "fx", kind: "trail", val: "glow", price: 80, name: ["Lantern Trail", "Svetilkina sled"], desc: ["A warm glow follows your cursor.", "Kazalcu sledi topel sij."] },
+  { id: "trail-stardust", cat: "fx", kind: "trail", val: "stardust", price: 110, name: ["Stardust Trail", "Zvezdni prah"], desc: ["Twinkling stars trail behind the cursor.", "Za kazalcem migljajo zvezdice."] },
+  { id: "pass-cannon", cat: "fx", kind: "passfx", val: "cannon", price: 120, name: ["Cannon Salute", "Topovski pozdrav"], desc: ["Boom! Smoke and sparks when you run or pass.", "Bum! Dim in iskre ob zagonu ali uspehu."] },
+  { id: "pass-fireworks", cat: "fx", kind: "passfx", val: "fireworks", price: 150, name: ["Fireworks", "Ognjemet"], desc: ["Rockets burst across the screen when you pass.", "Ob uspehu čez zaslon pokajo rakete."] },
+  { id: "pass-kraken", cat: "fx", kind: "passfx", val: "kraken", price: 200, name: ["Kraken Splash", "Krakenov pljusk"], desc: ["Tentacles rise out of your editor. Splash!", "Iz urejevalnika se dvignejo lovke. Pljusk!"] },
+  { id: "bg-night", cat: "fx", kind: "edbg", val: "night", price: 140, name: ["Night Sea", "Nočno morje"], desc: ["Stars, a moon and gentle waves behind your code.", "Zvezde, luna in mehki valovi za tvojo kodo."] },
+  { id: "bg-map", cat: "fx", kind: "edbg", val: "map", price: 120, name: ["Treasure Map", "Zemljevid zaklada"], desc: ["A dotted trail leads to X behind your code.", "Za kodo pikčasta pot vodi do X."] },
+  { id: "bg-storm", cat: "fx", kind: "edbg", val: "storm", price: 160, name: ["Storm", "Nevihta"], desc: ["Rain and the odd flash of lightning.", "Dež in občasen blisk."] },
+  { id: "snd-typewriter", cat: "fx", kind: "sound", val: "typewriter", price: 70, name: ["Typewriter", "Pisalni stroj"], desc: ["Clacky keys and a ding on every new line.", "Klepetave tipke in zvonček ob novi vrstici."] },
+  { id: "snd-bell", cat: "fx", kind: "sound", val: "bell", price: 70, name: ["Ship's Bell", "Ladijski zvon"], desc: ["Soft wooden keys and bells when you pass.", "Mehke lesene tipke in zvonovi ob uspehu."] },
+  { id: "snd-drums", cat: "fx", kind: "sound", val: "drums", price: 90, name: ["Steel Drums", "Jekleni bobni"], desc: ["Every key plays a note. Code a tune!", "Vsaka tipka zaigra noto. Sprogramiraj melodijo!"] },
   // helpers (consumable)
   { id: "token", cat: "help", kind: "token", price: 30, name: ["Hint Token", "Žeton za namig"], desc: ["Open one hint without losing doubloons.", "Odpre en namig, ne da izgubiš dublone."] },
   { id: "scroll", cat: "help", kind: "scroll", price: 120, name: ["Solution Scroll", "Zvitek z rešitvijo"], desc: ["Peek at a solution and still keep the reward.", "Poglej rešitev in vseeno obdrži nagrado."] },
 ];
-const SHOP_CATS = [["editor", ["Editor", "Urejevalnik"]], ["pip", ["Pip", "Pip"]], ["ship", ["Ship", "Ladja"]], ["help", ["Helpers", "Pomočniki"]]];
+const SHOP_CATS = [["editor", ["Themes & fonts", "Teme in pisave"]], ["fx", ["Editor FX", "Učinki"]], ["pip", ["Pip", "Pip"]], ["ship", ["Ship", "Ladja"]], ["help", ["Helpers", "Pomočniki"]]];
 const FONT_URL = { "Courier Prime": "Courier+Prime", "Source Code Pro": "Source+Code+Pro:wght@400;600", "Fira Code": "Fira+Code:wght@400;600", "Space Mono": "Space+Mono" };
 const LN = (pair) => pair[S.lang === "sl" ? 1 : 0];
 const owns = (it) => it.price === 0 || (S.owned || []).includes(it.id);
@@ -2291,6 +2495,7 @@ function applyLook() {
   $$(".pip-gear-h").forEach((g) => (g.innerHTML = pipGear("h")));
   $$(".pip-gear-b").forEach((g) => (g.innerHTML = pipGear("b")));
   document.querySelectorAll(".CodeMirror").forEach((c) => c.CodeMirror && c.CodeMirror.refresh());
+  try { EdFX.refresh(); } catch (e) {}
 }
 function pipGear(part, eq) {
   const e = eq || S.equip || {};
@@ -2307,6 +2512,11 @@ function shopPreview(it) {
   if (it.kind === "font") { if (it.val && FONT_URL[it.val] && !document.getElementById("font-" + FONT_URL[it.val])) { const l = document.createElement("link"); l.rel = "stylesheet"; l.id = "font-" + FONT_URL[it.val]; l.href = "https://fonts.googleapis.com/css2?family=" + FONT_URL[it.val] + "&display=swap"; document.head.appendChild(l); } return `<div class="sp-font" style="font-family:${it.val ? `'${it.val}',` : ""}var(--f-mono)">print("Ahoy!")</div>`; }
   if (it.cat === "pip") { const eq = Object.assign({}, S.equip, { [it.kind]: it.val }); return `<div class="sp-pip">${pipArt(true, eq).replace("<svg", '<svg width="64" height="64"')}</div>`; }
   if (it.kind === "sail" || it.kind === "flag") return `<div class="sp-swatch">${it.kind === "sail" ? `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M32 6v50" stroke="#6b4a22" stroke-width="3"/><path d="M14 12h36c-3 10-3 22 0 32H14c3-10 3-22 0-32z" fill="${it.val}" stroke="rgba(0,0,0,.35)"/><path d="M8 54h48l-6 6H14z" fill="#8f5a2e"/></svg>` : `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M16 6v54" stroke="#6b4a22" stroke-width="3"/><path d="M18 8h34l-6 10 6 10H18z" fill="${it.val}"/><circle cx="32" cy="18" r="4" fill="#f2efe4"/></svg>`}</div>`;
+  if (it.cat === "fx") {
+    const icon = { typefx: "M8 40h48M14 30l6-14M30 26l2-14M46 30l-4-14", trail: "M8 44c10-20 26 6 48-24", passfx: "M10 46l14-8 8 4 20-20M40 18l12-4-4 12", edbg: "M8 44c8-6 16 6 24 0s16 6 24 0M14 16h.1M30 12h.1M48 20h.1", sound: "M18 26v12h8l12 10V16L26 26zM46 24c4 4 4 12 0 16" }[it.kind];
+    const col = { typefx: "#ffd36b", trail: "#f5cb7a", passfx: "#ef6b54", edbg: "#7fc6e6", sound: "#63c28f" }[it.kind];
+    return `<div class="sp-fx"><svg viewBox="0 0 64 64" width="44" height="44" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="${icon}"/></svg></div>`;
+  }
   return `<div class="sp-swatch">${it.kind === "token" ? ICON.lantern : CHEST.replace('class="chest"', 'class="chest" style="width:64px;height:54px"')}</div>`;
 }
 let shopCat = "editor";
@@ -2322,7 +2532,7 @@ function openShop(worldApi) {
         const btn = it.cat === "help" ? `<button class="btn small primary" type="button" data-buy="${it.id}">${ICON.coin}${it.price}</button>`
           : on ? `<span class="tag on">${esc(t("equippedL"))}</span>` : own ? `<button class="btn small" type="button" data-equip="${it.id}">${esc(t("equipL"))}</button>`
           : `<button class="btn small primary" type="button" data-buy="${it.id}" ${wallet() < it.price ? 'data-poor="1"' : ""}>${ICON.coin}${it.price}</button>`;
-        return `<div class="shop-item ${on ? "on" : ""}"><div class="si-prev">${shopPreview(it)}</div><div class="si-text"><b>${esc(LN(it.name))}</b><span>${esc(LN(it.desc))}</span></div><div class="si-act">${btn}${own && it.cat !== "help" && !on && (it.kind === "hat" || it.kind === "face" || it.kind === "bling" || it.kind === "sail" || it.kind === "flag") ? "" : ""}${on && (it.kind === "hat" || it.kind === "face" || it.kind === "bling" || it.kind === "sail" || it.kind === "flag") ? `<button class="btn small ghost" type="button" data-unequip="${it.kind}">${esc(t("removeL"))}</button>` : ""}</div></div>`;
+        return `<div class="shop-item ${on ? "on" : ""}"><div class="si-prev">${shopPreview(it)}</div><div class="si-text"><b>${esc(LN(it.name))}</b><span>${esc(LN(it.desc))}</span></div><div class="si-act">${btn}${own && it.cat !== "help" && !on && (it.kind === "hat" || it.kind === "face" || it.kind === "bling" || it.kind === "sail" || it.kind === "flag") ? "" : ""}${on && it.kind !== "theme" && it.kind !== "font" ? `<button class="btn small ghost" type="button" data-unequip="${it.kind}">${esc(t("removeL"))}</button>` : ""}${it.cat === "fx" && it.kind !== "edbg" ? `<button class="btn small ghost try" type="button" data-try="${it.id}">${esc(t("tryL"))}</button>` : ""}</div></div>`;
       }).join("")}</div>
       <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" data-close>${esc(t("close"))}</button></div>`;
     $$("[data-cat]", m).forEach((b) => b.addEventListener("click", () => { shopCat = b.dataset.cat; render(m); }));
@@ -2341,6 +2551,7 @@ function openShop(worldApi) {
       S.equip = Object.assign({}, S.equip, { [it.kind]: it.val }); save(); applyLook(); Sound.play("click"); react("equip1");
       worldApi && worldApi.repaint && worldApi.repaint(); render(m);
     }));
+    $$("[data-try]", m).forEach((b) => b.addEventListener("click", () => { const it = SHOP.find((x) => x.id === b.dataset.try); EdFX.demo(it.kind, it.val, b); }));
     $$("[data-unequip]", m).forEach((b) => b.addEventListener("click", () => {
       S.equip = Object.assign({}, S.equip, { [b.dataset.unequip]: null }); save(); applyLook();
       worldApi && worldApi.repaint && worldApi.repaint(); render(m);
@@ -2386,11 +2597,13 @@ function renderWorld() {
       onShop: (api) => openShop(api),
       onSail: (id) => { S.shipAt = Math.max(0, CH.findIndex((c) => c.lessons.some((l) => l.id === id))); save(); location.hash = id; },
       onFail: () => { disposeWorld(); S.no3d = true; renderWorld(); S.no3d = false; },
+      getState: () => S.world || {}, saveState: (w) => { S.world = w; save(); },
+      award: (n, why) => { addCoins(n); toast(ICON.coin, `<b>+${n}</b> ${esc(why || t("doubloons"))}`); },
     });
     window.__ssWorld = world3d;
   };
   if (window.World3D) start();
-  else import("./world3d.js?v=4").then(start).catch((e) => { console.warn(e); disposeWorld(); $("#view").innerHTML = `<section class="harbor-2d"><h1>${esc(t("harbor"))}</h1><p>${esc(t("harborNoGL"))}</p><div class="row"><button class="btn primary" type="button" data-shop>${esc(t("shopH"))}</button></div></section>`; $("[data-shop]").addEventListener("click", () => openShop(null)); });
+  else import("./world3d.js?v=5").then(start).catch((e) => { console.warn(e); disposeWorld(); $("#view").innerHTML = `<section class="harbor-2d"><h1>${esc(t("harbor"))}</h1><p>${esc(t("harborNoGL"))}</p><div class="row"><button class="btn primary" type="button" data-shop>${esc(t("shopH"))}</button></div></section>`; $("[data-shop]").addEventListener("click", () => openShop(null)); });
 }
 
 /* ================= router ================= */

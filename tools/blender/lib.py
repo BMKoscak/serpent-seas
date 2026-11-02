@@ -37,19 +37,39 @@ def mat(name="vc", rough=0.88, metal=0.0, emit=None):
     return m
 
 def _obj_from_bm(bm, name, material=None):
+    smooth = STYLE["smooth"]
+    if smooth:
+        lim = math.radians(STYLE["sharp"])
+        for f in bm.faces: f.smooth = True
+        for e in bm.edges:
+            if not e.is_manifold or e.calc_face_angle(3.0) > lim: e.smooth = False
     me = bpy.data.meshes.new(name)
     bm.to_mesh(me); bm.free()
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
     me.materials.append(material or mat())
-    for p in me.polygons: p.use_smooth = False
+    if not smooth:
+        for p in me.polygons: p.use_smooth = False
     return ob
 
-def paint(ob, color, jitter=0.04, per_face=None):
-    """Fill the 'Col' corner attribute. color: hex or callable(face_center_game, normal_game)->hex"""
+STYLE = {"smooth": True, "sharp": 38, "grad": 0.3, "vnoise": 0.06, "bevel": True}
+
+def _vn(v):
+    # cheap smooth-ish value noise from position, same for shared vertices
+    x, y, z = v.x * 3.1, v.y * 3.7, v.z * 2.9
+    return math.sin(x * 1.7 + y * 0.9) * math.sin(y * 1.3 - z * 1.1) * math.sin(z * 1.9 + x * 0.7)
+
+def paint(ob, color, jitter=0.04, per_face=None, grad=None, vnoise=None):
+    """Fill the 'Col' corner attribute, painterly: per-face colour (hex or callable(face_center, normal)),
+    darkened toward the bottom of the part and varied with soft positional noise."""
     me = ob.data
     attr = me.color_attributes.get("Col") or me.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
     mw = ob.matrix_world
+    grad = STYLE["grad"] if grad is None else grad
+    vnoise = STYLE["vnoise"] if vnoise is None else vnoise
+    wv = [mw @ v.co for v in me.vertices]
+    ys = [v.z for v in wv] or [0]
+    y0, y1 = min(ys), max(ys); hy = max(1e-4, y1 - y0)
     for p in me.polygons:
         if callable(color):
             c = mw @ p.center; n = (mw.to_3x3() @ p.normal).normalized()
@@ -57,10 +77,24 @@ def paint(ob, color, jitter=0.04, per_face=None):
         else:
             col = color
         r, g, b = hexrgb(col)
-        k = 1 + (random.random() - 0.5) * 2 * jitter
-        rgb = (min(1, r * k), min(1, g * k), min(1, b * k), 1)
+        kf = 1 + (random.random() - 0.5) * 2 * jitter
         for li in p.loop_indices:
-            attr.data[li].color_srgb = rgb
+            vi = me.loops[li].vertex_index; w = wv[vi]
+            t = (w.z - y0) / hy
+            k = kf * (1 - grad * (1 - t) ** 1.6) * (1 + vnoise * _vn(w))
+            attr.data[li].color_srgb = (min(1, r * k), min(1, g * k), min(1, b * k), 1)
+    return ob
+
+def wobble(ob, amp=0.06, freq=0.6, seed=0, lean=0.0):
+    """make a part hand-made and crooked: smooth noise displacement plus an optional lean with height"""
+    mw = ob.matrix_world; inv = mw.inverted()
+    for v in ob.data.vertices:
+        w = mw @ v.co
+        dx = amp * math.sin(w.z * freq * 2.1 + seed) * math.cos(w.y * freq * 1.3 + seed * 0.7)
+        dy = amp * math.sin(w.x * freq * 1.7 - seed) * math.cos(w.z * freq * 1.1 + seed * 1.3)
+        dz = amp * 0.5 * math.sin(w.x * freq * 1.9 + w.y * freq + seed)
+        w2 = Vector((w.x + dx + lean * max(0, w.z), w.y + dy, w.z + dz))
+        v.co = inv @ w2
     return ob
 
 def finish(ob, loc=(0, 0, 0), rot=(0, 0, 0), color=None, jitter=0.04, name=None):
@@ -78,6 +112,8 @@ def box(sx, sy, sz, loc=(0, 0, 0), rot=(0, 0, 0), color="#888888", name="box", j
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1)
     bmesh.ops.scale(bm, vec=Vector((sx, sz, sy)), verts=bm.verts)
+    if not bevel and STYLE["bevel"]:
+        bevel = min(0.045, min(sx, sy, sz) * 0.18)
     if bevel:
         bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=1, affect="EDGES")
     ob = _obj_from_bm(bm, name, material)
@@ -163,3 +199,37 @@ def tris(objs):
         if o.type == "MESH":
             n += sum(len(p.vertices) - 2 for p in o.data.polygons)
     return n
+
+def loft(rings, segs=12, name="loft", color="#888888", material=None, caps=(True, True), arc=None, jitter=0.03):
+    """rings: [(y, cx, cz, rx, rz)] in game coords. arc=(a0, a1) degrees makes an open strip (e.g. coat skirt)."""
+    bm = bmesh.new()
+    rows = []
+    for (y, cx, cz, rx, rz) in rings:
+        row = []
+        n = segs + (1 if arc else 0)
+        for i in range(n):
+            if arc: a = math.radians(arc[0] + (arc[1] - arc[0]) * i / segs)
+            else: a = i / segs * math.tau
+            # angle 0 = +z (front), going toward +x
+            x = cx + math.sin(a) * rx; z = cz + math.cos(a) * rz
+            row.append(bm.verts.new(G(x, y, z)))
+        rows.append(row)
+    n = len(rows[0])
+    for r in range(len(rows) - 1):
+        for i in range(n if not arc else n - 1):
+            a, b = rows[r][i], rows[r][(i + 1) % n]
+            c, d = rows[r + 1][(i + 1) % n], rows[r + 1][i]
+            try: bm.faces.new([a, d, c, b])
+            except ValueError: pass
+    if not arc:
+        if caps[0]:
+            try: bm.faces.new(list(rows[0]))
+            except ValueError: pass
+        if caps[1]:
+            try: bm.faces.new(list(reversed(rows[-1])))
+            except ValueError: pass
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    ob = _obj_from_bm(bm, name, material)
+    if color is not None: paint(ob, color, jitter)
+    return ob
+

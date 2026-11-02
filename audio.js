@@ -242,6 +242,41 @@
       return b.duration;
     });
   }
+  /* ---------- editor sound packs (bought from Old Silas) ---------- */
+  const PENTA = [0, 2, 4, 7, 9, 12, 14, 16];
+  let packNote = 0, lastKey = 0;
+  const PACKS = {
+    typewriter: {
+      key(t) { noise(t, 0.025, 0.22, sfxBus, { from: 2600, q: 3 }); osc("square", 180 + Math.random() * 40, t, 0.02, 0.05, sfxBus, { filter: 1200 }); },
+      enter(t) { noise(t, 0.08, 0.18, sfxBus, { from: 900, to: 400, q: 1.2 }); osc("sine", 2100, t + 0.06, 0.5, 0.12, sfxBus, { verb: true }); },
+      run(t) { noise(t, 0.12, 0.2, sfxBus, { from: 1400, to: 500, q: 1 }); },
+      pass(t) { osc("sine", 2100, t, 0.7, 0.16, sfxBus, { verb: true }); osc("sine", 2640, t + 0.12, 0.7, 0.12, sfxBus, { verb: true }); },
+    },
+    bell: {
+      key(t) { osc("sine", 520 + Math.random() * 60, t, 0.05, 0.06, sfxBus, { filter: 1500 }); noise(t, 0.02, 0.05, sfxBus, { from: 700, q: 2 }); },
+      enter(t) { osc("sine", 880, t, 0.6, 0.08, sfxBus, { verb: true }); },
+      run(t) { osc("sine", 660, t, 0.9, 0.12, sfxBus, { verb: true }); osc("sine", 1320, t, 0.6, 0.05, sfxBus); },
+      pass(t) { [0, 0.28, 0.56].forEach((d, i) => { osc("sine", 784, t + d, 1.4, 0.16, sfxBus, { verb: true }); osc("sine", 1568, t + d, 0.9, 0.06, sfxBus); osc("triangle", 2350, t + d, 0.3, 0.03, sfxBus); }); },
+    },
+    drums: {
+      key(t) { const n = PENTA[packNote++ % PENTA.length]; const f = 392 * Math.pow(2, n / 12); osc("sine", f, t, 0.35, 0.09, sfxBus, { verb: true }); osc("sine", f * 2.76, t, 0.12, 0.03, sfxBus); osc("sine", f * 5.4, t, 0.05, 0.015, sfxBus); },
+      enter(t) { packNote = 0; osc("sine", 196, t, 0.5, 0.1, sfxBus, { verb: true }); },
+      run(t) { [0, 4, 7].forEach((n, i) => { const f = 392 * Math.pow(2, n / 12); osc("sine", f, t + i * 0.07, 0.4, 0.09, sfxBus, { verb: true }); }); },
+      pass(t) { [0, 4, 7, 12, 16].forEach((n, i) => { const f = 392 * Math.pow(2, n / 12); osc("sine", f, t + i * 0.09, 0.6, 0.11, sfxBus, { verb: true }); osc("sine", f * 2.76, t + i * 0.09, 0.15, 0.03, sfxBus); }); },
+    },
+  };
+  function pack(name, ev) {
+    if (!ctx || !unlocked || !prefs.sfx || !PACKS[name]) return;
+    const now = performance.now();
+    if (ev === "key") { if (now - lastKey < 28) return; lastKey = now; }
+    const t = ctx.currentTime + 0.005;
+    PACKS[name][ev] && PACKS[name][ev](t);
+  }
+  function cannonBoom() {
+    if (!ctx || !unlocked || !prefs.sfx) return;
+    if (!(SAMPLED.cannon && SAMPLED.cannon(ctx.currentTime + 0.01))) fx.cannon && fx.cannon(ctx.currentTime + 0.01);
+  }
+
   /* ---------- crew voices (3D world) ---------- */
   let crewSrc = null;
   function crew(id, key, lang) {
@@ -420,6 +455,8 @@
   window.Sound = {
     play,
     say,
+    pack,
+    cannonBoom,
     crew,
     stopCrew,
     voiceLevel,
