@@ -172,7 +172,7 @@ function paintShip(obj, cfg = window.SS_SHIP || {}) {
     if (!o.isMesh) return;
     const c = /sail/.test(o.name) ? cfg.sail : /flag/.test(o.name) ? cfg.flag : null;
     if (!c) return;
-    o.material = o.material.clone(); o.material.map = null; o.material.color.set(c); o.material.needsUpdate = true;
+    o.material = o.material.clone(); o.material.map = null; o.material.vertexColors = false; o.material.color.set(c); o.material.needsUpdate = true;
   });
   return obj;
 }
@@ -216,12 +216,13 @@ function lights(scene, pal) {
 
 /* ---------------- islands ---------------- */
 const DECOR = {
-  palms: ["palm-bend", "palm-straight", "palm-detailed-bend", "palm-detailed-straight"],
-  rocks: ["rocks-a", "rocks-b", "rocks-c", "rocks-sand-a", "rocks-sand-b", "rocks-sand-c"],
-  props: ["barrel", "crate", "chest", "cannon", "bottle-large"],
+  palms: ["custom/palm-a", "custom/palm-b", "custom/palm-c", "custom/palm-a"],
+  rocks: ["custom/rock-a", "custom/rock-b", "custom/rock-c", "custom/rock-d", "custom/rock-a", "custom/rock-c"],
+  props: ["custom/barrel", "custom/crate", "custom/chest", "cannon", "custom/crate-stack"],
+  plants: ["custom/bush-a", "custom/bush-b", "custom/bush-c", "custom/flowers-a", "custom/flowers-b", "custom/fern-a"],
 };
 // special set pieces per island index
-const SPECIAL = { 0: ["structure-platform-dock", "tower-watch"], 3: ["ship-wreck"], 6: ["structure"], 9: ["tower-complete-small"], 11: ["castle-wall"], 13: ["tower-complete-large", "castle-gate"] };
+const SPECIAL = { 0: ["structure-platform-dock", "custom/lighthouse"], 3: ["ship-wreck"], 6: ["structure"], 9: ["tower-complete-small"], 11: ["castle-wall"], 13: ["tower-complete-large", "castle-gate"] };
 
 const LAND_TOP = 1.15;
 function makeLand(R, radius, seed) {
@@ -263,11 +264,13 @@ async function buildIsland(i, info) {
   const nPalm = 2 + Math.floor(R() * 3) + (i === 13 ? 2 : 0);
   for (let k = 0; k < nPalm; k++) await place(DECOR.palms[Math.floor(R() * 4)], rad * 0.55, 1.05 + R() * 0.45);
   for (let k = 0; k < 2; k++) { const r = await place(DECOR.rocks[Math.floor(R() * 6)], 1, 0.6 + R() * 0.5); const a = R() * 6.28; r.position.set(Math.cos(a) * rad * 1.02, -0.3, Math.sin(a) * rad * 0.9); }
+  for (let k = 0; k < 3; k++) await place(DECOR.plants[Math.floor(R() * DECOR.plants.length)], rad * 0.7, 0.55 + R() * 0.35);
   if (R() < 0.7) await place(DECOR.props[Math.floor(R() * DECOR.props.length)], 2.2, 0.8);
   for (const sp of SPECIAL[i] || []) {
     const o = await model(sp);
     if (sp === "ship-wreck") { o.position.set(rad + 3.5, -0.9, 2); o.rotation.set(0.15, 1.2, 0.3); o.scale.setScalar(0.5); }
     else if (sp.startsWith("structure-platform-dock")) { o.position.set(rad * 0.9, -0.2, 1.2); o.rotation.y = -Math.PI / 2; o.scale.set(1, 1.1, 1.6); }
+    else if (sp === "custom/lighthouse") { o.position.set(-1.6, top - 0.2, -1.6); o.scale.setScalar(0.24); }
     else if (sp === "castle-gate") { o.position.set(-2.5, top - 0.15, 3.0); o.rotation.y = 0.3; o.scale.setScalar(0.9); }
     else { o.position.set(-1.2 * big, top - 0.2, -1.2 * big); o.scale.setScalar(sp === "tower-complete-large" ? 1.1 : 0.9); }
     grp.add(o);
@@ -372,7 +375,7 @@ function mountChart(host, opts) {
       const g = await buildIsland(i, data[i]); if (disposed) return;
       g.position.copy(pos[i]); islandGroups.push(g); scene.add(g);
     }
-    ship = paintShip(await model("ship-pirate-large")); if (disposed) return;
+    ship = paintShip(await model("custom/ship-galleon")); if (disposed) return;
     ship.scale.setScalar(0.62);
     ship.traverse((o) => { if (/sail/.test(o.name)) sails.push(o); if (/flag/.test(o.name)) flags.push(o); });
     sails.forEach((s) => (s.userData.base = s.scale.clone()));
@@ -600,8 +603,8 @@ function mountCelebration(host, opts = {}) {
     opts.onBoom && opts.onBoom();
   }
   (async () => {
-    ship = paintShip(await model(kind === "finale" ? "ship-pirate-large" : "ship-pirate-medium")); if (disposed) return;
-    ship.scale.setScalar(0.75); ship.traverse((o) => { if (/sail/.test(o.name)) { sails.push(o); o.userData.base = o.scale.clone(); } });
+    ship = paintShip(await model("custom/ship-galleon")); if (disposed) return;
+    ship.scale.setScalar(kind === "finale" ? 0.75 : 0.6); ship.traverse((o) => { if (/sail/.test(o.name)) { sails.push(o); o.userData.base = o.scale.clone(); } });
     scene.add(ship);
     island = await buildIsland(kind === "finale" ? 13 : (opts.seed || 2), {}); if (disposed) return;
     island.position.set(-14, 0, -16); if (kind !== "lesson") island.userData.flag.visible = true; scene.add(island);
@@ -680,6 +683,6 @@ function webglOK() {
   try { const c = document.createElement("canvas"); return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl"))); } catch (e) { return false; }
 }
 
-window.Sea3D = { ok: webglOK(), mountChart, mountCelebration, preload: () => Promise.all(["ship-pirate-large", "patch-sand", "palm-bend"].map(model)) };
+window.Sea3D = { ok: webglOK(), mountChart, mountCelebration, preload: () => Promise.all(["custom/ship-galleon", "patch-sand", "custom/palm-a"].map(model)) };
 window.dispatchEvent(new Event("sea3d-ready"));
 export { THREE, loader, model, waveH, waveGrad, makeSky, makeOcean, SKY, DUSK, makeRenderer, makeGovernor, lights, rng, soft, tint, makeCloud, makeGull, makeSerpent, makeLand, LAND_TOP, paintShip, webglOK };

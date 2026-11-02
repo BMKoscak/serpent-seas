@@ -38,7 +38,8 @@ Then open http://localhost:8000.
 | `audio.js` | sound engine (recorded samples with a synthesized fallback) |
 | `sea3d.js`, `lib/` | 3D sea chart and celebrations (three.js r170) |
 | `world3d.js` | the explorable first-person harbor and ship |
-| `models/` | Kenney Pirate Kit, Mini Characters (`chars/`) and Fantasy Town Kit (`town/`) models (`.glb`, renamed `.glb.wasm` so every static host serves them) |
+| `models/custom/` | our own low-poly models (ship, crew, harbor, nature), generated in headless Blender by `tools/blender/` |
+| `models/` | remaining Kenney Pirate Kit pieces (`.glb`, renamed `.glb.wasm` so every static host serves them) |
 | `sfx/`, `music/`, `voice2/`, `voice3/` | audio (`voice3/` holds the crew's lines) |
 | `pyodide/` | self-hosted Pyodide 0.26.4 (the stdlib archive is renamed `.zip.wasm`) |
 
@@ -46,6 +47,6 @@ Then open http://localhost:8000.
 
 - Python runtime: [Pyodide](https://pyodide.org) (MPL-2.0)
 - Code editor: [CodeMirror 5](https://codemirror.net) (MIT)
-- 3D: [three.js](https://threejs.org) (MIT) and Kenney's [Pirate Kit](https://kenney.nl/assets/pirate-kit), [Mini Characters](https://kenney.nl/assets/mini-characters) and [Fantasy Town Kit](https://kenney.nl/assets/fantasy-town-kit) (CC0)
+- 3D: [three.js](https://threejs.org) (MIT) custom low-poly models made with [Blender](https://www.blender.org), plus a few pieces from Kenney's [Pirate Kit](https://kenney.nl/assets/pirate-kit) (CC0)
 - Music, sound effects, Pip's voice and the crew's voices were generated with [ElevenLabs](https://elevenlabs.io)
 - Built by Ben Koščak ([@BMKoscak](https://github.com/BMKoscak)) with Claude

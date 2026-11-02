@@ -2,7 +2,7 @@
    three.js + Kenney Pirate Kit, Mini Characters and Fantasy Town Kit (all CC0).
    Exposes window.World3D.mount(host, opts). */
 import { mergeGeometries } from "./lib/BufferGeometryUtils.js";
-import { THREE, loader, model, waveH, makeSky, makeOcean, SKY, makeRenderer, makeGovernor, lights, rng, soft, makeCloud, makeGull, makeSerpent, paintShip, webglOK } from "./sea3d.js?v=3";
+import { THREE, loader, model, waveH, makeSky, makeOcean, SKY, makeRenderer, makeGovernor, lights, rng, soft, makeCloud, makeGull, makeSerpent, paintShip, webglOK } from "./sea3d.js?v=4";
 
 const LINES = {"captain":{"greet1":["Ah, there ye are. The sea's been waitin', and so have I.","Á, tu si. Morje te čaka, pa jaz tudi."],"greet2":["Welcome aboard the Serpent, sailor. Mind the deck, she bites.","Dobrodošel na Kači, mornar. Pazi na palubo, grize."],"orders1":["Yer next lesson awaits. Take the wheel when ye're ready, and we'll set sail.","Naslednja lekcija te čaka. Primi krmilo, ko boš pripravljen, in odplujemo."],"sail1":["Raise the anchor! Hoist the sails! We sail for knowledge!","Dvignite sidro! Razpnite jadra! Plujemo po znanje!"],"arrive1":["Land ho. Go ashore, and come back smarter than ye left.","Kopno na vidiku. Pojdi na obalo in se vrni pametnejši, kot si odšel."],"tip1":["A wise captain names things clearly. Same goes for yer variables.","Moder kapitan stvari jasno poimenuje. Enako velja za tvoje spremenljivke."],"tip2":["When the storm hits, read the error. It tells ye exactly where the leak is.","Ko udari nevihta, preberi napako. Točno ti pove, kje pušča."],"tip3":["Small steps, sailor. Run yer code often, and ye'll never drift far off course.","Majhni koraki, mornar. Kodo poganjaj pogosto, pa ne boš nikoli zašel daleč s poti."],"proud1":["Ye've grown, sailor. I've seen captains with half yer grit.","Zrasel si, mornar. Videl sem kapitane s pol tvoje vztrajnosti."],"bye1":["Off with ye. And don't let that parrot near the biscuits.","Pojdi zdaj. In ne pusti tiste papige blizu prepečenca."]},"ada":{"greet1":["Quartermaster Ada. I keep the books, the cargo, and the crew in order. Mostly the crew.","Upraviteljica Ada. Skrbim za knjige, tovor in red med posadko. Predvsem med posadko."],"greet2":["Back again? Good. Something needs counting, and you look clever.","Spet tukaj? Dobro. Nekaj je treba prešteti, ti pa izgledaš pametno."],"tip1":["A list keeps things in order. A dictionary finds them by name. Choose wisely.","Seznam hrani stvari po vrsti. Slovar jih najde po imenu. Izbiraj pametno."],"tip2":["If you copy the same code three times, it wants to be a function. Listen to it.","Če isto kodo kopiraš trikrat, si želi postati funkcija. Prisluhni ji."],"tip3":["Loops are for chores. Let the computer repeat things. It never gets bored.","Zanke so za opravila. Naj računalnik ponavlja. Nikoli se ne dolgočasi."],"tip4":["Test with weird input. Empty lists, zero, negative numbers. Pirates love edge cases.","Preizkusi s čudnimi vhodi. Prazni seznami, nič, negativna števila. Pirati obožujejo robne primere."],"tip5":["Comments explain why, not what. The code already says what.","Komentarji pojasnijo zakaj, ne kaj. Koda že pove kaj."],"banter1":["The cook says his stew is object oriented. I've decided not to ask.","Kuhar pravi, da je njegova enolončnica objektno usmerjena. Odločila sem se, da ne bom spraševala."],"banter2":["Pip once tried to audit our cargo. He counted three crackers and declared us bankrupt.","Pip je enkrat poskušal pregledati tovor. Preštel je tri krekerje in razglasil stečaj."],"bye1":["Off you go. Keep your indentation tidy.","Pojdi zdaj. Pazi, da bo zamik urejen."]},"cook":{"greet1":["Arr, welcome to me galley! Mind the pot, it's older than the ship!","Arr, dobrodošel v moji kuhinji! Pazi na lonec, starejši je od ladje!"],"greet2":["Hungry, matey? I've got stew, more stew, and a mystery!","Si lačen, mornar? Imam enolončnico, še več enolončnice in skrivnost!"],"tip1":["A function's just a recipe, see? Write it once, cook it a thousand times!","Funkcija je samo recept, veš? Napišeš ga enkrat, skuhaš tisočkrat!"],"tip2":["Parameters are the ingredients. Return is what comes out the pot!","Parametri so sestavine. Return je to, kar pride iz lonca!"],"tip3":["Never mix salt and sugar, and never mix strings and numbers. Trust me.","Nikoli ne mešaj soli in sladkorja, in nikoli ne mešaj besedil in števil. Verjemi mi."],"tip4":["A while loop with no end is like me stew: it just keeps going.","Zanka while brez konca je kot moja enolončnica: kar traja in traja."],"banter1":["Today's special: fish! Yesterday's special: also fish. Tomorrow? Ye guessed it.","Današnja posebnost: riba! Včerajšnja posebnost: tudi riba. Jutri? Uganil si."],"banter2":["The parrot keeps stealin' me crackers. I've started hidin' 'em in a dictionary.","Papiga mi kar naprej krade krekerje. Začel sem jih skrivati v slovarju."],"banter3":["Don't tell the captain, but I once made soup out of a semicolon.","Ne povej kapitanu, ampak enkrat sem skuhal juho iz podpičja."],"bye1":["Off ye go! Come back when ye're hungry for more!","Pojdi zdaj! Vrni se, ko boš lačen še več!"]},"nell":{"greet1":["Hi! I'm Nell, the lookout! I can see everything from up there. Well, almost.","Živijo! Jaz sem Nell, opazovalka! Od zgoraj vidim vse. No, skoraj vse."],"greet2":["Ahoy! Did you see the new island? It's huge! Probably full of loops!","Ahoj! Si videl nov otok? Ogromen je! Verjetno poln zank!"],"tip1":["When I'm lost I print things out. Seeing what your variables hold is like a spyglass!","Ko se izgubim, si stvari izpišem. Videti, kaj hranijo spremenljivke, je kot daljnogled!"],"tip2":["Big problems look scary from far away. Up close, they're just lots of tiny problems!","Velike težave od daleč izgledajo strašno. Od blizu so samo veliko majhnih težav!"],"tip3":["Everyone gets errors. Even the captain! He just hides it better.","Vsi dobivamo napake. Tudi kapitan! Samo bolje jih skriva."],"tip4":["Try changing one thing at a time. Then you know exactly what fixed it!","Spreminjaj eno stvar naenkrat. Potem točno veš, kaj je popravilo napako!"],"banter1":["I saw a sea serpent once! Or a log. It was a very convincing log.","Enkrat sem videla morsko kačo! Ali pa hlod. Bil je zelo prepričljiv hlod."],"banter2":["Pip says he's the real lookout. He fell asleep in the crow's nest twice.","Pip pravi, da je on pravi opazovalec. Dvakrat je zaspal v košu na jamboru."],"banter3":["One day I'll write a program that spots treasure for me. You'll help, right?","Nekoč bom napisala program, ki bo zame iskal zaklade. Mi boš pomagal, kajne?"],"bye1":["Bye! Wave at me when you pass the mast!","Adijo! Pomahaj mi, ko greš mimo jambora!"]},"silas":{"greet1":["Ah, a customer. Old Silas has wares for every coder on the seven seas.","Á, kupec. Stari Silas ima blago za vsakega programerja na sedmih morjih."],"greet2":["Back for more treasures, are ye? I knew ye had taste.","Spet si prišel po zaklade, kaj? Vedel sem, da imaš okus."],"browse1":["Have a look. Themes for yer editor, hats for yer bird, sails for yer ship.","Kar poglej. Teme za urejevalnik, klobuki za ptiča, jadra za ladjo."],"buy1":["A fine choice! That'll look grand.","Odlična izbira! To bo izgledalo imenitno."],"buy2":["Pleasure doin' business. Spend it all, I always say.","Veselje je poslovati s tabo. Zapravi vse, vedno pravim."],"poor1":["Ach, ye're a few doubloons short. Finish a lesson or two and come back.","Oh, nekaj dublonov ti manjka. Končaj lekcijo ali dve in se vrni."],"poor2":["No coin, no treasure. Them's the rules of the sea.","Brez kovancev ni zakladov. Takšna so pravila morja."],"equip1":["Wear it proud, sailor.","Nosi ga ponosno, mornar."],"tip1":["Every lesson ye finish fills yer purse. Learnin' pays, in more ways than one.","Vsaka lekcija, ki jo končaš, napolni mošnjiček. Učenje se splača, na več načinov."],"bye1":["Fair winds, young one. Come back when yer purse is heavy.","Dober veter, mladič. Vrni se, ko bo mošnjiček težak."]}};
 
@@ -39,13 +39,13 @@ function glb(path) {
 }
 async function townModel(name) { const g = await glb("models/town/" + name + ".glb.wasm"); return g.scene.clone(true); }
 async function character(name) {
-  // each crew member uses a different file, so the skinned meshes never need cloning
-  const g = await glb("models/chars/character-" + name + ".glb.wasm");
+  // each character uses its own file, so the skinned meshes never need cloning
+  const g = await glb("models/custom/char-" + name + ".glb.wasm");
   return { scene: g.scene, clips: g.animations };
 }
 
 /* ---------------- world layout (meters) ---------------- */
-const SHIP_S = 2.6, SHIP_DRAFT = -2.4, CHAR_S = 2.9;
+const SHIP_S = 2.6, SHIP_DRAFT = -2.4, CHAR_S = 1.0;
 const SHIP_HOME = new THREE.Vector3(75, 0, 0), SHIP_YAW = Math.PI / 2;
 const PIER = { x0: 27, x1: 84, z0: -12.2, z1: -6.7, y: 2.2 };
 const PLAZA = new THREE.Vector2(19, -4);
@@ -58,7 +58,7 @@ function terrainH(x, z) {
   const r = Math.hypot(x, z), a = Math.atan2(z, x), t = r / islandR(a);
   let h = 1.8 + 0.35 * Math.sin(x * 0.21) * Math.sin(z * 0.17);
   const dh = Math.hypot(x - HILL.x, z - HILL.y); h += 6.5 * Math.pow(Math.max(0, 1 - dh / 17), 1.6);
-  const dp = Math.hypot(x - PLAZA.x, z - PLAZA.y); h = h + (1.9 - h) * smooth(13, 7, dp); // flat market square
+  const dp = Math.hypot(x - PLAZA.x, z - PLAZA.y); h = h + (1.9 - h) * smooth(21, 14, dp); // flat market square and village
   return h + (-3.2 - h) * smooth(0.78, 1.14, t);
 }
 
@@ -160,6 +160,7 @@ function mount(host, opts = {}) {
   const sky = makeSky(SKY); scene.add(sky);
   const ocean = makeOcean(SKY, 640, 150, [{ x: 0, z: 0, r: 34 }]); scene.add(ocean);
   lights(scene, SKY);
+  { const fill = new THREE.DirectionalLight("#bcd6ff", 0.75); fill.position.set(60, 40, 70); scene.add(fill); }
   const gov = makeGovernor(renderer, ocean);
 
   /* --- state --- */
@@ -198,10 +199,13 @@ function mount(host, opts = {}) {
       root.traverse((m) => {
         if (!m.isMesh || m.isSkinnedMesh) return;
         const mat = Array.isArray(m.material) ? null : m.material; if (!mat) return;
-        const key = (mat.map && mat.map.image && (mat.map.image.currentSrc || mat.map.image.src)) || mat.uuid;
+        const sig = Object.keys(m.geometry.attributes).filter((k) => ["position", "normal", "uv", "color"].includes(k)).sort().join(",");
+        const key = ((mat.map && mat.map.image && (mat.map.image.currentSrc || mat.map.image.src)) || (mat.name + "|" + mat.side + "|" + mat.emissive.getHexString() + "|" + mat.metalness.toFixed(2) + "|" + mat.roughness.toFixed(2) + "|" + mat.vertexColors)) + "|" + sig;
         let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone();
-        for (const a of Object.keys(g.attributes)) if (!["position", "normal", "uv"].includes(a)) g.deleteAttribute(a);
-        if (!g.attributes.normal || !g.attributes.uv) return;
+        for (const a of Object.keys(g.attributes)) if (!["position", "normal", "uv", "color"].includes(a)) g.deleteAttribute(a);
+        if (!g.attributes.normal) return;
+        if (g.attributes.color && g.attributes.color.itemSize === 4) { const c = g.attributes.color, a3 = new Float32Array(c.count * 3); for (let i = 0; i < c.count; i++) { a3[i * 3] = c.getX(i); a3[i * 3 + 1] = c.getY(i); a3[i * 3 + 2] = c.getZ(i); } g.setAttribute("color", new THREE.BufferAttribute(a3, 3)); }
+        if (g.attributes.color && g.attributes.color.normalized) { const c = g.attributes.color, a3 = new Float32Array(c.count * 3); for (let i = 0; i < c.count; i++) { a3[i * 3] = c.getX(i); a3[i * 3 + 1] = c.getY(i); a3[i * 3 + 2] = c.getZ(i); } g.setAttribute("color", new THREE.BufferAttribute(a3, 3)); }
         g.applyMatrix4(m.matrixWorld);
         if (!groups.has(key)) groups.set(key, { mat, geos: [] });
         groups.get(key).geos.push(g);
@@ -228,71 +232,69 @@ function mount(host, opts = {}) {
   }
 
   async function addCrew(id, x, y, z, yaw, parent) {
-    const def = CREW[id], ch = await character(def.model);
+    const def = CREW[id], ch = await character(id);
     if (disposed) return;
     const root = new THREE.Group(); root.position.set(x, y, z); root.rotation.y = yaw;
     const m = ch.scene; m.scale.setScalar(CHAR_S); root.add(m);
-    let head = null; m.traverse((o) => { if (o.isBone && o.name === "head") head = o; if (o.isMesh) o.frustumCulled = false; });
-    if (head && def.hat) { const h = makeHat(def.hat, def.hatColor); h.position.set(0, 0.315, -0.01); h.rotation.x = -0.05; head.add(h); }
+    let head = null, jaw = null; m.traverse((o) => { if (o.isBone && o.name === "head") head = o; if (o.isBone && o.name === "jaw") jaw = o; if (o.isMesh) o.frustumCulled = false; });
+    // the jaw opens around the character's sideways axis, expressed in the jaw bone's own frame
+    let jawAxis = null;
+    if (jaw) { m.updateMatrixWorld(true); const qm = m.getWorldQuaternion(new THREE.Quaternion()), qj = jaw.getWorldQuaternion(new THREE.Quaternion()); jawAxis = new THREE.Vector3(1, 0, 0).applyQuaternion(qm.invert().multiply(qj).invert()).normalize(); }
     const mixer = new THREE.AnimationMixer(m); mixers.push(mixer);
     const act = (n) => { const c = THREE.AnimationClip.findByName(ch.clips, n); return c ? mixer.clipAction(c) : null; };
     const idle = act("idle"); idle && idle.play(); idle && (idle.time = Math.random() * 2);
     (parent || scene).add(root);
     circles.push(parent ? { obj: root, r: 0.55 } : { x, z, r: 0.55 });
-    npcs.push({ id, def, root, head, mixer, act, idle, baseYaw: yaw, tipI: 0, chatI: 0, met: false, talkT: 0 });
+    npcs.push({ id, def, root, head, jaw, jawAxis, jawAmt: 0, mixer, act, idle, baseYaw: yaw, tipI: 0, chatI: 0, met: false, talkT: 0 });
   }
 
   async function build() {
-    // ship + deck dressing
-    shipModel = paintShip(await model("ship-pirate-large")); if (disposed) return;
+    // ship (custom galleon, same deck layout as before)
+    shipModel = paintShip(await model("custom/ship-galleon")); if (disposed) return;
     shipModel.scale.setScalar(SHIP_S); shipModel.position.y = SHIP_DRAFT; shipRoot.add(shipModel);
-    shipModel.traverse((c) => { if (c.isMesh) { c.userData.ship = true; if (!/sail|flag/.test(c.name)) { c.material = c.material.clone(); c.material.side = THREE.DoubleSide; meshColliders.push(c); } } });
+    shipModel.traverse((c) => { if (c.isMesh) { c.userData.ship = true; if (!/sail|flag|jolly|rig/.test(c.name)) { c.material = c.material.clone(); c.material.side = THREE.DoubleSide; meshColliders.push(c); } } });
     const S = SHIP_S, onDeck = { parent: shipRoot, y: deckY };
+    const C = (n) => "custom/" + n;
     const jobs = [
-      place("barrel", -1.7 * S, -0.3 * S, 0.9, 0, { ...onDeck, r: 0.65 }),
-      place("barrel", -1.75 * S, 0.15 * S, 0.9, 1, { ...onDeck, r: 0.65 }),
-      place("crate", -1.0 * S, -0.9 * S, 1.0, 0.3, { ...onDeck, r: 0.7 }),
-      place("cannon", 1.75 * S, 0.6 * S, 1.1, -Math.PI / 2, { ...onDeck, r: 0.8 }),
-      place("cannon", -1.75 * S, -1.6 * S, 1.1, Math.PI / 2, { ...onDeck, r: 0.8 }),
-      place("chest", 0.9 * S, -6.0 * S + 1.6, 0.8, Math.PI, { parent: shipRoot, y: SHIP_DRAFT + 3.5 * S, r: 0.6 }),
-      place("barrel", 1.6 * S, -2.6 * S, 0.8, 0.4, { ...onDeck, r: 0.6 }),
+      place(C("barrel"), -1.7 * S, -0.1 * S, 0.9, 0, { ...onDeck, r: 0.5 }),
+      place(C("crate"), -1.15 * S, 0.75 * S, 1.0, 0.3, { ...onDeck, r: 0.7 }),
+      place(C("chest"), -0.9 * S, -6.0 * S + 1.4, 1.0, Math.PI * 0.9, { parent: shipRoot, y: SHIP_DRAFT + 3.5 * S, r: 0.6 }),
+      place(C("crate-stack"), 1.25 * S, 3.0 * S, 0.8, 0.5, { parent: shipRoot, y: SHIP_DRAFT + 2.8 * S, r: 1.0 }),
     ];
-    // a grate over the cargo hatch so nobody falls in
-    const grate = new THREE.Mesh(new THREE.BoxGeometry(1.15 * S, 0.12, 1.15 * S), WOOD_D); grate.position.set(0, deckY - 0.04, -2.0 * S); shipRoot.add(grate); grate.userData.ship = true; meshColliders.push(grate);
-    for (let k = -2; k <= 2; k++) { const bar = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.05, 1.15 * S), WOOD); bar.position.set(k * 0.55, deckY + 0.03, -2.0 * S); shipRoot.add(bar); }
     const pot = makePot(); pot.position.set(-0.95 * S, deckY, -1.85 * S); shipRoot.add(pot); circles.push({ obj: pot, r: 0.7 }); pot.add(steam); steam.position.y = 1.1;
-    // island dressing
-    const R = rng(21);
-    const palmOK = (x, z) => Math.hypot(x - PLAZA.x, z - PLAZA.y) > 12 && !(x > 24 && z < -3 && z > -15) && Math.hypot(x - HILL.x, z - HILL.y) > 5;
-    for (let i = 0; i < 26; i++) {
-      const a = R() * Math.PI * 2, t = 0.5 + R() * 0.3, rr = islandR(a) * t, x = Math.cos(a) * rr, z = Math.sin(a) * rr;
-      if (!palmOK(x, z)) continue;
-      jobs.push(place(["palm-bend", "palm-straight", "palm-detailed-bend", "palm-detailed-straight"][i % 4], x, z, 2.0 + R() * 0.7, R() * 6.28, { r: 0.7 }));
-    }
-    for (let i = 0; i < 12; i++) {
-      const a = R() * Math.PI * 2, rr = islandR(a) * (0.86 + R() * 0.12), x = Math.cos(a) * rr, z = Math.sin(a) * rr;
-      if (x > 24 && z < -3 && z > -15) continue;
-      jobs.push(place(["rocks-a", "rocks-b", "rocks-c", "rocks-sand-a", "rocks-sand-b"][i % 5], x, z, 1.8 + R(), R() * 6.28, { r: 1.6 }));
-    }
-    jobs.push(place("tower-watch", HILL.x, HILL.y, 2.4, 0.4, { r: 3.4 }));
+    // island nature
+    const R = rng(21), P = PLAZA;
+    const free = (x, z, m = 0) => Math.hypot(x - P.x, z - P.y) > 19 + m && !(x > 22 && z < -1 && z > -17) && Math.hypot(x - HILL.x, z - HILL.y) > 5 + m;
+    const ring = (n, t0, t1, fn) => { for (let i = 0; i < n; i++) { const a = R() * Math.PI * 2, rr = islandR(a) * (t0 + R() * (t1 - t0)), x = Math.cos(a) * rr, z = Math.sin(a) * rr; fn(x, z, i); } };
+    ring(30, 0.45, 0.82, (x, z, i) => { if (free(x, z)) jobs.push(place(C(["palm-a", "palm-b", "palm-c"][i % 3]), x, z, 2.1 + R() * 0.7, R() * 6.28, { r: 0.6 })); });
+    ring(14, 0.86, 0.98, (x, z, i) => { if (!(x > 22 && z < -1 && z > -17)) jobs.push(place(C(["rock-a", "rock-b", "rock-c", "rock-d"][i % 4]), x, z, 1.6 + R() * 1.2, R() * 6.28, { r: 1.7, y: terrainH(x, z) - 0.35 })); });
+    ring(20, 0.3, 0.8, (x, z, i) => { if (free(x, z, -4)) jobs.push(place(C(["bush-a", "bush-b", "bush-c"][i % 3]), x, z, 1.2 + R() * 0.6, R() * 6.28, { r: 0.9 })); });
+    ring(26, 0.2, 0.85, (x, z, i) => { if (free(x, z, -6)) jobs.push(place(C(["flowers-a", "flowers-b", "fern-a"][i % 3]), x, z, 1.4 + R() * 0.6, R() * 6.28, {})); });
+    ring(5, 0.9, 0.97, (x, z) => jobs.push(place(C("driftwood"), x, z, 1.5, R() * 6.28, { y: terrainH(x, z) + 0.05 })));
+    jobs.push(place(C("lighthouse"), HILL.x, HILL.y, 1.0, 0.6, { r: 2.7, y: terrainH(HILL.x, HILL.y) - 0.4 }));
+    // market square and village
+    jobs.push(place(C("well"), P.x, P.y, 1.0, 0.3, { r: 1.25 }));
+    jobs.push(place(C("stall-silas"), P.x - 2, P.y - 7.6, 1.0, 0, { r: 2.2 }));
+    jobs.push(place(C("stall-fish"), P.x + 5, P.y - 7.6, 1.0, 0, { r: 2.2 }));
+    jobs.push(place(C("stall-fruit"), P.x - 9.5, P.y - 1.5, 1.0, Math.PI / 2, { r: 2.2 }));
+    const building = (n, x, z, rot, w, d) => { jobs.push(place(C(n), x, z, 1.0, rot, { y: terrainH(x, z) - 0.1 })); rectCircles(x, z, w, d, rot); };
+    building("tavern", P.x + 5.5, P.y + 11.5, Math.PI, 7.5, 5.4);
+    building("house-a", P.x - 5.5, P.y + 12, Math.PI, 6.0, 4.6);
+    building("house-b", P.x - 15.5, P.y + 3.5, Math.PI / 2, 5.0, 4.4);
+    for (const [dx, dz] of [[-5, -3.5], [7.5, -2.5], [-6.5, 6.5], [9.5, 5.5]]) jobs.push(place(C("lamp-post"), P.x + dx, P.y + dz, 1.0, R() * 6, { r: 0.3 }));
+    for (let x = PIER.x0 + 6; x < PIER.x1; x += 12) jobs.push(place(C("lamp-post"), x, PIER.z0 + 0.35, 1.0, Math.PI / 2, { y: PIER.y, r: 0.3 }));
+    jobs.push(place(C("bench"), P.x + 1, P.y + 6, 1.0, Math.PI, { r: 0.9 }));
+    jobs.push(place(C("bench"), P.x - 4, P.y + 5.5, 1.0, Math.PI + 0.3, { r: 0.9 }));
+    jobs.push(place(C("cart"), P.x + 10.5, P.y + 0.5, 1.0, -1.2, { r: 1.5 }));
+    jobs.push(place(C("crate-stack"), P.x + 10, P.y - 9.5, 1.0, 0.4, { r: 1.4 }));
+    jobs.push(place(C("signpost"), P.x + 8.5, P.y - 4.2, 1.0, 0.2, { r: 0.3 }));
+    jobs.push(place(C("net-rack"), 30, -17.5, 1.0, 0.25, { r: 0.4 }));
+    jobs.push(place(C("anchor-deco"), 25, 1.5, 1.4, 0.6, { r: 0.8 }));
+    jobs.push(place(C("rowboat"), 45, -16.5, 1.5, 0.3, { y: -0.2 }));
+    jobs.push(place(C("rowboat"), 34, 8.5, 1.4, 2.4, { y: terrainH(34, 8.5) }));
+    for (const [dx, dz, n] of [[1.8, -9.6, "barrel"], [-5.6, -9.2, "crate"], [-12, 2.5, "barrel"], [-12, -5.2, "crate"], [11.5, -6.5, "barrel"], [8.5, 9.5, "barrel"], [9.3, 9.0, "barrel"]]) jobs.push(place(C(n), P.x + dx, P.y + dz, 1.0, R() * 6, { r: 0.6 }));
+    for (let x = PIER.x0 + 4; x < PIER.x1 - 6; x += 9) jobs.push(place(C(x % 2 ? "barrel" : "crate"), x, PIER.z0 + 1.1, 0.9, R() * 6, { y: PIER.y, r: 0.6 }));
     jobs.push(place("flag-pirate-high", HILL.x + 5, HILL.y - 3, 1.6, 0, { r: 0.4 }));
-    // market square
-    const P = PLAZA;
-    jobs.push(place("fountain-round", P.x, P.y, 2.6, 0, { town: true, r: 2.7 }));
-    jobs.push(place("stall-red", P.x - 2, P.y - 7.5, 4.2, 0, { town: true, r: 2.4 }));
-    jobs.push(place("stall-green", P.x - 10, P.y - 1.5, 4.0, Math.PI / 2, { town: true, r: 2.3 }));
-    jobs.push(place("stall", P.x + 6, P.y - 7.5, 4.0, -0.3, { town: true, r: 2.3 }));
-    jobs.push(place("cart", P.x + 7, P.y + 5, 2.6, 2.2, { town: true, r: 1.8 }));
-    jobs.push(place("stall-bench", P.x - 5, P.y + 6, 2.6, 0.4, { town: true, r: 1.2 }));
-    jobs.push(place("stall-bench", P.x + 1, P.y + 7.5, 2.6, -0.2, { town: true, r: 1.2 }));
-    for (const [dx, dz] of [[-6, -6], [6, -3], [-7, 4], [8, 1], [3, -10.5]]) jobs.push(place("lantern", P.x + dx, P.y + dz, 2.2, 0, { town: true, r: 0.35 }));
-    jobs.push(place("banner-red", P.x + 2.2, P.y - 8.5, 2.6, 0, { town: true }));
-    jobs.push(place("banner-green", P.x - 6.2, P.y - 8.5, 2.6, 0, { town: true }));
-    for (const [dx, dz, n] of [[1.5, -9, "barrel"], [-5.2, -9, "crate"], [-11, 1, "barrel"], [-11, -5, "crate"], [10, -6, "barrel"], [9, -8, "crate"]]) jobs.push(place(n, P.x + dx, P.y + dz, 1.0, R() * 6, { r: 0.75 }));
-    jobs.push(place("tree-crooked", P.x - 13, P.y + 8, 2.8, 0.5, { town: true, r: 0.7 }));
-    jobs.push(place("tree-crooked", P.x + 12, P.y + 9, 2.5, 2.1, { town: true, r: 0.7 }));
-    for (let x = PIER.x0 + 4; x < PIER.x1 - 6; x += 9) jobs.push(place(x % 2 ? "barrel" : "crate", x, PIER.z0 + 0.9, 0.9, R() * 6, { y: PIER.y, r: 0.7 }));
-    jobs.push(place("boat-row-small", 45, -16, 2.0, 0.3, { y: -0.25 }));
     await Promise.all(jobs); if (disposed) return;
     try { mergeStatics(); } catch (e) { console.warn("merge", e); }
     // crew
@@ -300,16 +302,25 @@ function mount(host, opts = {}) {
       addCrew("captain", 0.9 * S, SHIP_DRAFT + 3.5 * S, -5.3 * S, -0.5, shipRoot),
       addCrew("ada", 1.35 * S, deckY, -0.55 * S, -1.2, shipRoot),
       addCrew("cook", -1.4 * S, deckY, -2.45 * S, 1.3, shipRoot),
-      addCrew("nell", 0, SHIP_DRAFT + 2.8 * S, 3.6 * S, 0, shipRoot),
-      addCrew("silas", P.x - 2, terrainH(P.x - 2, P.y - 8.3), P.y - 8.3, 0, null),
-      addWalker("female-c", (t) => [P.x + Math.cos(t) * 5.2, P.y + Math.sin(t) * 5.2], 0.16),
-      addWalker("male-f", (t) => [PIER.x0 + 14 + Math.sin(t) * 12, (PIER.z0 + PIER.z1) / 2 - 1.2], 0.12, PIER.y),
+      addCrew("nell", 0, SHIP_DRAFT + 2.8 * S, 3.4 * S, 0, shipRoot),
+      addCrew("silas", P.x - 2, terrainH(P.x - 2, P.y - 8.35), P.y - 8.35, 0, null),
+      addWalker("villager", (t) => [P.x + Math.cos(t) * 5.4, P.y + Math.sin(t) * 5.4], 0.15),
+      addWalker("fisher", (t) => [PIER.x0 + 14 + Math.sin(t) * 12, (PIER.z0 + PIER.z1) / 2 - 0.9], 0.12, PIER.y),
     ]);
     if (disposed) return;
     ready = true; $w("[data-load]").remove(); onLockChange();
     opts.onReady && opts.onReady();
   }
-
+  function rectCircles(x, z, w, d, rot) {
+    // approximate a rectangle footprint with a row of circles along its long side
+    const long = Math.max(w, d), short = Math.min(w, d), r = short / 2 + 0.1;
+    const alongX = (w >= d) !== (Math.abs(Math.sin(rot)) > 0.7);
+    const n = Math.max(1, Math.ceil((long - short) / (r * 0.9)) + 1);
+    for (let i = 0; i < n; i++) {
+      const o = n === 1 ? 0 : -((long - short) / 2) + (long - short) * i / (n - 1);
+      circles.push({ x: x + (alongX ? o : 0), z: z + (alongX ? 0 : o), r });
+    }
+  }
   const walkers = [];
   async function addWalker(name, path, speed, y) {
     const ch = await character(name); if (disposed) return;
@@ -321,6 +332,7 @@ function mount(host, opts = {}) {
   }
 
   /* --- helpers --- */
+  const V2q = new THREE.Quaternion();
   const ray = new THREE.Raycaster(), V = new THREE.Vector3(), V2 = new THREE.Vector3(), N = new THREE.Vector3(), UP = new THREE.Vector3(0, 1, 0), DOWN = new THREE.Vector3(0, -1, 0);
   function groundAt(x, y, z) {
     // highest surface below (y + STEP); returns {h, ship}
@@ -565,13 +577,16 @@ function mount(host, opts = {}) {
       let diff = ((want - n.root.rotation.y + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
       n.root.rotation.y += diff * Math.min(1, dt * 5);
       n.talkT = Math.max(0, n.talkT - dt);
-      if (n.head) { const lv = n.talkT > 0 ? (window.Sound && Sound.voiceLevel ? Sound.voiceLevel() : 0.3) : 0; n.head.rotation.x = -Math.abs(Math.sin(t * 13)) * 0.12 * Math.min(1, lv * 3 + (n.talkT > 0 ? 0.25 : 0)); }
+      const lv = n.talkT > 0 ? (window.Sound && Sound.voiceLevel ? Sound.voiceLevel() : 0.3) : 0;
+      const want2 = n.talkT > 0 ? Math.min(0.42, lv * 1.6 + 0.05 + Math.abs(Math.sin(t * 11)) * 0.12 * (lv > 0.02 ? 1 : 0.4)) : 0;
+      n.jawAmt += (want2 - n.jawAmt) * Math.min(1, dt * 18);
     }
     for (const w of walkers) {
       w.t += dt * w.speed; const [x, z] = w.path(w.t), [x2, z2] = w.path(w.t + 0.02);
       w.root.position.set(x, w.y != null ? w.y : terrainH(x, z), z); w.root.rotation.y = Math.atan2(x2 - x, z2 - z);
     }
     for (const m of mixers) m.update(dt);
+    for (const n of npcs) if (n.jaw && n.jawAmt > 0.002) n.jaw.quaternion.multiply(V2q.setFromAxisAngle(n.jawAxis, n.jawAmt));
     if (!dialog && !sailing && ready) {
       const s = nearNpc ? `<kbd>${touch ? "▶" : "E"}</kbd> ${tr("talk", lang)} · <b>${nearNpc.def.name[L]}</b>` : null;
       if (s !== promptShown) { promptShown = s; const pe = $w("[data-prompt]"); pe.hidden = !s; if (s) pe.innerHTML = s; const tt = $w("[data-ttalk]"); if (tt) tt.hidden = !s; }
