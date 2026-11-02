@@ -166,6 +166,17 @@ function makeSerpent() {
   return g;
 }
 
+// Ship upgrades bought in the shop: tint sails and flags (materials are cloned so the cache stays clean).
+function paintShip(obj, cfg = window.SS_SHIP || {}) {
+  obj.traverse((o) => {
+    if (!o.isMesh) return;
+    const c = /sail/.test(o.name) ? cfg.sail : /flag/.test(o.name) ? cfg.flag : null;
+    if (!c) return;
+    o.material = o.material.clone(); o.material.map = null; o.material.color.set(c); o.material.needsUpdate = true;
+  });
+  return obj;
+}
+
 /* ---------------- renderer setup shared by both scenes ---------------- */
 function makeRenderer(canvasHost) {
   const r = new THREE.WebGLRenderer({ antialias: (window.devicePixelRatio || 1) < 1.5, powerPreference: "high-performance" });
@@ -361,7 +372,7 @@ function mountChart(host, opts) {
       const g = await buildIsland(i, data[i]); if (disposed) return;
       g.position.copy(pos[i]); islandGroups.push(g); scene.add(g);
     }
-    ship = await model("ship-pirate-large"); if (disposed) return;
+    ship = paintShip(await model("ship-pirate-large")); if (disposed) return;
     ship.scale.setScalar(0.62);
     ship.traverse((o) => { if (/sail/.test(o.name)) sails.push(o); if (/flag/.test(o.name)) flags.push(o); });
     sails.forEach((s) => (s.userData.base = s.scale.clone()));
@@ -589,7 +600,7 @@ function mountCelebration(host, opts = {}) {
     opts.onBoom && opts.onBoom();
   }
   (async () => {
-    ship = await model(kind === "finale" ? "ship-pirate-large" : "ship-pirate-medium"); if (disposed) return;
+    ship = paintShip(await model(kind === "finale" ? "ship-pirate-large" : "ship-pirate-medium")); if (disposed) return;
     ship.scale.setScalar(0.75); ship.traverse((o) => { if (/sail/.test(o.name)) { sails.push(o); o.userData.base = o.scale.clone(); } });
     scene.add(ship);
     island = await buildIsland(kind === "finale" ? 13 : (opts.seed || 2), {}); if (disposed) return;
@@ -671,3 +682,4 @@ function webglOK() {
 
 window.Sea3D = { ok: webglOK(), mountChart, mountCelebration, preload: () => Promise.all(["ship-pirate-large", "patch-sand", "palm-bend"].map(model)) };
 window.dispatchEvent(new Event("sea3d-ready"));
+export { THREE, loader, model, waveH, waveGrad, makeSky, makeOcean, SKY, DUSK, makeRenderer, makeGovernor, lights, rng, soft, tint, makeCloud, makeGull, makeSerpent, makeLand, LAND_TOP, paintShip, webglOK };

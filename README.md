@@ -14,6 +14,7 @@
 - **English and Slovenian**, switchable at any time.
 - **A living 3D sea chart**: sail your galleon between 14 islands on an animated ocean, with fog over uncharted waters, a ghost ship and a sea serpent guarding the last island.
 - **Celebrations**: cannon salutes and fireworks when you finish lessons and conquer islands.
+- **An explorable 3D harbor** (Harbor tab): walk around in first person on the docks and aboard your ship, with WASD and mouse on a computer or a joystick on a phone. Talk to five voiced characters (the captain, the quartermaster, the cook, the lookout and a trader), set sail with the whole crew to your next lesson, and spend your doubloons on editor themes and fonts, outfits for Pip, sails and flags for your ship, and hint tokens.
 - **Pip the parrot**: a sarcastic, voiced companion with 84 lines per language. He jokes about your specific errors (IndentationError, NameError...), cheers your wins and begs for crackers. Plus an original soundtrack, sound effects and ocean ambience.
 - Progress is saved in your browser and can be exported or imported as a save code.
 
@@ -36,14 +37,15 @@ Then open http://localhost:8000.
 | `runner.js`, `harness.py` | Python worker and the test harness |
 | `audio.js` | sound engine (recorded samples with a synthesized fallback) |
 | `sea3d.js`, `lib/` | 3D sea chart and celebrations (three.js r170) |
-| `models/` | Kenney Pirate Kit models (`.glb`, renamed `.glb.wasm` so every static host serves them) |
-| `sfx/`, `music/`, `voice2/` | audio |
+| `world3d.js` | the explorable first-person harbor and ship |
+| `models/` | Kenney Pirate Kit, Mini Characters (`chars/`) and Fantasy Town Kit (`town/`) models (`.glb`, renamed `.glb.wasm` so every static host serves them) |
+| `sfx/`, `music/`, `voice2/`, `voice3/` | audio (`voice3/` holds the crew's lines) |
 | `pyodide/` | self-hosted Pyodide 0.26.4 (the stdlib archive is renamed `.zip.wasm`) |
 
 ## Credits
 
 - Python runtime: [Pyodide](https://pyodide.org) (MPL-2.0)
 - Code editor: [CodeMirror 5](https://codemirror.net) (MIT)
-- 3D: [three.js](https://threejs.org) (MIT) and the [Kenney Pirate Kit](https://kenney.nl/assets/pirate-kit) (CC0)
-- Music, sound effects and Pip's voice were generated with [ElevenLabs](https://elevenlabs.io)
+- 3D: [three.js](https://threejs.org) (MIT) and Kenney's [Pirate Kit](https://kenney.nl/assets/pirate-kit), [Mini Characters](https://kenney.nl/assets/mini-characters) and [Fantasy Town Kit](https://kenney.nl/assets/fantasy-town-kit) (CC0)
+- Music, sound effects, Pip's voice and the crew's voices were generated with [ElevenLabs](https://elevenlabs.io)
 - Built by Ben Koščak ([@BMKoscak](https://github.com/BMKoscak)) with Claude

@@ -26,3 +26,7 @@
 	• Twitter:	 twitter.com/KenneyNL
 	• BlueSky:	 kenney.bsky.social
 	• Instagram: instagram.com/kenney_nl
+
+	Also included (same CC0 license, by Kenney, www.kenney.nl):
+	• Mini Characters  -> models/chars/
+	• Fantasy Town Kit -> models/town/

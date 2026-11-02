@@ -456,6 +456,95 @@ html.calm *, html.calm *::before, html.calm *::after { animation: none !importan
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+.w3d [hidden] { display: none !important; }
+.world-page { position: fixed; inset: 0; z-index: 30; background: #0b2a3a; }
+.w3d { position: absolute; inset: 0; overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; font-family: inherit; }
+.w3d-view { position: absolute; inset: 0; }
+.w3d-view canvas { display: block; width: 100%; height: 100%; }
+.w3d-btn { font: inherit; font-size: 15px; font-weight: 700; color: #2b1d0e; background: #f6e7c4; border: 2px solid #6b4a22; border-radius: 10px; padding: 8px 14px; cursor: pointer; box-shadow: 0 3px 0 #6b4a22; display: inline-flex; align-items: center; gap: 8px; }
+.w3d-btn:hover { background: #fff3d6; }
+.w3d-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #6b4a22; }
+.w3d-btn.primary { background: #e2a948; }
+.w3d-btn.big { font-size: 18px; padding: 12px 22px; }
+.w3d-btn kbd { font: 700 12px/1 ui-monospace, monospace; background: #2b1d0e; color: #f6e7c4; border-radius: 4px; padding: 3px 5px; }
+.w3d-cross { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; background: rgba(255,255,255,.85); box-shadow: 0 0 0 2px rgba(0,0,0,.35); pointer-events: none; }
+.w3d-top { position: absolute; left: 12px; right: 12px; top: 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+.w3d-top > * { pointer-events: auto; }
+.w3d-purse { font-weight: 800; color: #ffe2a0; background: rgba(20,14,6,.6); border-radius: 999px; padding: 6px 14px; font-size: 16px; }
+.w3d-help { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); color: #fff; background: rgba(10,20,30,.6); padding: 8px 14px; border-radius: 10px; font-size: 14px; transition: opacity .8s; pointer-events: none; white-space: nowrap; max-width: calc(100% - 24px); overflow: hidden; text-overflow: ellipsis; }
+.w3d-help.gone { opacity: 0; }
+.w3d-prompt { position: absolute; left: 50%; top: calc(50% + 34px); transform: translateX(-50%); color: #fff; background: rgba(10,20,30,.72); padding: 8px 14px; border-radius: 10px; font-size: 15px; pointer-events: none; white-space: nowrap; }
+.w3d-prompt kbd { font: 700 12px/1 ui-monospace, monospace; background: #f6e7c4; color: #2b1d0e; border-radius: 4px; padding: 3px 6px; margin-right: 4px; }
+.w3d-lock { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5,15,25,.25); }
+.w3d-load { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 18px; font-weight: 700; background: linear-gradient(#2f6f9f, #f3d9a8); }
+.w3d-dlg { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); width: min(640px, calc(100% - 24px)); background: #f6e7c4; color: #2b1d0e; border: 3px solid #6b4a22; border-radius: 16px; padding: 14px 16px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.w3d-who { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.w3d-who b { font-size: 18px; }
+.w3d-who span { font-size: 13px; color: #7a5a32; }
+.w3d-dlg p { margin: 8px 0 12px; font-size: 17px; line-height: 1.45; min-height: 2.9em; }
+.w3d-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.w3d-sail { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); display: flex; gap: 12px; align-items: center; background: rgba(20,14,6,.7); color: #fff; padding: 8px 10px 8px 16px; border-radius: 12px; max-width: calc(100% - 160px); }
+.w3d-sail > div { display: grid; gap: 6px; min-width: 0; }
+.w3d-sail span { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.w3d-sail i { display: block; height: 6px; background: rgba(255,255,255,.25); border-radius: 3px; overflow: hidden; }
+.w3d-sail i b { display: block; height: 100%; width: 0; background: #e2a948; }
+.w3d-stick { position: absolute; left: 22px; bottom: 26px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.18); border: 2px solid rgba(255,255,255,.45); touch-action: none; }
+.w3d-stick i { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%; background: rgba(246,231,196,.9); border: 2px solid #6b4a22; }
+.w3d-tbtns { position: absolute; right: 18px; bottom: 30px; display: flex; flex-direction: column-reverse; gap: 12px; align-items: flex-end; }
+.w3d-btn.round { width: 74px; height: 74px; border-radius: 50%; justify-content: center; padding: 0; font-size: 14px; }
+.w3d-btn.round.talk { background: #e2a948; width: 86px; height: 86px; font-size: 16px; }
+.w3d.touch .w3d-help { bottom: 162px; white-space: normal; text-align: center; width: max-content; }
+.w3d.talking .w3d-stick, .w3d.talking .w3d-tbtns { display: none; }
+.w3d.touch .w3d-prompt { top: calc(50% + 40px); }
+@media (max-width: 560px) { .w3d-dlg p { font-size: 15px; } .w3d-sail { max-width: calc(100% - 24px); top: 60px; } }
+body.in-world #pip-mate, body.in-world .topbar { display: none; }
+.harbor-2d { max-width: 640px; margin: 40px auto; padding: 0 16px; display: grid; gap: 14px; }
+.modal.shop { width: min(760px, 100%); }
+.shop-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.shop-head h2 { margin: 0; }
+.shop-tabs { flex-wrap: wrap; }
+.shop-tabs button[aria-selected="true"] { color: var(--bg); background: var(--brass); }
+.shop-note { margin: 0; color: var(--muted); font-size: 15px; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 10px; }
+.shop-item { display: grid; grid-template-columns: 76px 1fr; grid-template-rows: auto auto; gap: 6px 12px; align-items: center; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.shop-item.on { border-color: var(--brass); }
+.si-prev { grid-row: span 2; display: grid; place-items: center; min-height: 64px; }
+.si-text { display: grid; gap: 2px; }
+.si-text span { color: var(--muted); font-size: 14px; line-height: 1.35; }
+.si-act { display: flex; gap: 6px; flex-wrap: wrap; }
+.si-act .btn svg { width: 16px; height: 16px; vertical-align: -3px; margin-right: 3px; }
+.tag.on { background: var(--brass); color: var(--bg); padding: 4px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+.sp-code { font: 11px/1.5 var(--f-mono); background: var(--code-bg); color: var(--ink); border-radius: 8px; padding: 6px 7px; width: 76px; overflow: hidden; white-space: nowrap; border: 1px solid var(--line); }
+.sp-font { font-size: 13px; background: var(--code-bg); border-radius: 8px; padding: 10px 6px; width: 76px; text-align: center; overflow: hidden; white-space: nowrap; border: 1px solid var(--line); }
+.sp-swatch svg, .sp-pip svg { display: block; }
+/* editor themes (bought from Old Silas) */
+.CodeMirror { font-family: var(--f-code, var(--f-mono)); }
+[data-cmtheme="parchment"] { --code-bg: #f4e8cc; }
+[data-cmtheme="parchment"] .CodeMirror, .sp-code[data-cmtheme="parchment"] { color: #3a2a18; }
+[data-cmtheme="parchment"] .CodeMirror-gutters { border-right-color: #d9c39a; }
+[data-cmtheme="parchment"] .CodeMirror-linenumber { color: #a08a62; }
+[data-cmtheme="parchment"] .CodeMirror-cursor { border-left-color: #7a3e12; }
+[data-cmtheme="parchment"] .cm-keyword { color: #a3361f !important; } [data-cmtheme="parchment"] .cm-builtin { color: #1f5f8b !important; }
+[data-cmtheme="parchment"] .cm-string { color: #3f7a2a !important; } [data-cmtheme="parchment"] .cm-number { color: #a35f00 !important; }
+[data-cmtheme="parchment"] .cm-comment { color: #8b7a5a !important; } [data-cmtheme="parchment"] .cm-def { color: #7a3e12 !important; }
+[data-cmtheme="parchment"] .cm-variable, [data-cmtheme="parchment"] .cm-variable-2 { color: #3a2a18 !important; } [data-cmtheme="parchment"] .cm-operator { color: #8a5a1a !important; } [data-cmtheme="parchment"] .cm-property { color: #5b3c8f !important; }
+[data-cmtheme="reef"] { --code-bg: #062e2e; }
+[data-cmtheme="reef"] .cm-keyword { color: #ff7f6a !important; } [data-cmtheme="reef"] .cm-builtin { color: #5ce1d6 !important; }
+[data-cmtheme="reef"] .cm-string { color: #ffd27a !important; } [data-cmtheme="reef"] .cm-number { color: #ff9fc0 !important; }
+[data-cmtheme="reef"] .cm-comment { color: #5f9a95 !important; } [data-cmtheme="reef"] .cm-def { color: #9ff0a8 !important; }
+[data-cmtheme="kraken"] { --code-bg: #170f2b; }
+[data-cmtheme="kraken"] .cm-keyword { color: #ff79c6 !important; } [data-cmtheme="kraken"] .cm-builtin { color: #8be9fd !important; }
+[data-cmtheme="kraken"] .cm-string { color: #c3f584 !important; } [data-cmtheme="kraken"] .cm-number { color: #bd93f9 !important; }
+[data-cmtheme="kraken"] .cm-comment { color: #7c6fa8 !important; } [data-cmtheme="kraken"] .cm-def { color: #50fa7b !important; } [data-cmtheme="kraken"] .cm-operator { color: #ffb86c !important; }
+[data-cmtheme="gold"] { --code-bg: #0e0a04; }
+[data-cmtheme="gold"] .CodeMirror, .sp-code[data-cmtheme="gold"] { color: #f3e3b5; }
+[data-cmtheme="gold"] .cm-keyword { color: #ffcc4d !important; font-weight: 700; } [data-cmtheme="gold"] .cm-builtin { color: #e8b04a !important; }
+[data-cmtheme="gold"] .cm-string { color: #fff1c1 !important; } [data-cmtheme="gold"] .cm-number { color: #ffa94d !important; }
+[data-cmtheme="gold"] .cm-comment { color: #8a7344 !important; } [data-cmtheme="gold"] .cm-def { color: #ffd98a !important; } [data-cmtheme="gold"] .cm-operator { color: #d4a017 !important; }
+.sp-code[data-cmtheme="parchment"] { background: #f4e8cc; } .sp-code[data-cmtheme="reef"] { background: #062e2e; } .sp-code[data-cmtheme="kraken"] { background: #170f2b; } .sp-code[data-cmtheme="gold"] { background: #0e0a04; }
+.sp-code[data-cmtheme="parchment"] .cm-keyword { color: #a3361f; } .sp-code[data-cmtheme="parchment"] .cm-builtin { color: #1f5f8b; } .sp-code[data-cmtheme="parchment"] .cm-string { color: #3f7a2a; } .sp-code[data-cmtheme="parchment"] .cm-number { color: #a35f00; } .sp-code[data-cmtheme="parchment"] .cm-def { color: #7a3e12; }
+.sp-code[data-cmtheme="deep"] .cm-keyword { color: #e88c6a; } .sp-code[data-cmtheme="deep"] .cm-builtin { color: #7fc6e6; } .sp-code[data-cmtheme="deep"] .cm-string { color: #a9d38a; } .sp-code[data-cmtheme="deep"] .cm-number { color: #f0c36b; } .sp-code[data-cmtheme="deep"] .cm-def { color: #f5cb7a; } .sp-code .cm-variable-2 { color: inherit; }
+.sp-code[data-cmtheme="reef"] { color: #dff; } .sp-code[data-cmtheme="kraken"] { color: #eee; }
 </style>
 
 <header class="topbar" id="topbar"></header>
@@ -495,6 +584,10 @@ const CH = CUR.chapters;
 const T = {
   en: {
     map: "Sea Chart", workshop: "Workshop", log: "Captain's Log", settings: "Settings",
+    harbor: "Harbor", shopH: "Old Silas's Wares", equipL: "Equip", equippedL: "Equipped", removeL: "Remove",
+    shopHelpNote: (a, b) => `You have ${a} hint token${a === 1 ? "" : "s"} and ${b} solution scroll${b === 1 ? "" : "s"}. They're used automatically when you open a hint or the solution.`,
+    harborOff: "The 3D harbor is switched off in Sound & display settings. You can still shop here.", harborNoGL: "Your browser can't show the 3D harbor, but Old Silas will still trade with you.", turnOn3d: "Turn on 3D",
+    tokenHint: (n) => `Use a hint token (${n} left)`, scrollPeek: (n) => `Use a solution scroll (${n} left), no doubloons lost`,
     doubloons: "doubloons", streak: "day streak", run: "Run", check: "Check", reset: "Reset", input: "Input",
     output: "Output", noOutput: "(no output)", loadingPy: "Hoisting the sails: loading Python. The first time takes a moment.",
     pyReady: "Interpreter ready", pyFail: "The Interpreter could not start in this browser.", running: "Running",
@@ -542,6 +635,10 @@ const T = {
   },
   sl: {
     map: "Pomorska karta", workshop: "Delavnica", log: "Kapitanov dnevnik", settings: "Nastavitve",
+    harbor: "Pristan", shopH: "Blago starega Silasa", equipL: "Nadeni", equippedL: "Nadeto", removeL: "Odstrani",
+    shopHelpNote: (a, b) => `Imaš ${a} žetonov za namig in ${b} zvitkov z rešitvijo. Porabijo se samodejno, ko odpreš namig ali rešitev.`,
+    harborOff: "3D pristan je izklopljen v nastavitvah zvoka in prikaza. Tukaj lahko še vedno nakupuješ.", harborNoGL: "Tvoj brskalnik ne zmore 3D pristana, stari Silas pa bo vseeno trgoval s tabo.", turnOn3d: "Vklopi 3D",
+    tokenHint: (n) => `Porabi žeton za namig (še ${n})`, scrollPeek: (n) => `Porabi zvitek z rešitvijo (še ${n}), brez izgube dublonov`,
     doubloons: "dublonov", streak: "dni zapored", run: "Zaženi", check: "Preveri", reset: "Ponastavi", input: "Vnos",
     output: "Izpis", noOutput: "(ni izpisa)", loadingPy: "Dvigujemo jadra: nalagam Python. Prvič traja trenutek.",
     pyReady: "Tolmač pripravljen", pyFail: "Tolmač se v tem brskalniku ni mogel zagnati.", running: "Teče",
@@ -606,13 +703,15 @@ const BADGES = {
 const KEY = "serpent-seas-v1";
 const DEF = { lang: null, onboarded: false, coins: 0, done: {}, code: {}, hints: {}, peek: {}, predict: {},
   badges: [], streak: { last: null, count: 0 }, placed: [], unlockAll: false, ran: 0, fixes: 0, workshop: null,
-  audio: { music: true, sfx: true, ambience: true, voice: true, musicVol: 0.5, sfxVol: 0.7 }, reduceMotion: false, shipAt: 0, pip: true };
+  audio: { music: true, sfx: true, ambience: true, voice: true, musicVol: 0.5, sfxVol: 0.7 }, reduceMotion: false, shipAt: 0, pip: true,
+  spent: 0, owned: [], equip: {}, tokens: 0, scrolls: 0, freeHints: {}, scrolled: {} };
 function loadState() {
   let s = null;
   try { const raw = localStorage.getItem(KEY); if (raw) s = JSON.parse(raw); } catch (e) {}
   const base = JSON.parse(JSON.stringify(DEF));
   const out = s && typeof s === "object" ? Object.assign(base, s) : base;
   out.audio = Object.assign({}, DEF.audio, out.audio || {});
+  out.equip = Object.assign({}, out.equip || {}); out.freeHints = out.freeHints || {}; out.scrolled = out.scrolled || {};
   return out;
 }
 let S = loadState();
@@ -708,7 +807,7 @@ function award(id) {
 }
 function addCoins(n, fromEl) {
   const before = rankInfo().i;
-  const shown = S.coins;
+  const shown = wallet();
   S.coins += n; save();
   const after = rankInfo();
   if (n <= 0) { renderTop(); return; }
@@ -781,7 +880,7 @@ const ICON = {
   dotFlag: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 14V2.5M4 3h8l-2 3 2 3H4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
 };
 const BRAND = '<svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#12303b" stroke="#e2a948" stroke-width="1.6"/><path d="M11 25c3 0 3-5 6-5s3 5 6 5 3-5 6-5" fill="none" stroke="#63c28f" stroke-width="3" stroke-linecap="round"/><circle cx="29.3" cy="19.6" r="1.2" fill="#ece2c9"/><path d="M20 6v4M20 30v4M6 20h4M30 20h4" stroke="#e2a948" stroke-width="1.4" stroke-linecap="round"/></svg>';
-function pipArt(bg) {
+function pipArt(bg, eq) {
   return `<svg class="pip-art" viewBox="0 0 64 64" aria-hidden="true">${bg ? '<circle cx="32" cy="32" r="31" fill="#173a47" stroke="#2a4d5a"/>' : ""}`
     + '<g class="pip-body">'
     + '<path class="pip-tail" d="M22 44c-4 2-6 6-5 12 3-3 6-5 9-6z" fill="#ef6b54"/><path class="pip-tail" d="M24 47c-2 3-2 7 0 11 1-3 3-5 5-6z" fill="#e2a948"/>'
@@ -798,7 +897,8 @@ function pipArt(bg) {
     + '<ellipse class="pip-blush" cx="33.5" cy="33.5" rx="3" ry="1.8" fill="#ef6b54" opacity=".55"/>'
     + '<path class="pip-jaw" d="M44 36c3 0 5 1 6 3-2 1-4 1-6-1z" fill="#9c6d1f"/>'
     + '<path d="M44 30c6 0 9 4 7 9-2-2-4-3-7-3z" fill="#e2a948"/>'
-    + '</g></g></svg>';
+    + '<g class="pip-gear-h">' + pipGear("h", eq) + '</g>'
+    + '</g><g class="pip-gear-b">' + pipGear("b", eq) + '</g></g></svg>';
 }
 const PIP = pipArt(true);
 const CAPTAIN = '<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="31" fill="#173a47" stroke="#2a4d5a"/><path d="M14 64c1-12 8-18 18-18s17 6 18 18z" fill="#6b2e2a"/><circle cx="32" cy="34" r="11" fill="#c99a72"/><path d="M21 37c2 7 6 10 11 10s9-3 11-10c-3 3-7 4-11 4s-8-1-11-4z" fill="#3a2a20"/><path d="M8 27c6-2 9-12 24-12s18 10 24 12c-6 3-14 4-24 4S14 30 8 27z" fill="#1d1712" stroke="#e2a948" stroke-width="1.4"/><circle cx="32" cy="22" r="2.4" fill="#ece2c9"/><rect x="34" y="31" width="7" height="3.5" rx="1" fill="#1d1712"/><circle cx="27" cy="33" r="1.3" fill="#1d1712"/></svg>';
@@ -1027,7 +1127,9 @@ function toast(icon, html) {
   $("#toasts").appendChild(el);
   setTimeout(() => el.remove(), 3600);
 }
+let modalOnClose = null;
 function openModal(html, onMount, dismissable = true) {
+  modalOnClose = null;
   const root = $("#modal-root");
   root.innerHTML = `<div class="modal-back"><div class="modal" role="dialog" aria-modal="true">${html}</div></div>`;
   const back = $(".modal-back", root);
@@ -1035,7 +1137,7 @@ function openModal(html, onMount, dismissable = true) {
   onMount && onMount($(".modal", root));
   const f = $("button, textarea, select", root); f && f.focus();
 }
-function closeModal() { $("#modal-root").innerHTML = ""; }
+function closeModal() { $("#modal-root").innerHTML = ""; const f = modalOnClose; modalOnClose = null; f && f(); }
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#modal-root .modal-back") && S.onboarded) closeModal(); });
 
 /* ================= Python engine ================= */
@@ -1238,17 +1340,18 @@ function showOutput(api, res, extraTop = "") {
 function renderTop() {
   const r = rankInfo();
   const view = (location.hash || "#map").slice(1);
-  const cur = view === "workshop" ? "workshop" : view === "log" ? "log" : view === "map" || !view ? "map" : "";
+  const cur = view === "workshop" ? "workshop" : view === "log" ? "log" : view === "world" ? "world" : view === "map" || !view ? "map" : "";
   $("#topbar").innerHTML = `
     <button class="brand" type="button" data-go="map" aria-label="Serpent Seas">${BRAND}<span class="brand-name">Serpent Seas</span></button>
     <nav class="nav" aria-label="Main">
       <button type="button" data-go="map" ${cur === "map" ? 'aria-current="page"' : ""}>${esc(t("map"))}</button>
+      <button type="button" data-go="world" ${cur === "world" ? 'aria-current="page"' : ""}>${esc(t("harbor"))}</button>
       <button type="button" data-go="workshop" ${cur === "workshop" ? 'aria-current="page"' : ""}>${esc(t("workshop"))}</button>
       <button type="button" data-go="log" ${cur === "log" ? 'aria-current="page"' : ""}>${esc(t("log"))}</button>
     </nav>
     <div class="stats">
       <div class="rank" title="${esc(r.next ? `${r.pct}%` : "")}"><span class="rank-name">${esc(r.name)}</span><span class="rank-bar"><i style="width:${r.pct}%"></i></span></div>
-      <span class="stat" id="coin-stat" title="${esc(t("doubloons"))}">${ICON.coin}<b>${S.coins}</b></span>
+      <span class="stat" id="coin-stat" title="${esc(t("doubloons"))}">${ICON.coin}<b>${wallet()}</b></span>
       <span class="stat" title="${esc(t("streak"))}">${ICON.lantern}<b>${streakNow()}</b></span>
       <button class="iconbtn" type="button" data-lang aria-label="${esc(t("language"))}">${S.lang === "sl" ? "SL" : "EN"}</button>
       <button class="iconbtn" type="button" data-sound aria-label="${esc(t("sound"))}">${S.audio.music || S.audio.sfx ? ICON.speaker : ICON.mute}</button>
@@ -1460,9 +1563,9 @@ function stepReachable(i) {
 const kindIcon = (s) => s.type === "story" ? ICON.dotStory : s.type === "learn" ? ICON.dotLearn : s.type === "predict" ? ICON.dotPredict : s.kind === "debug" ? ICON.dotBug : s.kind === "project" ? ICON.dotFlag : ICON.dotCode;
 const BASE = { learn: 5, task: 20, debug: 20, project: 60 };
 function rewardFor(k, s) {
-  if (S.peek[k]) return 0;
+  if (S.peek[k] && !S.scrolled[k]) return 0;
   const base = BASE[s.kind] || 20;
-  return Math.max(5, base - 5 * (S.hints[k] || 0));
+  return Math.max(5, base - 5 * Math.max(0, (S.hints[k] || 0) - (S.freeHints[k] || 0)));
 }
 function complete(k, coins, fromEl) {
   if (S.done[k]) return;
@@ -1565,16 +1668,22 @@ function renderHints(s, k) {
   if (S.peek[k]) h += `<div class="hint solution"><div class="eyebrow">${esc(t("solution"))}</div><pre><code>${esc(s.solution)}</code></pre>
     <div class="row"><button class="btn small" type="button" data-put>${esc(t("putInEditor"))}</button><span style="color:var(--muted);font-size:14px">${esc(t("typeTip"))}</span></div></div>`;
   const row = [];
-  if (n < s.hints.length) row.push(`<button class="btn small" type="button" data-hint>${esc(n === 0 ? t("showHint") : t("nextHint"))}${done ? "" : ` <span style="color:var(--muted)">${esc(t("hintCost"))}</span>`}</button>`);
+  if (n < s.hints.length) row.push(`<button class="btn small" type="button" data-hint>${esc(n === 0 ? t("showHint") : t("nextHint"))}${done ? "" : S.tokens > 0 ? ` <span style="color:var(--kelp)">${esc(t("tokenHint", S.tokens))}</span>` : ` <span style="color:var(--muted)">${esc(t("hintCost"))}</span>`}</button>`);
   else if (!S.peek[k]) row.push(`<button class="btn small ghost" type="button" data-peek>${esc(t("showSolution"))}</button>`);
   if (row.length) h += `<div class="hint-row" data-hintrow>${row.join("")}</div>`;
   host.innerHTML = h;
   host.hidden = !h;
   const hb = $("[data-hint]", host);
-  hb && hb.addEventListener("click", () => { Sound.play("squawk"); Pip.say("hint", { gap: 20000 }); S.hints[k] = (S.hints[k] || 0) + 1; save(); renderHints(s, k); refreshChip(s, k); });
+  hb && hb.addEventListener("click", () => { Sound.play("squawk"); Pip.say("hint", { gap: 20000 }); S.hints[k] = (S.hints[k] || 0) + 1; if (!done && S.tokens > 0) { S.tokens--; S.freeHints[k] = (S.freeHints[k] || 0) + 1; } save(); renderHints(s, k); refreshChip(s, k); });
   const pb = $("[data-peek]", host);
   pb && pb.addEventListener("click", () => {
     if (S.done[k]) { S.peek[k] = true; save(); renderHints(s, k); return; }
+    if (S.scrolls > 0) {
+      $("[data-hintrow]", host).outerHTML = `<div class="confirm"><span>${esc(t("scrollPeek", S.scrolls))}</span><button class="btn small primary" type="button" data-yes>${esc(t("showIt"))}</button><button class="btn small" type="button" data-no>${esc(t("keepTrying"))}</button></div>`;
+      $("[data-yes]", host).addEventListener("click", () => { S.scrolls--; S.scrolled[k] = true; S.peek[k] = true; save(); renderHints(s, k); refreshChip(s, k); Pip.say("peek", { gap: 20000 }); });
+      $("[data-no]", host).addEventListener("click", () => renderHints(s, k));
+      return;
+    }
     $("[data-hintrow]", host).outerHTML = `<div class="confirm"><span>${esc(t("peekWarn"))}</span><button class="btn small" type="button" data-yes>${esc(t("showIt"))}</button><button class="btn small primary" type="button" data-no>${esc(t("keepTrying"))}</button></div>`;
     $("[data-yes]", host).addEventListener("click", () => { S.peek[k] = true; save(); renderHints(s, k); refreshChip(s, k); Pip.say("peek", { gap: 20000 }); });
     $("[data-no]", host).addEventListener("click", () => renderHints(s, k));
@@ -1840,15 +1949,170 @@ function openSettings() {
   });
 }
 
+
+/* ================= shop & cosmetics ================= */
+const wallet = () => Math.max(0, S.coins - (S.spent || 0));
+const SHOP = [
+  // editor themes
+  { id: "theme-deep", cat: "editor", kind: "theme", val: "deep", price: 0, name: ["Deep Sea", "Globoko morje"], desc: ["The classic dark-water editor.", "Klasični temni urejevalnik."] },
+  { id: "theme-parchment", cat: "editor", kind: "theme", val: "parchment", price: 80, name: ["Old Parchment", "Stari pergament"], desc: ["Light, warm, easy on the eyes in daylight.", "Svetel in topel, prijazen za oči podnevi."] },
+  { id: "theme-reef", cat: "editor", kind: "theme", val: "reef", price: 100, name: ["Coral Reef", "Koralni greben"], desc: ["Teal water with coral highlights.", "Turkizna voda s koralnimi poudarki."] },
+  { id: "theme-kraken", cat: "editor", kind: "theme", val: "kraken", price: 120, name: ["Kraken Ink", "Krakenovo črnilo"], desc: ["Deep purple with glowing tentacle colours.", "Temno vijolična z žarečimi barvami."] },
+  { id: "theme-gold", cat: "editor", kind: "theme", val: "gold", price: 200, name: ["Treasure Hoard", "Zakladnica"], desc: ["Black and gold. For captains only.", "Črno in zlato. Samo za kapitane."] },
+  // editor fonts
+  { id: "font-default", cat: "editor", kind: "font", val: "", price: 0, name: ["JetBrains Mono", "JetBrains Mono"], desc: ["The standard ship's font.", "Običajna ladijska pisava."] },
+  { id: "font-courier", cat: "editor", kind: "font", val: "Courier Prime", price: 40, name: ["Courier Prime", "Courier Prime"], desc: ["Like a captain's typewritten log.", "Kot kapitanov tipkani dnevnik."] },
+  { id: "font-source", cat: "editor", kind: "font", val: "Source Code Pro", price: 50, name: ["Source Code Pro", "Source Code Pro"], desc: ["Clean and calm.", "Čista in mirna."] },
+  { id: "font-fira", cat: "editor", kind: "font", val: "Fira Code", price: 60, name: ["Fira Code", "Fira Code"], desc: ["Friendly shapes, popular with coders.", "Prijazne oblike, priljubljena med programerji."] },
+  { id: "font-space", cat: "editor", kind: "font", val: "Space Mono", price: 80, name: ["Space Mono", "Space Mono"], desc: ["Bold and quirky.", "Krepka in posebna."] },
+  // Pip
+  { id: "hat-bandana", cat: "pip", kind: "hat", val: "bandana", price: 70, name: ["Red Bandana", "Rdeča ruta"], desc: ["Every deckhand's favourite.", "Najljubša vsakega mornarja."] },
+  { id: "hat-tricorn", cat: "pip", kind: "hat", val: "tricorn", price: 150, name: ["Captain's Tricorn", "Kapitanov klobuk"], desc: ["Pip will be unbearable.", "Pip bo neznosen."] },
+  { id: "hat-crown", cat: "pip", kind: "hat", val: "crown", price: 400, name: ["Golden Crown", "Zlata krona"], desc: ["King of the parrots.", "Kralj papig."] },
+  { id: "face-monocle", cat: "pip", kind: "face", val: "monocle", price: 90, name: ["Brass Monocle", "Medeninasti monokel"], desc: ["Very distinguished. Very.", "Zelo ugledno. Zelo."] },
+  { id: "bling-chain", cat: "pip", kind: "bling", val: "chain", price: 60, name: ["Gold Chain", "Zlata verižica"], desc: ["A doubloon on a chain.", "Dublon na verižici."] },
+  // ship
+  { id: "sail-white", cat: "ship", kind: "sail", val: "#efe7d6", price: 90, name: ["Canvas Sails", "Platnena jadra"], desc: ["Honest white canvas.", "Pošteno belo platno."] },
+  { id: "sail-blue", cat: "ship", kind: "sail", val: "#2c5aa0", price: 100, name: ["Royal Blue Sails", "Kraljevsko modra jadra"], desc: ["Navy-style, but cooler.", "Kot mornarica, le bolj kul."] },
+  { id: "sail-crimson", cat: "ship", kind: "sail", val: "#b8322a", price: 120, name: ["Crimson Sails", "Škrlatna jadra"], desc: ["Seen from miles away.", "Vidna od daleč."] },
+  { id: "sail-gold", cat: "ship", kind: "sail", val: "#e2b04a", price: 300, name: ["Golden Sails", "Zlata jadra"], desc: ["Pure show-off.", "Čisto razkazovanje."] },
+  { id: "flag-red", cat: "ship", kind: "flag", val: "#c0392b", price: 60, name: ["Red Flag", "Rdeča zastava"], desc: ["No quarter given.", "Brez milosti."] },
+  { id: "flag-green", cat: "ship", kind: "flag", val: "#2e8b57", price: 60, name: ["Serpent Green Flag", "Kačje zelena zastava"], desc: ["For Python pirates.", "Za Python pirate."] },
+  { id: "flag-purple", cat: "ship", kind: "flag", val: "#6a3d9a", price: 80, name: ["Royal Purple Flag", "Vijolična zastava"], desc: ["Fancy.", "Imenitno."] },
+  // helpers (consumable)
+  { id: "token", cat: "help", kind: "token", price: 30, name: ["Hint Token", "Žeton za namig"], desc: ["Open one hint without losing doubloons.", "Odpre en namig, ne da izgubiš dublone."] },
+  { id: "scroll", cat: "help", kind: "scroll", price: 120, name: ["Solution Scroll", "Zvitek z rešitvijo"], desc: ["Peek at a solution and still keep the reward.", "Poglej rešitev in vseeno obdrži nagrado."] },
+];
+const SHOP_CATS = [["editor", ["Editor", "Urejevalnik"]], ["pip", ["Pip", "Pip"]], ["ship", ["Ship", "Ladja"]], ["help", ["Helpers", "Pomočniki"]]];
+const FONT_URL = { "Courier Prime": "Courier+Prime", "Source Code Pro": "Source+Code+Pro:wght@400;600", "Fira Code": "Fira+Code:wght@400;600", "Space Mono": "Space+Mono" };
+const LN = (pair) => pair[S.lang === "sl" ? 1 : 0];
+const owns = (it) => it.price === 0 || (S.owned || []).includes(it.id);
+const equipped = (it) => { const e = S.equip || {}; return it.kind === "theme" ? (e.theme || "deep") === it.val : it.kind === "font" ? (e.font || "") === it.val : e[it.kind] === it.val; };
+function applyLook() {
+  const e = S.equip || {};
+  document.documentElement.dataset.cmtheme = e.theme || "deep";
+  const f = e.font || "";
+  document.documentElement.style.setProperty("--f-code", f ? `"${f}", var(--f-mono)` : "var(--f-mono)");
+  if (f && FONT_URL[f] && !document.getElementById("font-" + FONT_URL[f])) {
+    const l = document.createElement("link"); l.rel = "stylesheet"; l.id = "font-" + FONT_URL[f];
+    l.href = "https://fonts.googleapis.com/css2?family=" + FONT_URL[f] + "&display=swap"; document.head.appendChild(l);
+  }
+  window.SS_SHIP = { sail: e.sail || null, flag: e.flag || null };
+  $$(".pip-gear-h").forEach((g) => (g.innerHTML = pipGear("h")));
+  $$(".pip-gear-b").forEach((g) => (g.innerHTML = pipGear("b")));
+  document.querySelectorAll(".CodeMirror").forEach((c) => c.CodeMirror && c.CodeMirror.refresh());
+}
+function pipGear(part, eq) {
+  const e = eq || S.equip || {};
+  if (part === "b") return e.bling === "chain" ? '<path d="M31 40q7 6 15 0" stroke="#f1c84b" stroke-width="1.8" fill="none"/><circle cx="38.5" cy="44.5" r="2.6" fill="#f1c84b" stroke="#9c6d1f" stroke-width=".8"/>' : "";
+  let s = "";
+  if (e.face === "monocle") s += '<circle cx="38" cy="27" r="6.6" fill="none" stroke="#e2a948" stroke-width="1.6"/><path d="M44 31q3 6 1 12" stroke="#e2a948" stroke-width=".9" fill="none"/>';
+  if (e.hat === "tricorn") s += '<path d="M23 20c5-2 8-10 15-10s10 8 15 10c-4 3-9 4-15 4s-11-1-15-4z" fill="#1d1712" stroke="#e2a948" stroke-width="1.1"/><circle cx="38" cy="17" r="2" fill="#ece2c9"/>';
+  else if (e.hat === "bandana") s += '<path d="M27 23c0-7 6-12 12-11s10 5 10 11c-6-2-16-2-22 0z" fill="#c0392b"/><circle cx="34" cy="17" r="1" fill="#f6e7c4"/><circle cx="41" cy="16" r="1" fill="#f6e7c4"/><path d="M28 21l-7 1 3 4z" fill="#a83224"/>';
+  else if (e.hat === "crown") s += '<path d="M29 19l1.5-9 4.5 5 3-7 3 7 4.5-5 1.5 9z" fill="#f1c84b" stroke="#9c6d1f" stroke-width="1"/><circle cx="38" cy="15.5" r="1.3" fill="#ef6b54"/>';
+  return s;
+}
+function shopPreview(it) {
+  if (it.kind === "theme") return `<div class="sp-code" data-cmtheme="${it.val}"><span class="cm-keyword">def</span> <span class="cm-def">ahoy</span>(<span class="cm-variable-2">n</span>):<br>&nbsp;&nbsp;<span class="cm-builtin">print</span>(<span class="cm-string">"Arr!"</span> * <span class="cm-number">3</span>)</div>`;
+  if (it.kind === "font") { if (it.val && FONT_URL[it.val] && !document.getElementById("font-" + FONT_URL[it.val])) { const l = document.createElement("link"); l.rel = "stylesheet"; l.id = "font-" + FONT_URL[it.val]; l.href = "https://fonts.googleapis.com/css2?family=" + FONT_URL[it.val] + "&display=swap"; document.head.appendChild(l); } return `<div class="sp-font" style="font-family:${it.val ? `'${it.val}',` : ""}var(--f-mono)">print("Ahoy!")</div>`; }
+  if (it.cat === "pip") { const eq = Object.assign({}, S.equip, { [it.kind]: it.val }); return `<div class="sp-pip">${pipArt(true, eq).replace("<svg", '<svg width="64" height="64"')}</div>`; }
+  if (it.kind === "sail" || it.kind === "flag") return `<div class="sp-swatch">${it.kind === "sail" ? `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M32 6v50" stroke="#6b4a22" stroke-width="3"/><path d="M14 12h36c-3 10-3 22 0 32H14c3-10 3-22 0-32z" fill="${it.val}" stroke="rgba(0,0,0,.35)"/><path d="M8 54h48l-6 6H14z" fill="#8f5a2e"/></svg>` : `<svg viewBox="0 0 64 64" width="64" height="64"><path d="M16 6v54" stroke="#6b4a22" stroke-width="3"/><path d="M18 8h34l-6 10 6 10H18z" fill="${it.val}"/><circle cx="32" cy="18" r="4" fill="#f2efe4"/></svg>`}</div>`;
+  return `<div class="sp-swatch">${it.kind === "token" ? ICON.lantern : CHEST.replace('class="chest"', 'class="chest" style="width:64px;height:54px"')}</div>`;
+}
+let shopCat = "editor";
+function openShop(worldApi) {
+  const react = (k) => worldApi && worldApi.silas && worldApi.silas(k);
+  const render = (m) => {
+    const items = SHOP.filter((it) => it.cat === shopCat);
+    m.innerHTML = `<div class="shop-head"><h2>${esc(t("shopH"))}</h2><span class="stat shop-purse">${ICON.coin}<b>${wallet()}</b></span></div>
+      <div class="seg shop-tabs" role="tablist">${SHOP_CATS.map(([c, n]) => `<button type="button" role="tab" data-cat="${c}" aria-selected="${c === shopCat}">${esc(LN(n))}</button>`).join("")}</div>
+      ${shopCat === "help" ? `<p class="shop-note">${esc(t("shopHelpNote", S.tokens || 0, S.scrolls || 0))}</p>` : ""}
+      <div class="shop-grid">${items.map((it) => {
+        const own = owns(it), on = own && it.cat !== "help" && equipped(it);
+        const btn = it.cat === "help" ? `<button class="btn small primary" type="button" data-buy="${it.id}">${ICON.coin}${it.price}</button>`
+          : on ? `<span class="tag on">${esc(t("equippedL"))}</span>` : own ? `<button class="btn small" type="button" data-equip="${it.id}">${esc(t("equipL"))}</button>`
+          : `<button class="btn small primary" type="button" data-buy="${it.id}" ${wallet() < it.price ? 'data-poor="1"' : ""}>${ICON.coin}${it.price}</button>`;
+        return `<div class="shop-item ${on ? "on" : ""}"><div class="si-prev">${shopPreview(it)}</div><div class="si-text"><b>${esc(LN(it.name))}</b><span>${esc(LN(it.desc))}</span></div><div class="si-act">${btn}${own && it.cat !== "help" && !on && (it.kind === "hat" || it.kind === "face" || it.kind === "bling" || it.kind === "sail" || it.kind === "flag") ? "" : ""}${on && (it.kind === "hat" || it.kind === "face" || it.kind === "bling" || it.kind === "sail" || it.kind === "flag") ? `<button class="btn small ghost" type="button" data-unequip="${it.kind}">${esc(t("removeL"))}</button>` : ""}</div></div>`;
+      }).join("")}</div>
+      <div class="row" style="justify-content:flex-end"><button class="btn primary" type="button" data-close>${esc(t("close"))}</button></div>`;
+    $$("[data-cat]", m).forEach((b) => b.addEventListener("click", () => { shopCat = b.dataset.cat; render(m); }));
+    $$("[data-buy]", m).forEach((b) => b.addEventListener("click", () => {
+      const it = SHOP.find((x) => x.id === b.dataset.buy);
+      if (wallet() < it.price) { Sound.play("fail"); react(Math.random() < 0.5 ? "poor1" : "poor2"); shakeEl(b); return; }
+      S.spent = (S.spent || 0) + it.price;
+      if (it.kind === "token") S.tokens = (S.tokens || 0) + 1;
+      else if (it.kind === "scroll") S.scrolls = (S.scrolls || 0) + 1;
+      else { S.owned = (S.owned || []).concat(it.id); S.equip = Object.assign({}, S.equip, { [it.kind]: it.val }); }
+      save(); applyLook(); Sound.play("coins"); react(Math.random() < 0.5 ? "buy1" : "buy2");
+      worldApi && worldApi.repaint && worldApi.repaint(); renderTop(); render(m);
+    }));
+    $$("[data-equip]", m).forEach((b) => b.addEventListener("click", () => {
+      const it = SHOP.find((x) => x.id === b.dataset.equip);
+      S.equip = Object.assign({}, S.equip, { [it.kind]: it.val }); save(); applyLook(); Sound.play("click"); react("equip1");
+      worldApi && worldApi.repaint && worldApi.repaint(); render(m);
+    }));
+    $$("[data-unequip]", m).forEach((b) => b.addEventListener("click", () => {
+      S.equip = Object.assign({}, S.equip, { [b.dataset.unequip]: null }); save(); applyLook();
+      worldApi && worldApi.repaint && worldApi.repaint(); render(m);
+    }));
+    $("[data-close]", m).addEventListener("click", closeModal);
+  };
+  openModal("", (m) => { m.classList.add("shop"); render(m); });
+  modalOnClose = () => { worldApi && worldApi.shopClosed && worldApi.shopClosed(); };
+}
+
+/* ================= harbor (3D world) ================= */
+let world3d = null;
+function disposeWorld() { if (world3d) { try { world3d.dispose(); } catch (e) {} world3d = null; } document.body.classList.remove("in-world"); }
+function worldDestinations() {
+  const out = [], nt = nextTarget();
+  if (nt) out.push(nt);
+  for (const ch of CH) {
+    if (!chapterUnlocked(ch) || ch.charting) continue;
+    ch.lessons.forEach((l, i) => { if (lessonUnlocked(ch, i) && !lessonDone(ch, l) && !out.some((o) => o.l === l)) out.push({ ch, l }); });
+  }
+  if (!out.length) CH.forEach((ch) => { if (chapterUnlocked(ch) && !ch.charting) ch.lessons.forEach((l) => out.length < 4 && out.push({ ch, l })); });
+  return out.slice(0, 4).map(({ ch, l }) => ({ id: l.id, title: L(l.title) }));
+}
+function renderWorld() {
+  disposeWorld();
+  const canWebGL = (() => { try { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); } catch (e) { return false; } })();
+  if (S.no3d || !canWebGL) {
+    $("#view").innerHTML = `<section class="harbor-2d"><h1>${esc(t("harbor"))}</h1><p>${esc(t(S.no3d ? "harborOff" : "harborNoGL"))}</p>
+      <div class="row"><button class="btn primary" type="button" data-shop>${esc(t("shopH"))}</button>${S.no3d ? `<button class="btn" type="button" data-on3d>${esc(t("turnOn3d"))}</button>` : ""}</div></section>`;
+    $("[data-shop]").addEventListener("click", () => openShop(null));
+    const on = $("[data-on3d]"); on && on.addEventListener("click", () => { S.no3d = false; save(); renderWorld(); });
+    return;
+  }
+  $("#view").innerHTML = `<div class="world-page" id="world-host"></div>`;
+  document.body.classList.add("in-world");
+  const host = $("#world-host");
+  const start = () => {
+    if (!$("#world-host") || world3d) return;
+    world3d = window.World3D.mount(host, {
+      lang: S.lang, touch: window.matchMedia("(pointer: coarse)").matches,
+      wallet, destinations: worldDestinations, voyageDone: () => CH.filter(chapterPassed).length,
+      onExit: () => go("map"),
+      onShop: (api) => openShop(api),
+      onSail: (id) => { S.shipAt = Math.max(0, CH.findIndex((c) => c.lessons.some((l) => l.id === id))); save(); location.hash = id; },
+      onFail: () => { disposeWorld(); S.no3d = true; renderWorld(); S.no3d = false; },
+    });
+    window.__ssWorld = world3d;
+  };
+  if (window.World3D) start();
+  else import("./world3d.js").then(start).catch((e) => { console.warn(e); disposeWorld(); $("#view").innerHTML = `<section class="harbor-2d"><h1>${esc(t("harbor"))}</h1><p>${esc(t("harborNoGL"))}</p><div class="row"><button class="btn primary" type="button" data-shop>${esc(t("shopH"))}</button></div></section>`; $("[data-shop]").addEventListener("click", () => openShop(null)); });
+}
+
 /* ================= router ================= */
 function go(h) { if ((location.hash || "#map").slice(1) === h) route(); else location.hash = h; }
 function route(keepStep) {
   if (LS && LS.interp) { LS.interp.dispose(); }
-  disposeChart(); disposeCeleb();
+  disposeChart(); disposeCeleb(); disposeWorld();
   const h = (location.hash || "#map").slice(1);
   renderTop();
   Sound.setScene(h === "workshop" || findLesson(h) ? "lesson" : "map");
-  if (h === "workshop") { LS = null; renderWorkshop(); }
+  if (h === "world") { LS = null; renderWorld(); }
+  else if (h === "workshop") { LS = null; renderWorkshop(); }
   else if (h === "log") { LS = null; renderLog(); }
   else if (findLesson(h)) {
     if (keepStep === true && LS && LS.l && LS.l.id === h) renderStep();
@@ -1857,6 +2121,7 @@ function route(keepStep) {
 }
 window.addEventListener("hashchange", () => route());
 
+applyLook();
 applyPrefs();
 route();
 Pip.mount();

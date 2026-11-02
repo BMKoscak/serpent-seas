@@ -242,9 +242,25 @@
       return b.duration;
     });
   }
+  /* ---------- crew voices (3D world) ---------- */
+  let crewSrc = null;
+  function crew(id, key, lang) {
+    if (!ctx || !unlocked || !prefs.voice) return Promise.resolve(0);
+    const name = "c_" + lang + "_" + id + "_" + key;
+    return load(name, "voice3/" + lang + "_" + id + "_" + key + ".mp3").then((b) => {
+      if (!b) return 0;
+      stopCrew(); if (voiceSrc) { try { voiceSrc.stop(); } catch (e) {} }
+      const s = ctx.createBufferSource(); s.buffer = b; s.connect(voiceBus);
+      s.start(); crewSrc = s;
+      s.onended = () => { if (crewSrc === s) crewSrc = null; };
+      duck(0.35, b.duration);
+      return b.duration;
+    });
+  }
+  function stopCrew() { if (crewSrc) { try { crewSrc.stop(); } catch (e) {} crewSrc = null; } }
   const lvl = new Uint8Array(256);
   function voiceLevel() {
-    if (!voiceAn || !voiceSrc) return 0;
+    if (!voiceAn || (!voiceSrc && !crewSrc)) return 0;
     voiceAn.getByteTimeDomainData(lvl);
     let sum = 0; for (let i = 0; i < lvl.length; i++) { const v = (lvl[i] - 128) / 128; sum += v * v; }
     return Math.min(1, Math.sqrt(sum / lvl.length) * 4);
@@ -404,6 +420,8 @@
   window.Sound = {
     play,
     say,
+    crew,
+    stopCrew,
     voiceLevel,
     setScene(s) { if (s === scene) return; scene = s; fadeTracks(); },
     setPrefs(p) { Object.assign(prefs, p); applyPrefs(); },
